@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>商品詳情 — FORMA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg sticky-top forma-nav">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand forma-logo" href="index.html">FORMA</a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+        <i class="bi bi-list fs-4"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav mx-auto gap-4">
+          <li class="nav-item"><a class="nav-link" href="index.html">首頁</a></li>
+          <li class="nav-item"><a class="nav-link" href="products.html">商品</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">關於品牌</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">設計師</a></li>
+        </ul>
+        <div class="d-flex align-items-center gap-3">
+          <a href="#" class="nav-icon"><i class="bi bi-search"></i></a>
+          <a href="#" class="nav-icon"><i class="bi bi-person"></i></a>
+          <a href="cart.html" class="nav-icon cart-icon">
+            <i class="bi bi-bag"></i>
+            <span class="cart-badge" id="cartCount">0</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="container">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb forma-breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">首頁</a></li>
+          <li class="breadcrumb-item"><a href="products.html">商品</a></li>
+          <li class="breadcrumb-item active" id="breadcrumbProduct">商品詳情</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- PRODUCT DETAIL -->
+  <section class="section-pad">
+    <div class="container">
+      <div class="row g-5">
+
+        <!-- LEFT: Image Gallery with Magnifier -->
+        <div class="col-12 col-lg-6">
+          <div class="gallery-wrap">
+
+            <!-- Main image with magnifier -->
+            <div class="magnifier-container" id="magnifierContainer">
+              <img id="mainImage"
+                   src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=900&q=90"
+                   alt="Product Image"
+                   class="gallery-main-img">
+              <!-- Magnifier lens -->
+              <div class="magnifier-lens" id="magnifierLens"></div>
+              <!-- Magnifier result (zoomed view) -->
+              <div class="magnifier-result" id="magnifierResult"></div>
+            </div>
+
+            <!-- Thumbnail Strip -->
+            <div class="thumb-strip" id="thumbStrip">
+              <img class="thumb active"
+                   src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=200&q=70"
+                   data-full="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=900&q=90"
+                   onclick="switchImage(this)" alt="view 1">
+              <img class="thumb"
+                   src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=200&q=70"
+                   data-full="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=900&q=90"
+                   onclick="switchImage(this)" alt="view 2">
+              <img class="thumb"
+                   src="https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=200&q=70"
+                   data-full="https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=900&q=90"
+                   onclick="switchImage(this)" alt="view 3">
+              <img class="thumb"
+                   src="https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=200&q=70"
+                   data-full="https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=900&q=90"
+                   onclick="switchImage(this)" alt="view 4">
+            </div>
+
+            <p class="magnifier-hint"><i class="bi bi-zoom-in me-1"></i> 滑鼠移至圖片可放大查看細節</p>
+          </div>
+        </div>
+
+        <!-- RIGHT: Product Info -->
+        <div class="col-12 col-lg-6">
+          <div class="product-detail-info">
+            <p class="detail-brand" id="detailBrand">Herman Miller</p>
+            <h1 class="detail-name" id="detailName">Eames Lounge Chair & Ottoman</h1>
+
+            <div class="detail-rating">
+              <i class="bi bi-star-fill"></i>
+              <i class="bi bi-star-fill"></i>
+              <i class="bi bi-star-fill"></i>
+              <i class="bi bi-star-fill"></i>
+              <i class="bi bi-star-half"></i>
+              <span class="rating-count">(128 則評價)</span>
+            </div>
+
+            <p class="detail-price" id="detailPrice">NT$ 128,000</p>
+
+            <p class="detail-desc">
+              由 Charles & Ray Eames 於 1956 年設計，融合黑胡桃木外殼與真皮坐墊，
+              是現代家具史上最具代表性的作品之一。每件均在美國密西根州手工製造，
+              提供五年品質保固。
+            </p>
+
+            <!-- Color Options -->
+            <div class="option-group">
+              <h6 class="option-label">顏色 <span class="option-selected" id="colorSelected">黑色皮革</span></h6>
+              <div class="color-swatches">
+                <button class="swatch active" style="background:#1a1a1a;" onclick="selectColor(this,'黑色皮革')" title="黑色皮革"></button>
+                <button class="swatch" style="background:#8B6355;" onclick="selectColor(this,'棕色皮革')" title="棕色皮革"></button>
+                <button class="swatch" style="background:#C4A882;" onclick="selectColor(this,'駝色皮革')" title="駝色皮革"></button>
+                <button class="swatch" style="background:#2C3E50;" onclick="selectColor(this,'深藍皮革')" title="深藍皮革"></button>
+              </div>
+            </div>
+
+            <!-- Material -->
+            <div class="option-group">
+              <h6 class="option-label">木材 <span class="option-selected" id="woodSelected">黑胡桃木</span></h6>
+              <div class="d-flex gap-2 flex-wrap">
+                <button class="opt-btn active" onclick="selectOption(this, 'woodSelected', '黑胡桃木')">黑胡桃木</button>
+                <button class="opt-btn" onclick="selectOption(this, 'woodSelected', '白梣木')">白梣木</button>
+                <button class="opt-btn" onclick="selectOption(this, 'woodSelected', '淺胡桃木')">淺胡桃木</button>
+              </div>
+            </div>
+
+            <!-- Quantity -->
+            <div class="option-group">
+              <h6 class="option-label">數量</h6>
+              <div class="qty-control">
+                <button class="qty-btn" onclick="changeQty(-1)"><i class="bi bi-dash"></i></button>
+                <span class="qty-num" id="qtyNum">1</span>
+                <button class="qty-btn" onclick="changeQty(1)"><i class="bi bi-plus"></i></button>
+              </div>
+            </div>
+
+            <!-- CTA Buttons -->
+            <div class="d-flex flex-column gap-3 mt-4">
+              <button class="btn-forma-full" onclick="addToCartDetail()">
+                <i class="bi bi-bag-plus me-2"></i> 加入購物車
+              </button>
+              <button class="btn-forma-outline" onclick="window.location='cart.html'">
+                立即購買
+              </button>
+            </div>
+
+            <!-- Meta info -->
+            <div class="detail-meta mt-4">
+              <div class="meta-row">
+                <span class="meta-key"><i class="bi bi-truck me-2"></i>配送</span>
+                <span class="meta-val">預計 7-14 個工作天到府安裝</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-key"><i class="bi bi-shield-check me-2"></i>保固</span>
+                <span class="meta-val">5 年原廠品質保固</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-key"><i class="bi bi-arrow-counterclockwise me-2"></i>退換</span>
+                <span class="meta-val">30 天鑑賞期，全額退款</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PRODUCT TABS -->
+      <div class="product-tabs mt-5">
+        <ul class="nav nav-tabs forma-tabs" id="productTabs">
+          <li class="nav-item">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tabSpec">規格</button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabStory">品牌故事</button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabReview">評價 (128)</button>
+          </li>
+        </ul>
+        <div class="tab-content forma-tab-content">
+          <div class="tab-pane fade show active" id="tabSpec">
+            <div class="row g-3 spec-grid">
+              <div class="col-6 col-md-3"><div class="spec-item"><span class="spec-key">尺寸</span><span class="spec-val">84 × 84 × 84 cm</span></div></div>
+              <div class="col-6 col-md-3"><div class="spec-item"><span class="spec-key">重量</span><span class="spec-val">約 31 kg</span></div></div>
+              <div class="col-6 col-md-3"><div class="spec-item"><span class="spec-key">材質</span><span class="spec-val">真皮 / 胡桃木</span></div></div>
+              <div class="col-6 col-md-3"><div class="spec-item"><span class="spec-key">原產地</span><span class="spec-val">美國密西根州</span></div></div>
+              <div class="col-6 col-md-3"><div class="spec-item"><span class="spec-key">設計師</span><span class="spec-val">Charles & Ray Eames</span></div></div>
+              <div class="col-6 col-md-3"><div class="spec-item"><span class="spec-key">年份</span><span class="spec-val">1956 年首發</span></div></div>
+              <div class="col-6 col-md-3"><div class="spec-item"><span class="spec-key">座高</span><span class="spec-val">40 cm</span></div></div>
+              <div class="col-6 col-md-3"><div class="spec-item"><span class="spec-key">保固</span><span class="spec-val">5 年</span></div></div>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="tabStory">
+            <div class="story-content">
+              <p>Herman Miller 成立於 1905 年，是美國最具代表性的辦公與居家家具品牌之一。與設計師 Charles 及 Ray Eames 長達數十年的合作，創造出無數改變家具設計史的經典作品。</p>
+              <p>Eames Lounge Chair 自 1956 年問世以來，被 MoMA 永久收藏，象徵著現代設計與精湛工藝的完美結合。每件產品均在美國手工製作，融入最高標準的品質控制。</p>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="tabReview">
+            <div class="review-list">
+              <div class="review-item">
+                <div class="d-flex justify-content-between">
+                  <strong>陳 O 宇</strong>
+                  <span class="review-stars">★★★★★</span>
+                </div>
+                <p class="review-date">2025 年 3 月</p>
+                <p class="review-text">品質超乎預期，坐起來非常舒適，是我買過最值得的家具投資。</p>
+              </div>
+              <div class="review-item">
+                <div class="d-flex justify-content-between">
+                  <strong>林 O 如</strong>
+                  <span class="review-stars">★★★★☆</span>
+                </div>
+                <p class="review-date">2025 年 2 月</p>
+                <p class="review-text">外觀非常漂亮，安裝服務也很專業，客廳質感提升了很多。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Related Products -->
+      <div class="mt-6">
+        <div class="section-header">
+          <span class="section-label">您可能也喜歡</span>
+          <h2 class="section-title">相關商品</h2>
+        </div>
+        <div class="row g-4">
+          <div class="col-12 col-md-6 col-lg-3">
+            <div class="product-card" onclick="window.location='product-detail.html?id=2'">
+              <div class="product-img-wrap">
+                <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&q=80" class="product-img" alt="LC2 Sofa">
+                <div class="product-overlay">
+                  <button class="btn-overlay" onclick="event.stopPropagation(); addToCart(2,'LC2 Grand Confort',245000)"><i class="bi bi-bag-plus me-1"></i> 加入購物車</button>
+                </div>
+              </div>
+              <div class="product-info">
+                <p class="product-brand">Cassina</p>
+                <h3 class="product-name">LC2 Grand Confort</h3>
+                <p class="product-price">NT$ 245,000</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6 col-lg-3">
+            <div class="product-card" onclick="window.location='product-detail.html?id=3'">
+              <div class="product-img-wrap">
+                <img src="https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=600&q=80" class="product-img" alt="Series 7">
+                <div class="product-overlay">
+                  <button class="btn-overlay" onclick="event.stopPropagation(); addToCart(3,'Series 7 Chair',38000)"><i class="bi bi-bag-plus me-1"></i> 加入購物車</button>
+                </div>
+              </div>
+              <div class="product-info">
+                <p class="product-brand">Fritz Hansen</p>
+                <h3 class="product-name">Series 7 Chair</h3>
+                <p class="product-price">NT$ 38,000</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6 col-lg-3">
+            <div class="product-card" onclick="window.location='product-detail.html?id=4'">
+              <div class="product-img-wrap">
+                <img src="https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=600&q=80" class="product-img" alt="Noguchi">
+                <div class="product-overlay">
+                  <button class="btn-overlay" onclick="event.stopPropagation(); addToCart(4,'Noguchi Coffee Table',96000)"><i class="bi bi-bag-plus me-1"></i> 加入購物車</button>
+                </div>
+              </div>
+              <div class="product-info">
+                <p class="product-brand">Vitra</p>
+                <h3 class="product-name">Noguchi Coffee Table</h3>
+                <p class="product-price">NT$ 96,000</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6 col-lg-3">
+            <div class="product-card" onclick="window.location='product-detail.html?id=5'">
+              <div class="product-img-wrap">
+                <img src="https://images.unsplash.com/photo-1592078615290-033ee584e267?w=600&q=80" class="product-img" alt="Aeron">
+                <div class="product-overlay">
+                  <button class="btn-overlay" onclick="event.stopPropagation(); addToCart(5,'Aeron Chair',158000)"><i class="bi bi-bag-plus me-1"></i> 加入購物車</button>
+                </div>
+              </div>
+              <div class="product-info">
+                <p class="product-brand">Herman Miller</p>
+                <h3 class="product-name">Aeron Chair</h3>
+                <p class="product-price">NT$ 158,000</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="forma-footer">
+    <div class="container">
+      <div class="footer-bottom py-4">
+        <p>© 2025 FORMA. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="cartToast" class="toast align-items-center text-bg-dark border-0" role="alert">
+      <div class="d-flex">
+        <div class="toast-body"><i class="bi bi-check-circle me-2"></i> 已加入購物車！</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="cart.js"></script>
+  <script src="detail.js"></script>
+</body>
+</html>

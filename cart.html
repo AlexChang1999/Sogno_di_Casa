@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>購物車 — FORMA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg sticky-top forma-nav">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand forma-logo" href="index.html">FORMA</a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+        <i class="bi bi-list fs-4"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav mx-auto gap-4">
+          <li class="nav-item"><a class="nav-link" href="index.html">首頁</a></li>
+          <li class="nav-item"><a class="nav-link" href="products.html">商品</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">關於品牌</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">設計師</a></li>
+        </ul>
+        <div class="d-flex align-items-center gap-3">
+          <a href="#" class="nav-icon"><i class="bi bi-search"></i></a>
+          <a href="#" class="nav-icon"><i class="bi bi-person"></i></a>
+          <a href="cart.html" class="nav-icon cart-icon">
+            <i class="bi bi-bag"></i>
+            <span class="cart-badge" id="cartCount">0</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="container">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb forma-breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">首頁</a></li>
+          <li class="breadcrumb-item active">購物車</li>
+        </ol>
+      </nav>
+      <h1 class="page-title">購物車</h1>
+    </div>
+  </div>
+
+  <!-- CART CONTENT -->
+  <section class="section-pad">
+    <div class="container">
+
+      <!-- Empty Cart -->
+      <div id="emptyCart" class="empty-cart text-center py-5" style="display:none;">
+        <i class="bi bi-bag empty-cart-icon"></i>
+        <h3 class="mt-4 mb-2">您的購物車是空的</h3>
+        <p class="text-muted mb-4">探索我們的精品家具系列，找到您心儀的設計</p>
+        <a href="products.html" class="btn-forma">繼續選購</a>
+      </div>
+
+      <!-- Cart with items -->
+      <div id="cartContent" class="row g-5">
+        <!-- Cart Items -->
+        <div class="col-12 col-lg-8">
+          <div class="cart-header d-flex justify-content-between align-items-center mb-4">
+            <h5 class="cart-count-title">共 <span id="itemCount">0</span> 件商品</h5>
+            <button class="btn-text-link" onclick="clearCart()">清空購物車</button>
+          </div>
+          <div id="cartItems">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="col-12 col-lg-4">
+          <div class="order-summary">
+            <h5 class="summary-title">訂單摘要</h5>
+
+            <div class="summary-row">
+              <span>小計</span>
+              <span id="subtotal">NT$ 0</span>
+            </div>
+            <div class="summary-row">
+              <span>運費</span>
+              <span id="shipping">免費</span>
+            </div>
+            <div class="summary-row">
+              <span>稅金 (5%)</span>
+              <span id="tax">NT$ 0</span>
+            </div>
+
+            <!-- Coupon -->
+            <div class="coupon-wrap">
+              <input type="text" class="coupon-input" id="couponInput" placeholder="優惠碼">
+              <button class="coupon-btn" onclick="applyCoupon()">套用</button>
+            </div>
+            <div id="couponMsg" class="coupon-msg"></div>
+
+            <div class="summary-total">
+              <span>合計</span>
+              <span id="total">NT$ 0</span>
+            </div>
+
+            <button class="btn-forma-full mt-4" onclick="checkout()">
+              前往結帳 <i class="bi bi-arrow-right ms-2"></i>
+            </button>
+            <a href="products.html" class="btn-forma-outline mt-2 d-block text-center">繼續選購</a>
+
+            <div class="summary-secure mt-3">
+              <i class="bi bi-lock me-1"></i> 安全加密結帳
+              <span class="mx-2">·</span>
+              <i class="bi bi-shield-check me-1"></i> 隱私保護
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Checkout Modal -->
+  <div id="checkoutModal" class="modal fade" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content forma-modal">
+        <div class="modal-header border-0">
+          <h5 class="modal-title">確認結帳</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p>您即將結帳，共 <strong id="modalItemCount">0</strong> 件商品，合計 <strong id="modalTotal">NT$ 0</strong>。</p>
+          <p class="text-muted small">此為展示頁面，實際結帳功能需串接金流服務。</p>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn-forma-outline-sm" data-bs-dismiss="modal">取消</button>
+          <button type="button" class="btn-forma-sm-dark" onclick="confirmOrder()">確認訂單</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="forma-footer">
+    <div class="container">
+      <div class="footer-bottom py-4">
+        <p>© 2025 FORMA. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="cart.js"></script>
+  <script src="cart-page.js"></script>
+</body>
+</html>

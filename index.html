@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FORMA — 精品家具</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+  <!-- Bootstrap 5 CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ── NAVBAR ── -->
+  <nav class="navbar navbar-expand-lg sticky-top forma-nav">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand forma-logo" href="index.html">FORMA</a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+        <i class="bi bi-list fs-4"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav mx-auto gap-4">
+          <li class="nav-item"><a class="nav-link active" href="index.html">首頁</a></li>
+          <li class="nav-item"><a class="nav-link" href="products.html">商品</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">關於品牌</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">設計師</a></li>
+        </ul>
+        <div class="d-flex align-items-center gap-3">
+          <a href="#" class="nav-icon"><i class="bi bi-search"></i></a>
+          <a href="#" class="nav-icon"><i class="bi bi-person"></i></a>
+          <a href="cart.html" class="nav-icon cart-icon">
+            <i class="bi bi-bag"></i>
+            <span class="cart-badge" id="cartCount">0</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── HERO CAROUSEL ── -->
+  <section class="hero-section">
+    <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+      <div class="carousel-inner">
+
+        <div class="carousel-item active">
+          <div class="hero-slide hero-slide-1">
+            <div class="hero-content">
+              <p class="hero-label">New Collection 2025</p>
+              <h1 class="hero-title">靜謐的<br><em>生活美學</em></h1>
+              <p class="hero-sub">源自北歐設計精神，每件家具皆是藝術的延伸</p>
+              <a href="products.html" class="btn-forma">探索系列 <i class="bi bi-arrow-right ms-2"></i></a>
+            </div>
+          </div>
+        </div>
+
+        <div class="carousel-item">
+          <div class="hero-slide hero-slide-2">
+            <div class="hero-content hero-content-right">
+              <p class="hero-label">Herman Miller — Signature</p>
+              <h1 class="hero-title">人體工學<br><em>的藝術</em></h1>
+              <p class="hero-sub">重新定義工作與生活的邊界</p>
+              <a href="products.html" class="btn-forma btn-forma-light">立即選購 <i class="bi bi-arrow-right ms-2"></i></a>
+            </div>
+          </div>
+        </div>
+
+        <div class="carousel-item">
+          <div class="hero-slide hero-slide-3">
+            <div class="hero-content">
+              <p class="hero-label">Cassina — Iconic Series</p>
+              <h1 class="hero-title">義大利<br><em>工藝傳承</em></h1>
+              <p class="hero-sub">百年手工技藝，融入現代生活空間</p>
+              <a href="products.html" class="btn-forma">發現更多 <i class="bi bi-arrow-right ms-2"></i></a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <!-- Carousel controls -->
+      <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+        <i class="bi bi-arrow-left carousel-arrow"></i>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+        <i class="bi bi-arrow-right carousel-arrow"></i>
+      </button>
+      <!-- Indicators -->
+      <div class="carousel-indicators carousel-dots">
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── BRAND STRIP ── -->
+  <section class="brand-strip py-4">
+    <div class="container">
+      <div class="d-flex justify-content-center align-items-center flex-wrap gap-5">
+        <span class="brand-name">Herman Miller</span>
+        <span class="brand-sep">·</span>
+        <span class="brand-name">Cassina</span>
+        <span class="brand-sep">·</span>
+        <span class="brand-name">Vitra</span>
+        <span class="brand-sep">·</span>
+        <span class="brand-name">Knoll</span>
+        <span class="brand-sep">·</span>
+        <span class="brand-name">Fritz Hansen</span>
+        <span class="brand-sep">·</span>
+        <span class="brand-name">Muji</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FEATURED PRODUCTS ── -->
+  <section class="section-pad">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">精選商品</span>
+        <h2 class="section-title">本季主打</h2>
+        <a href="products.html" class="section-link">全部商品 <i class="bi bi-arrow-right"></i></a>
+      </div>
+
+      <div class="row g-4">
+        <!-- Product Card 1 -->
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="product-card" onclick="window.location='product-detail.html?id=1'">
+            <div class="product-img-wrap">
+              <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80" class="product-img" alt="Eames Lounge Chair">
+              <div class="product-overlay">
+                <button class="btn-overlay" onclick="event.stopPropagation(); addToCart(1, 'Eames Lounge Chair', 128000)">
+                  <i class="bi bi-bag-plus me-1"></i> 加入購物車
+                </button>
+              </div>
+              <span class="product-badge">新品</span>
+            </div>
+            <div class="product-info">
+              <p class="product-brand">Herman Miller</p>
+              <h3 class="product-name">Eames Lounge Chair</h3>
+              <p class="product-price">NT$ 128,000</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product Card 2 -->
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="product-card" onclick="window.location='product-detail.html?id=2'">
+            <div class="product-img-wrap">
+              <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&q=80" class="product-img" alt="LC2 Sofa">
+              <div class="product-overlay">
+                <button class="btn-overlay" onclick="event.stopPropagation(); addToCart(2, 'LC2 Grand Confort', 245000)">
+                  <i class="bi bi-bag-plus me-1"></i> 加入購物車
+                </button>
+              </div>
+            </div>
+            <div class="product-info">
+              <p class="product-brand">Cassina</p>
+              <h3 class="product-name">LC2 Grand Confort</h3>
+              <p class="product-price">NT$ 245,000</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product Card 3 -->
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="product-card" onclick="window.location='product-detail.html?id=3'">
+            <div class="product-img-wrap">
+              <img src="https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=600&q=80" class="product-img" alt="Series 7 Chair">
+              <div class="product-overlay">
+                <button class="btn-overlay" onclick="event.stopPropagation(); addToCart(3, 'Series 7 Chair', 38000)">
+                  <i class="bi bi-bag-plus me-1"></i> 加入購物車
+                </button>
+              </div>
+              <span class="product-badge badge-sale">熱銷</span>
+            </div>
+            <div class="product-info">
+              <p class="product-brand">Fritz Hansen</p>
+              <h3 class="product-name">Series 7 Chair</h3>
+              <p class="product-price">NT$ 38,000</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product Card 4 -->
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="product-card" onclick="window.location='product-detail.html?id=4'">
+            <div class="product-img-wrap">
+              <img src="https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=600&q=80" class="product-img" alt="Noguchi Table">
+              <div class="product-overlay">
+                <button class="btn-overlay" onclick="event.stopPropagation(); addToCart(4, 'Noguchi Coffee Table', 96000)">
+                  <i class="bi bi-bag-plus me-1"></i> 加入購物車
+                </button>
+              </div>
+            </div>
+            <div class="product-info">
+              <p class="product-brand">Vitra</p>
+              <h3 class="product-name">Noguchi Coffee Table</h3>
+              <p class="product-price">NT$ 96,000</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── BANNER SPLIT ── -->
+  <section class="banner-split">
+    <div class="banner-left">
+      <div class="banner-content">
+        <span class="banner-label">Living Collection</span>
+        <h2 class="banner-title">客廳<br>的靈魂</h2>
+        <a href="products.html?cat=living" class="btn-forma-sm">探索 →</a>
+      </div>
+    </div>
+    <div class="banner-right">
+      <div class="banner-content">
+        <span class="banner-label">Office Collection</span>
+        <h2 class="banner-title">辦公<br>新秩序</h2>
+        <a href="products.html?cat=office" class="btn-forma-sm btn-forma-sm-light">探索 →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── MORE PRODUCTS ── -->
+  <section class="section-pad bg-cream">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">品牌精選</span>
+        <h2 class="section-title">設計經典</h2>
+        <a href="products.html" class="section-link">查看全部 <i class="bi bi-arrow-right"></i></a>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-12 col-md-4 col-lg-4">
+          <div class="product-card product-card-wide" onclick="window.location='product-detail.html?id=5'">
+            <div class="product-img-wrap">
+              <img src="https://images.unsplash.com/photo-1592078615290-033ee584e267?w=800&q=80" class="product-img" alt="Aeron Chair">
+              <div class="product-overlay">
+                <button class="btn-overlay" onclick="event.stopPropagation(); addToCart(5, 'Aeron Chair', 158000)">
+                  <i class="bi bi-bag-plus me-1"></i> 加入購物車
+                </button>
+              </div>
+            </div>
+            <div class="product-info">
+              <p class="product-brand">Herman Miller</p>
+              <h3 class="product-name">Aeron Chair</h3>
+              <p class="product-price">NT$ 158,000</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-4 col-lg-4">
+          <div class="product-card product-card-wide" onclick="window.location='product-detail.html?id=6'">
+            <div class="product-img-wrap">
+              <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&q=80" class="product-img" alt="Tulip Table">
+              <div class="product-overlay">
+                <button class="btn-overlay" onclick="event.stopPropagation(); addToCart(6, 'Tulip Dining Table', 182000)">
+                  <i class="bi bi-bag-plus me-1"></i> 加入購物車
+                </button>
+              </div>
+              <span class="product-badge">限量</span>
+            </div>
+            <div class="product-info">
+              <p class="product-brand">Knoll</p>
+              <h3 class="product-name">Tulip Dining Table</h3>
+              <p class="product-price">NT$ 182,000</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-4 col-lg-4">
+          <div class="product-card product-card-wide" onclick="window.location='product-detail.html?id=7'">
+            <div class="product-img-wrap">
+              <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&q=80" class="product-img" alt="Shell Chair">
+              <div class="product-overlay">
+                <button class="btn-overlay" onclick="event.stopPropagation(); addToCart(7, 'Shell Chair', 62000)">
+                  <i class="bi bi-bag-plus me-1"></i> 加入購物車
+                </button>
+              </div>
+            </div>
+            <div class="product-info">
+              <p class="product-brand">Fritz Hansen</p>
+              <h3 class="product-name">Shell Chair</h3>
+              <p class="product-price">NT$ 62,000</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FEATURE STRIP ── -->
+  <section class="feature-strip section-pad">
+    <div class="container">
+      <div class="row g-4 text-center">
+        <div class="col-6 col-md-3">
+          <div class="feature-item">
+            <i class="bi bi-truck feature-icon"></i>
+            <h5 class="feature-title">全台免費配送</h5>
+            <p class="feature-text">訂單滿 NT$50,000 享免費到府安裝</p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="feature-item">
+            <i class="bi bi-shield-check feature-icon"></i>
+            <h5 class="feature-title">5年品質保固</h5>
+            <p class="feature-text">原廠授權，全面品質保障</p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="feature-item">
+            <i class="bi bi-arrow-counterclockwise feature-icon"></i>
+            <h5 class="feature-title">30天鑑賞期</h5>
+            <p class="feature-text">不滿意可全額退款</p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="feature-item">
+            <i class="bi bi-headset feature-icon"></i>
+            <h5 class="feature-title">專屬設計顧問</h5>
+            <p class="feature-text">一對一空間搭配建議</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer class="forma-footer">
+    <div class="container">
+      <div class="row g-5 py-5">
+        <div class="col-12 col-md-4">
+          <p class="footer-logo">FORMA</p>
+          <p class="footer-desc">精選全球頂尖家具品牌，為您的生活空間注入設計靈魂。</p>
+          <div class="d-flex gap-3 mt-3">
+            <a href="#" class="social-icon"><i class="bi bi-instagram"></i></a>
+            <a href="#" class="social-icon"><i class="bi bi-facebook"></i></a>
+            <a href="#" class="social-icon"><i class="bi bi-pinterest"></i></a>
+          </div>
+        </div>
+        <div class="col-6 col-md-2">
+          <h6 class="footer-heading">商品</h6>
+          <ul class="footer-links">
+            <li><a href="#">客廳</a></li>
+            <li><a href="#">臥室</a></li>
+            <li><a href="#">辦公室</a></li>
+            <li><a href="#">戶外</a></li>
+          </ul>
+        </div>
+        <div class="col-6 col-md-2">
+          <h6 class="footer-heading">品牌</h6>
+          <ul class="footer-links">
+            <li><a href="#">Herman Miller</a></li>
+            <li><a href="#">Cassina</a></li>
+            <li><a href="#">Vitra</a></li>
+            <li><a href="#">Knoll</a></li>
+          </ul>
+        </div>
+        <div class="col-6 col-md-2">
+          <h6 class="footer-heading">服務</h6>
+          <ul class="footer-links">
+            <li><a href="#">配送說明</a></li>
+            <li><a href="#">退換貨政策</a></li>
+            <li><a href="#">常見問題</a></li>
+            <li><a href="#">聯絡我們</a></li>
+          </ul>
+        </div>
+        <div class="col-6 col-md-2">
+          <h6 class="footer-heading">關於</h6>
+          <ul class="footer-links">
+            <li><a href="#">品牌故事</a></li>
+            <li><a href="#">永續設計</a></li>
+            <li><a href="#">隱私政策</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 FORMA. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast 通知 -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="cartToast" class="toast align-items-center text-bg-dark border-0" role="alert">
+      <div class="d-flex">
+        <div class="toast-body">
+          <i class="bi bi-check-circle me-2"></i> 已加入購物車！
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="cart.js"></script>
+</body>
+</html>
