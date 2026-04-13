@@ -37,17 +37,42 @@ const PRODUCTS_DATA = [
   { id: 12, name: 'Florence Knoll Sofa',  brand: 'Knoll',         price: 198000, img: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=900&q=90' },
 ];
 
+const PRODUCT_IMAGE_MAP = window.PRODUCT_IMAGE_MAP || {};
+
+PRODUCTS_DATA.forEach((product) => {
+  const custom = PRODUCT_IMAGE_MAP[product.id];
+  if (!custom) return;
+  if (custom.img) product.img = custom.img;
+  if (Array.isArray(custom.gallery) && custom.gallery.length > 0) {
+    product.gallery = custom.gallery;
+  }
+});
+
 let qty = 1;
 let currentProductId = 1;
 let currentProductPrice = 128000; // 由 loadProductData() 動態設定
 
-// 每種顏色對應的主圖與縮圖組合
-const COLOR_IMAGES = {
-  '黑色皮革': { main: 'pics/Black.jpg',    thumb: 'pics/Black.jpg' },
-  '棕色皮革': { main: 'pics/Brown.jpg',    thumb: 'pics/Brown.jpg' },
-  '駝色皮革': { main: 'pics/camel.jpg',    thumb: 'pics/camel.jpg' },
+// 每種顏色對應的主圖與縮圖組合（優先使用 product-images.js 的 id=1 gallery）
+const DEFAULT_COLOR_IMAGES = {
+  '黑色皮革': { main: 'pics/Black.jpg', thumb: 'pics/Black.jpg' },
+  '棕色皮革': { main: 'pics/Brown.jpg', thumb: 'pics/Brown.jpg' },
+  '駝色皮革': { main: 'pics/camel.jpg', thumb: 'pics/camel.jpg' },
   '深藍皮革': { main: 'pics/Navy_blue.jpg', thumb: 'pics/Navy_blue.jpg' },
 };
+
+function buildColorImageMap() {
+  const gallery = PRODUCT_IMAGE_MAP?.[1]?.gallery;
+  if (!Array.isArray(gallery) || gallery.length < 4) return DEFAULT_COLOR_IMAGES;
+
+  return {
+    '黑色皮革': { main: gallery[0].full, thumb: gallery[0].thumb },
+    '棕色皮革': { main: gallery[1].full, thumb: gallery[1].thumb },
+    '駝色皮革': { main: gallery[2].full, thumb: gallery[2].thumb },
+    '深藍皮革': { main: gallery[3].full, thumb: gallery[3].thumb },
+  };
+}
+
+const COLOR_IMAGES = buildColorImageMap();
 
 // ── 放大鏡功能 ──
 function initMagnifier() {
@@ -198,6 +223,62 @@ function syncThumbStrip(product) {
   });
 }
 
+function syncRelatedProducts() {
+  const cards = document.querySelectorAll('.mt-6 .product-card[onclick*="product-detail.html?id="]');
+  cards.forEach((card) => {
+    const onclickText = card.getAttribute('onclick') || '';
+    const match = onclickText.match(/id=(\d+)/);
+    if (!match) return;
+
+    const productId = Number(match[1]);
+    const product = PRODUCTS_DATA.find((p) => p.id === productId);
+    if (!product) return;
+
+    const imgEl = card.querySelector('.product-img');
+    const brandEl = card.querySelector('.product-brand');
+    const nameEl = card.querySelector('.product-name');
+    const priceEl = card.querySelector('.product-price');
+    const btnEl = card.querySelector('.btn-overlay');
+
+    if (imgEl) {
+      imgEl.src = product.img;
+      imgEl.alt = product.name;
+    }
+    if (brandEl) brandEl.textContent = product.brand;
+    if (nameEl) nameEl.textContent = product.name;
+    if (priceEl) priceEl.textContent = `NT$ ${product.price.toLocaleString()}`;
+    if (btnEl) {
+      btnEl.setAttribute(
+        'onclick',
+        `event.stopPropagation(); addToCart(${product.id},'${product.name.replace(/'/g, "\\'")}',${product.price})`
+      );
+    }
+  });
+}
+
+function verifyColorImageMapping() {
+  const keywordRules = {
+    '黑色皮革': /black/i,
+    '棕色皮革': /brown/i,
+    '駝色皮革': /(camel|tan)/i,
+    '深藍皮革': /(navy|blue)/i,
+  };
+
+  Object.entries(COLOR_IMAGES).forEach(([label, cfg]) => {
+    const mainPath = String(cfg.main || '');
+    const expected = keywordRules[label];
+    if (expected && !expected.test(mainPath)) {
+      console.warn(`[ColorMap] ${label} 的路徑看起來與文字描述不一致: ${mainPath}`);
+    }
+
+    const probe = new Image();
+    probe.onerror = () => {
+      console.warn(`[ColorMap] ${label} 圖片載入失敗: ${mainPath}`);
+    };
+    probe.src = mainPath;
+  });
+}
+
 // ── 根據 URL ?id= 動態載入對應商品資料 ──
 function loadProductData(id) {
   const numId = Number(id);
@@ -231,5 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
   currentProductId = Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
 
   loadProductData(currentProductId);
+  syncRelatedProducts();
+  verifyColorImageMapping();
   initMagnifier();
 });

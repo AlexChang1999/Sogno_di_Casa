@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>商品圖片對照工具</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; line-height: 1.5; }
+    .wrap { max-width: 900px; margin: 0 auto; }
+    .card { border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+    label { display: block; margin: 10px 0 4px; font-weight: 600; }
+    input, select, textarea, button { width: 100%; padding: 8px; box-sizing: border-box; }
+    button { cursor: pointer; margin-top: 10px; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .note { color: #666; font-size: 14px; }
+    .ok { color: #0a7a2e; font-weight: 600; }
+    .preview-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+    .preview-item { border: 1px solid #ddd; border-radius: 8px; padding: 8px; }
+    .preview-item img { width: 100%; height: 120px; object-fit: cover; border-radius: 6px; background: #f4f4f4; display: block; }
+    .preview-item p { margin: 8px 0 0; font-size: 13px; }
+    .warn { color: #b45309; font-size: 13px; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>商品圖片對照工具</h1>
+    <p class="note">填完後按「產生設定」，把輸出貼到 <code>product-images.js</code> 的對應商品 ID。</p>
+
+    <div class="card">
+      <label for="productId">商品 ID</label>
+      <select id="productId"></select>
+
+      <label for="mainImg">主圖路徑（img）</label>
+      <input id="mainImg" placeholder="例如: pics/chair-01.jpg">
+
+      <div class="grid">
+        <div>
+          <label for="g1">縮圖 1（黑色）</label>
+          <input id="g1" placeholder="pics/Black.jpg">
+        </div>
+        <div>
+          <label for="g2">縮圖 2（棕色）</label>
+          <input id="g2" placeholder="pics/Brown.jpg">
+        </div>
+        <div>
+          <label for="g3">縮圖 3（駝色）</label>
+          <input id="g3" placeholder="pics/camel.jpg">
+        </div>
+        <div>
+          <label for="g4">縮圖 4（深藍）</label>
+          <input id="g4" placeholder="pics/Navy_blue.jpg">
+        </div>
+      </div>
+
+      <button id="btnGenerate">產生設定片段</button>
+      <button id="btnCopy">複製輸出</button>
+      <p class="ok" id="copiedMsg" style="display:none;">已複製到剪貼簿</p>
+    </div>
+
+    <div class="card">
+      <label for="output">輸出（貼到 product-images.js）</label>
+      <textarea id="output" rows="12" readonly></textarea>
+      <p class="warn" id="keywordWarn"></p>
+      <div class="preview-grid">
+        <div class="preview-item">
+          <img id="pvBlack" alt="黑色皮革預覽">
+          <p>黑色皮革</p>
+        </div>
+        <div class="preview-item">
+          <img id="pvBrown" alt="棕色皮革預覽">
+          <p>棕色皮革</p>
+        </div>
+        <div class="preview-item">
+          <img id="pvCamel" alt="駝色皮革預覽">
+          <p>駝色皮革</p>
+        </div>
+        <div class="preview-item">
+          <img id="pvNavy" alt="深藍皮革預覽">
+          <p>深藍皮革</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="product-images.js"></script>
+  <script>
+    const map = window.PRODUCT_IMAGE_MAP || {};
+    const productIdEl = document.getElementById('productId');
+    const mainImgEl = document.getElementById('mainImg');
+    const g1El = document.getElementById('g1');
+    const g2El = document.getElementById('g2');
+    const g3El = document.getElementById('g3');
+    const g4El = document.getElementById('g4');
+    const outputEl = document.getElementById('output');
+    const copiedMsgEl = document.getElementById('copiedMsg');
+    const keywordWarnEl = document.getElementById('keywordWarn');
+    const pvBlackEl = document.getElementById('pvBlack');
+    const pvBrownEl = document.getElementById('pvBrown');
+    const pvCamelEl = document.getElementById('pvCamel');
+    const pvNavyEl = document.getElementById('pvNavy');
+
+    function safe(value) {
+      return String(value || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    }
+
+    function fillProducts() {
+      for (let i = 1; i <= 12; i += 1) {
+        const option = document.createElement('option');
+        option.value = String(i);
+        option.textContent = `商品 ${i}`;
+        productIdEl.appendChild(option);
+      }
+    }
+
+    function loadCurrent() {
+      const id = Number(productIdEl.value);
+      const data = map[id] || {};
+      const gallery = Array.isArray(data.gallery) ? data.gallery : [];
+
+      mainImgEl.value = data.img || '';
+      g1El.value = gallery[0]?.full || '';
+      g2El.value = gallery[1]?.full || '';
+      g3El.value = gallery[2]?.full || '';
+      g4El.value = gallery[3]?.full || '';
+      buildSnippet();
+    }
+
+    function buildSnippet() {
+      const id = Number(productIdEl.value);
+      const main = mainImgEl.value.trim();
+      const g1 = g1El.value.trim();
+      const g2 = g2El.value.trim();
+      const g3 = g3El.value.trim();
+      const g4 = g4El.value.trim();
+      const hasGallery = g1 && g2 && g3 && g4;
+
+      let snippet = `  ${id}: { img: '${safe(main)}'`;
+      if (hasGallery) {
+        snippet += `,\n    gallery: [\n`;
+        snippet += `      { thumb: '${safe(g1)}', full: '${safe(g1)}' },\n`;
+        snippet += `      { thumb: '${safe(g2)}', full: '${safe(g2)}' },\n`;
+        snippet += `      { thumb: '${safe(g3)}', full: '${safe(g3)}' },\n`;
+        snippet += `      { thumb: '${safe(g4)}', full: '${safe(g4)}' },\n`;
+        snippet += `    ]`;
+      }
+      snippet += ` },`;
+      outputEl.value = snippet;
+      copiedMsgEl.style.display = 'none';
+      refreshPreview();
+      validateColorKeywords();
+    }
+
+    function refreshPreview() {
+      pvBlackEl.src = g1El.value.trim();
+      pvBrownEl.src = g2El.value.trim();
+      pvCamelEl.src = g3El.value.trim();
+      pvNavyEl.src = g4El.value.trim();
+    }
+
+    function validateColorKeywords() {
+      const checks = [
+        { label: '黑色皮革', value: g1El.value.trim(), regex: /black/i },
+        { label: '棕色皮革', value: g2El.value.trim(), regex: /brown/i },
+        { label: '駝色皮革', value: g3El.value.trim(), regex: /(camel|tan)/i },
+        { label: '深藍皮革', value: g4El.value.trim(), regex: /(navy|blue)/i },
+      ];
+
+      const mismatch = checks
+        .filter((item) => item.value && !item.regex.test(item.value))
+        .map((item) => `${item.label} 路徑看起來不像對應顏色：${item.value}`);
+
+      keywordWarnEl.textContent = mismatch.join(' | ');
+    }
+
+    document.getElementById('btnGenerate').addEventListener('click', buildSnippet);
+    document.getElementById('btnCopy').addEventListener('click', async () => {
+      await navigator.clipboard.writeText(outputEl.value);
+      copiedMsgEl.style.display = 'block';
+    });
+
+    [productIdEl, mainImgEl, g1El, g2El, g3El, g4El].forEach((el) => {
+      el.addEventListener('change', buildSnippet);
+      el.addEventListener('input', buildSnippet);
+    });
+    productIdEl.addEventListener('change', loadCurrent);
+
+    fillProducts();
+    loadCurrent();
+  </script>
+</body>
+</html>

@@ -17,6 +17,13 @@ const allProducts = [
   { id: 12, name: 'Florence Knoll Sofa', brand: 'Knoll', price: 198000, cat: 'sofa', img: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=600&q=80', badge: '新品' },
 ];
 
+const PRODUCT_IMAGE_MAP = window.PRODUCT_IMAGE_MAP || {};
+
+allProducts.forEach((product) => {
+  const custom = PRODUCT_IMAGE_MAP[product.id];
+  if (custom && custom.img) product.img = custom.img;
+});
+
 let currentView = 'grid';
 
 function renderProducts(products) {
