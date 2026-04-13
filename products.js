@@ -87,17 +87,15 @@ function filterProducts() {
   const anyBrandChecked = brandHM || brandCassina || brandVitra || brandFritz || brandKnoll;
 
   // ── 價格上限 ──
-  const maxPrice = parseInt(document.getElementById('priceRange')?.value || '300000');
+  const maxPrice = parseInt(document.getElementById('priceRange')?.value || '300000', 10);
 
   let filtered = allProducts.filter(p => {
-    // 類別：「全部」勾選或沒有勾選任何特定類別，就全部通過
     const passCategory = catAll || !anyCatChecked ||
       (catChair   && p.cat === 'chair')   ||
       (catSofa    && p.cat === 'sofa')    ||
       (catTable   && p.cat === 'table')   ||
       (catStorage && p.cat === 'storage');
 
-    // 品牌：沒有勾選任何品牌就全部通過
     const passBrand = !anyBrandChecked ||
       (brandHM      && p.brand === 'Herman Miller') ||
       (brandCassina && p.brand === 'Cassina')       ||
@@ -105,7 +103,6 @@ function filterProducts() {
       (brandFritz   && p.brand === 'Fritz Hansen')  ||
       (brandKnoll   && p.brand === 'Knoll');
 
-    // 價格
     const passPrice = p.price <= maxPrice;
 
     return passCategory && passBrand && passPrice;
@@ -145,6 +142,7 @@ function sortList(arr, val) {
 
 function updatePrice(val) {
   document.getElementById('priceMax').textContent = Number(val).toLocaleString();
+  filterProducts(); // 價格改變時重新篩選
 }
 
 function setView(mode) {

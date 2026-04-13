@@ -137,9 +137,11 @@ function checkout() {
   }
 
   const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
-  const tax      = Math.round(subtotal * 0.05);
-  const shipping = subtotal >= 50000 ? 0 : 3000;
-  const total    = subtotal + tax + shipping;
+  const discount = Math.round(subtotal * activeDiscount / 100);
+  const discounted = subtotal - discount;
+  const shippingFee = discounted >= 50000 ? 0 : 3000;
+  const tax = Math.round(discounted * 0.05);
+  const total = discounted + shippingFee + tax;
 
   document.getElementById('modalItemCount').textContent = cart.reduce((s, i) => s + i.qty, 0);
   document.getElementById('modalTotal').textContent     = `NT$ ${total.toLocaleString()}`;
@@ -155,9 +157,9 @@ async function confirmOrder() {
   const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
   const discount = Math.round(subtotal * activeDiscount / 100);
   const discounted = subtotal - discount;
-  const tax      = Math.round(discounted * 0.05);
   const shipping = discounted >= 50000 ? 0 : 3000;
-  const total    = discounted + tax + shipping;
+  const tax      = Math.round(discounted * 0.05);
+  const total    = discounted + shipping + tax;
 
   // 呼叫後端 API 儲存訂單到 PostgreSQL
   await saveOrderToUser(cart, total);

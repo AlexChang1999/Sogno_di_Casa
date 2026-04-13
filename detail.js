@@ -294,18 +294,17 @@ async function loadProductData(id) {
     const res = await fetch(`${DETAIL_API_BASE}/api/products/${numId}`);
     if (res.ok) {
       const data = await res.json();
-      // 把 API 回應格式轉成 detail.js 內部使用的格式
       let gallery = [];
       if (data.galleryJson) {
         try { gallery = JSON.parse(data.galleryJson); } catch (e) {}
       }
       product = {
-        id:      data.id,
-        name:    data.name  || '',
-        brand:   data.brand || '',
-        price:   data.price || 0,
-        img:     data.mainImage || '',
-        gallery: gallery,           // [{color, thumb, full}, ...]
+        id:          data.id,
+        name:        data.name  || '',
+        brand:       data.brand || '',
+        price:       data.price || 0,
+        img:         data.mainImage || '',
+        gallery:     gallery,
         description: data.description || ''
       };
     }
@@ -327,7 +326,6 @@ async function loadProductData(id) {
         dynamicColorImages[item.color] = { main: item.full, thumb: item.thumb };
       }
     });
-    // 如果 gallery 有顏色資訊，自動產生顏色按鈕
     generateColorButtons(product.gallery);
   }
 
