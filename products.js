@@ -78,11 +78,70 @@ function renderProducts(products) {
 
 function filterProducts() {
   const sortVal = document.getElementById('sortBy').value;
-  let filtered = [...allProducts];
+
+  // ── 類別篩選 ──
+  const catAll    = document.getElementById('cat-all')?.checked;
+  const catChair  = document.getElementById('cat-chair')?.checked;
+  const catSofa   = document.getElementById('cat-sofa')?.checked;
+  const catTable  = document.getElementById('cat-table')?.checked;
+  const catStorage = document.getElementById('cat-storage')?.checked;
+  const anyCatChecked = catChair || catSofa || catTable || catStorage;
+
+  // ── 品牌篩選 ──
+  const brandHM      = document.getElementById('brand-hm')?.checked;
+  const brandCassina = document.getElementById('brand-cassina')?.checked;
+  const brandVitra   = document.getElementById('brand-vitra')?.checked;
+  const brandFritz   = document.getElementById('brand-fritz')?.checked;
+  const brandKnoll   = document.getElementById('brand-knoll')?.checked;
+  const anyBrandChecked = brandHM || brandCassina || brandVitra || brandFritz || brandKnoll;
+
+  // ── 價格上限 ──
+  const maxPrice = parseInt(document.getElementById('priceRange')?.value || '300000');
+
+  let filtered = allProducts.filter(p => {
+    // 類別：「全部」勾選或沒有勾選任何特定類別，就全部通過
+    const passCategory = catAll || !anyCatChecked ||
+      (catChair   && p.cat === 'chair')   ||
+      (catSofa    && p.cat === 'sofa')    ||
+      (catTable   && p.cat === 'table')   ||
+      (catStorage && p.cat === 'storage');
+
+    // 品牌：沒有勾選任何品牌就全部通過
+    const passBrand = !anyBrandChecked ||
+      (brandHM      && p.brand === 'Herman Miller') ||
+      (brandCassina && p.brand === 'Cassina')       ||
+      (brandVitra   && p.brand === 'Vitra')         ||
+      (brandFritz   && p.brand === 'Fritz Hansen')  ||
+      (brandKnoll   && p.brand === 'Knoll');
+
+    // 價格
+    const passPrice = p.price <= maxPrice;
+
+    return passCategory && passBrand && passPrice;
+  });
+
   renderProducts(sortList(filtered, sortVal));
 }
 
 function sortProducts() {
+  filterProducts();
+}
+
+// 勾選「全部」時，取消其他類別；勾選其他時，取消「全部」
+function handleCatAll() {
+  const all = document.getElementById('cat-all');
+  if (all.checked) {
+    ['cat-chair','cat-sofa','cat-table','cat-storage'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.checked = false;
+    });
+  }
+  filterProducts();
+}
+
+function handleCatSpecific() {
+  const allEl = document.getElementById('cat-all');
+  if (allEl) allEl.checked = false;
   filterProducts();
 }
 

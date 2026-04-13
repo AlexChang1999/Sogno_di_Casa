@@ -10,6 +10,26 @@ let qty = 1;
 let currentProductId = 1;
 const PRODUCT_PRICE = 128000;
 
+// 每種顏色對應的主圖與縮圖組合
+const COLOR_IMAGES = {
+  '黑色皮革': {
+    main: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=900&q=90',
+    thumb: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=200&q=70'
+  },
+  '棕色皮革': {
+    main: 'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=900&q=90',
+    thumb: 'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=200&q=70'
+  },
+  '駝色皮革': {
+    main: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=900&q=90',
+    thumb: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=200&q=70'
+  },
+  '深藍皮革': {
+    main: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=900&q=90',
+    thumb: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=200&q=70'
+  }
+};
+
 // ── 放大鏡功能 ──
 function initMagnifier() {
   const container = document.getElementById('magnifierContainer');
@@ -83,11 +103,35 @@ function changeQty(delta) {
   document.getElementById('qtyNum').textContent = qty;
 }
 
-// ── 顏色選擇 ──
+// ── 顏色選擇（同時更換主圖與第一張縮圖）──
 function selectColor(btn, name) {
   document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('colorSelected').textContent = name;
+
+  const colorData = COLOR_IMAGES[name];
+  if (!colorData) return;
+
+  const mainImg  = document.getElementById('mainImage');
+  const result   = document.getElementById('magnifierResult');
+  const firstThumb = document.querySelector('.thumb');
+
+  // 淡出 → 換圖 → 淡入
+  mainImg.style.opacity = '0';
+  setTimeout(() => {
+    mainImg.src = colorData.main;
+    mainImg.style.opacity = '1';
+    if (result) result.style.backgroundImage = `url('${colorData.main}')`;
+  }, 150);
+
+  // 同步更新第一張縮圖
+  if (firstThumb) {
+    firstThumb.src = colorData.thumb;
+    firstThumb.dataset.full = colorData.main;
+    // 把 active 移回第一張縮圖
+    document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+    firstThumb.classList.add('active');
+  }
 }
 
 // ── 選項選擇 ──
@@ -97,15 +141,20 @@ function selectOption(btn, targetId, name) {
   document.getElementById(targetId).textContent = name;
 }
 
-// ── 加入購物車（詳情頁） ──
+// ── 加入購物車（詳情頁，包含顏色與材質選擇）──
 function addToCartDetail() {
+  const color = document.getElementById('colorSelected')?.textContent?.trim() || '';
+  const wood  = document.getElementById('woodSelected')?.textContent?.trim()  || '';
+  const variant = (color || wood) ? { color, wood } : null;
+
   addToCart(
     currentProductId,
     document.getElementById('detailName')?.textContent || 'Product',
     PRODUCT_PRICE,
     qty,
     document.getElementById('detailBrand')?.textContent || '',
-    document.getElementById('mainImage')?.src || ''
+    document.getElementById('mainImage')?.src || '',
+    variant
   );
 }
 

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>會員登入 — FORMA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .auth-wrap {
+      min-height: calc(100vh - 72px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1rem;
+      background: var(--color-bg);
+    }
+    .auth-card {
+      width: 100%;
+      max-width: 440px;
+      background: #fff;
+      border: 1px solid var(--color-border);
+      padding: 3rem 2.5rem;
+    }
+    .auth-logo {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 300;
+      letter-spacing: .2em;
+      text-align: center;
+      margin-bottom: .5rem;
+      color: var(--color-dark);
+    }
+    .auth-subtitle {
+      text-align: center;
+      font-size: .8rem;
+      letter-spacing: .1em;
+      color: var(--color-muted);
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+    }
+    .auth-tab-btns {
+      display: flex;
+      border-bottom: 1px solid var(--color-border);
+      margin-bottom: 2rem;
+    }
+    .auth-tab-btn {
+      flex: 1;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      padding: .75rem;
+      font-family: var(--font-body);
+      font-size: .8rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      cursor: pointer;
+      margin-bottom: -1px;
+      transition: all .2s;
+    }
+    .auth-tab-btn.active {
+      color: var(--color-dark);
+      border-bottom-color: var(--color-dark);
+    }
+    .auth-form-group {
+      margin-bottom: 1.25rem;
+    }
+    .auth-form-group label {
+      display: block;
+      font-size: .75rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: .4rem;
+    }
+    .auth-form-group input {
+      width: 100%;
+      border: 1px solid var(--color-border);
+      padding: .7rem 1rem;
+      font-family: var(--font-body);
+      font-size: .9rem;
+      outline: none;
+      transition: border-color .2s;
+      background: var(--color-bg);
+    }
+    .auth-form-group input:focus {
+      border-color: var(--color-dark);
+      background: #fff;
+    }
+    .auth-submit {
+      width: 100%;
+      background: var(--color-dark);
+      color: #fff;
+      border: none;
+      padding: .85rem;
+      font-family: var(--font-body);
+      font-size: .8rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background .2s;
+      margin-top: .5rem;
+    }
+    .auth-submit:hover { background: #333; }
+    .auth-msg {
+      font-size: .85rem;
+      padding: .6rem .8rem;
+      margin-bottom: 1rem;
+      display: none;
+    }
+    .auth-msg.error { background: #fff0f0; color: #c0392b; border-left: 3px solid #c0392b; }
+    .auth-msg.success { background: #f0fff4; color: #27ae60; border-left: 3px solid #27ae60; }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg sticky-top forma-nav">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand forma-logo" href="index.html">FORMA</a>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav mx-auto gap-4">
+          <li class="nav-item"><a class="nav-link" href="index.html">首頁</a></li>
+          <li class="nav-item"><a class="nav-link" href="products.html">商品</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">關於品牌</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">設計師</a></li>
+        </ul>
+        <div class="d-flex align-items-center gap-3">
+          <a href="#" class="nav-icon"><i class="bi bi-search"></i></a>
+          <a href="login.html" class="nav-icon"><i class="bi bi-person"></i></a>
+          <a href="cart.html" class="nav-icon cart-icon">
+            <i class="bi bi-bag"></i>
+            <span class="cart-badge" id="cartCount">0</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-logo">FORMA</div>
+      <p class="auth-subtitle">會員專區</p>
+
+      <!-- 分頁切換：登入 / 註冊 -->
+      <div class="auth-tab-btns">
+        <button class="auth-tab-btn active" id="tabLogin" onclick="switchTab('login')">登入</button>
+        <button class="auth-tab-btn" id="tabRegister" onclick="switchTab('register')">註冊</button>
+      </div>
+
+      <!-- 訊息區域 -->
+      <div class="auth-msg" id="authMsg"></div>
+
+      <!-- 登入表單 -->
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <div class="auth-form-group">
+          <label>電子郵件</label>
+          <input type="email" id="loginEmail" placeholder="your@email.com" required>
+        </div>
+        <div class="auth-form-group">
+          <label>密碼</label>
+          <input type="password" id="loginPassword" placeholder="請輸入密碼" required>
+        </div>
+        <button type="submit" class="auth-submit">登入</button>
+      </form>
+
+      <!-- 註冊表單（預設隱藏） -->
+      <form id="registerForm" style="display:none;" onsubmit="handleRegister(event)">
+        <div class="auth-form-group">
+          <label>姓名</label>
+          <input type="text" id="regName" placeholder="請輸入您的姓名" required>
+        </div>
+        <div class="auth-form-group">
+          <label>電子郵件</label>
+          <input type="email" id="regEmail" placeholder="your@email.com" required>
+        </div>
+        <div class="auth-form-group">
+          <label>密碼（至少 6 位）</label>
+          <input type="password" id="regPassword" placeholder="請設定密碼" minlength="6" required>
+        </div>
+        <div class="auth-form-group">
+          <label>確認密碼</label>
+          <input type="password" id="regPasswordConfirm" placeholder="再次輸入密碼" required>
+        </div>
+        <button type="submit" class="auth-submit">建立帳號</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="cart.js"></script>
+  <script src="auth.js"></script>
+  <script>
+    // 若已登入，直接跳回來源頁或首頁
+    if (getCurrentUser()) {
+      const back = new URLSearchParams(location.search).get('redirect') || 'index.html';
+      window.location.href = back;
+    }
+
+    function switchTab(tab) {
+      document.getElementById('loginForm').style.display    = tab === 'login'    ? '' : 'none';
+      document.getElementById('registerForm').style.display = tab === 'register' ? '' : 'none';
+      document.getElementById('tabLogin').classList.toggle('active',    tab === 'login');
+      document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
+      clearMsg();
+    }
+
+    function showMsg(text, type) {
+      const el = document.getElementById('authMsg');
+      el.textContent = text;
+      el.className = 'auth-msg ' + type;
+      el.style.display = 'block';
+    }
+    function clearMsg() {
+      document.getElementById('authMsg').style.display = 'none';
+    }
+
+    // 取得登入後應跳轉的頁面（優先 sessionStorage，其次 URL param）
+    function getRedirect() {
+      const stored = sessionStorage.getItem('loginRedirect');
+      if (stored) { sessionStorage.removeItem('loginRedirect'); return stored; }
+      return new URLSearchParams(location.search).get('redirect') || 'index.html';
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const email    = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const result   = login(email, password);
+      if (!result.ok) { showMsg(result.msg, 'error'); return; }
+      window.location.href = getRedirect();
+    }
+
+    function handleRegister(e) {
+      e.preventDefault();
+      const name    = document.getElementById('regName').value.trim();
+      const email   = document.getElementById('regEmail').value.trim();
+      const password = document.getElementById('regPassword').value;
+      const confirm  = document.getElementById('regPasswordConfirm').value;
+
+      if (password !== confirm) { showMsg('兩次輸入的密碼不一致', 'error'); return; }
+
+      const result = register(name, email, password);
+      if (!result.ok) { showMsg(result.msg, 'error'); return; }
+
+      showMsg('註冊成功！正在跳轉...', 'success');
+      setTimeout(() => { window.location.href = getRedirect(); }, 1000);
+    }
+  </script>
+</body>
+</html>
