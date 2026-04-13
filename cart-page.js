@@ -137,9 +137,11 @@ function checkout() {
   }
 
   const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
-  const tax      = Math.round(subtotal * 0.05);
-  const shipping = subtotal >= 50000 ? 0 : 3000;
-  const total    = subtotal + tax + shipping;
+  const discount = Math.round(subtotal * activeDiscount / 100);
+  const discounted = subtotal - discount;
+  const shippingFee = discounted >= 50000 ? 0 : 3000;
+  const tax = Math.round(discounted * 0.05);
+  const total = discounted + shippingFee + tax;
 
   document.getElementById('modalItemCount').textContent = cart.reduce((s, i) => s + i.qty, 0);
   document.getElementById('modalTotal').textContent     = `NT$ ${total.toLocaleString()}`;
@@ -153,9 +155,11 @@ function checkout() {
 function confirmOrder() {
   const cart     = getCart();
   const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
-  const tax      = Math.round(subtotal * 0.05);
-  const shipping = subtotal >= 50000 ? 0 : 3000;
-  const total    = subtotal + tax + shipping;
+  const discount = Math.round(subtotal * activeDiscount / 100);
+  const discounted = subtotal - discount;
+  const shipping = discounted >= 50000 ? 0 : 3000;
+  const tax      = Math.round(discounted * 0.05);
+  const total    = discounted + shipping + tax;
 
   // 將訂單記錄到會員資料中
   saveOrderToUser(cart, total);

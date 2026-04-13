@@ -6,28 +6,47 @@
    - URL params
 */
 
+// 相對於網站根目錄的路徑，部署到 GitHub Pages 時會與 repo 內檔案對應（勿用 file:// 或本機絕對路徑）
+const EAMES_LOCAL_GALLERY = [
+  { thumb: 'pics/Black.jpg',    full: 'pics/Black.jpg' },
+  { thumb: 'pics/Brown.jpg',    full: 'pics/Brown.jpg' },
+  { thumb: 'pics/camel.jpg',    full: 'pics/camel.jpg' },
+  { thumb: 'pics/Navy_blue.jpg', full: 'pics/Navy_blue.jpg' },
+];
+
+// 商品資料（與 products.js 相同，用來根據 URL ?id= 查詢對應商品）
+const PRODUCTS_DATA = [
+  {
+    id: 1,
+    name: 'Eames Lounge Chair',
+    brand: 'Herman Miller',
+    price: 128000,
+    img: 'pics/Black.jpg',
+    gallery: EAMES_LOCAL_GALLERY,
+  },
+  { id: 2,  name: 'LC2 Grand Confort',    brand: 'Cassina',       price: 245000, img: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=900&q=90' },
+  { id: 3,  name: 'Series 7 Chair',       brand: 'Fritz Hansen',  price: 38000,  img: 'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=900&q=90' },
+  { id: 4,  name: 'Noguchi Coffee Table', brand: 'Vitra',         price: 96000,  img: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=900&q=90' },
+  { id: 5,  name: 'Aeron Chair',          brand: 'Herman Miller', price: 158000, img: 'https://images.unsplash.com/photo-1592078615290-033ee584e267?w=900&q=90' },
+  { id: 6,  name: 'Tulip Dining Table',   brand: 'Knoll',         price: 182000, img: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=900&q=90' },
+  { id: 7,  name: 'Shell Chair',          brand: 'Fritz Hansen',  price: 62000,  img: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=900&q=90' },
+  { id: 8,  name: 'Ant Chair',            brand: 'Fritz Hansen',  price: 29000,  img: 'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=900&q=90' },
+  { id: 9,  name: 'DSW Chair',            brand: 'Vitra',         price: 42000,  img: 'https://images.unsplash.com/photo-1592078615290-033ee584e267?w=900&q=90' },
+  { id: 10, name: 'Barcelona Chair',      brand: 'Knoll',         price: 320000, img: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=900&q=90' },
+  { id: 11, name: 'LC4 Chaise Longue',    brand: 'Cassina',       price: 285000, img: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=900&q=90' },
+  { id: 12, name: 'Florence Knoll Sofa',  brand: 'Knoll',         price: 198000, img: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=900&q=90' },
+];
+
 let qty = 1;
 let currentProductId = 1;
-const PRODUCT_PRICE = 128000;
+let currentProductPrice = 128000; // 由 loadProductData() 動態設定
 
 // 每種顏色對應的主圖與縮圖組合
 const COLOR_IMAGES = {
-  '黑色皮革': {
-    main: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=900&q=90',
-    thumb: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=200&q=70'
-  },
-  '棕色皮革': {
-    main: 'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=900&q=90',
-    thumb: 'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=200&q=70'
-  },
-  '駝色皮革': {
-    main: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=900&q=90',
-    thumb: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=200&q=70'
-  },
-  '深藍皮革': {
-    main: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=900&q=90',
-    thumb: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=200&q=70'
-  }
+  '黑色皮革': { main: 'pics/Black.jpg',    thumb: 'pics/Black.jpg' },
+  '棕色皮革': { main: 'pics/Brown.jpg',    thumb: 'pics/Brown.jpg' },
+  '駝色皮革': { main: 'pics/camel.jpg',    thumb: 'pics/camel.jpg' },
+  '深藍皮革': { main: 'pics/Navy_blue.jpg', thumb: 'pics/Navy_blue.jpg' },
 };
 
 // ── 放大鏡功能 ──
@@ -109,6 +128,9 @@ function selectColor(btn, name) {
   btn.classList.add('active');
   document.getElementById('colorSelected').textContent = name;
 
+  // 本地色票圖僅對應 id 1（Eames）相簿；其他商品僅更新文字標籤
+  if (currentProductId !== 1) return;
+
   const colorData = COLOR_IMAGES[name];
   if (!colorData) return;
 
@@ -150,7 +172,7 @@ function addToCartDetail() {
   addToCart(
     currentProductId,
     document.getElementById('detailName')?.textContent || 'Product',
-    PRODUCT_PRICE,
+    currentProductPrice, // 使用動態載入的價格，不再硬寫死
     qty,
     document.getElementById('detailBrand')?.textContent || '',
     document.getElementById('mainImage')?.src || '',
@@ -158,11 +180,56 @@ function addToCartDetail() {
   );
 }
 
+// ── 同步縮圖列（與主圖同一組相對路徑，避免主圖已換但縮圖仍指向舊網址） ──
+function syncThumbStrip(product) {
+  const strip = document.getElementById('thumbStrip');
+  if (!strip || !product.img) return;
+
+  const thumbs = strip.querySelectorAll('.thumb');
+  const slides = product.gallery && product.gallery.length
+    ? product.gallery
+    : [{ thumb: product.img, full: product.img }];
+
+  thumbs.forEach((el, i) => {
+    const g = slides[i] || slides[0];
+    el.src = g.thumb;
+    el.dataset.full = g.full;
+    el.classList.toggle('active', i === 0);
+  });
+}
+
+// ── 根據 URL ?id= 動態載入對應商品資料 ──
+function loadProductData(id) {
+  const numId = Number(id);
+  if (!Number.isFinite(numId)) return;
+
+  const product = PRODUCTS_DATA.find(p => p.id === numId);
+  if (!product) return;
+
+  const brandEl = document.getElementById('detailBrand');
+  const nameEl = document.getElementById('detailName');
+  const priceEl = document.getElementById('detailPrice');
+  const mainImg = document.getElementById('mainImage');
+  const breadcrumb = document.getElementById('breadcrumbProduct');
+
+  if (brandEl) brandEl.textContent = product.brand;
+  if (nameEl) nameEl.textContent = product.name;
+  if (priceEl) priceEl.textContent = `NT$ ${product.price.toLocaleString()}`;
+  if (breadcrumb) breadcrumb.textContent = product.name;
+  if (mainImg) mainImg.src = product.img;
+
+  document.title = `${product.name} — FORMA`;
+  currentProductPrice = product.price;
+
+  syncThumbStrip(product);
+}
+
 // ── Init ──
 document.addEventListener('DOMContentLoaded', () => {
-  initMagnifier();
-
-  // 從 URL 參數讀取 id（模擬路由）
   const params = new URLSearchParams(window.location.search);
-  currentProductId = parseInt(params.get('id')) || 1;
+  const parsed = parseInt(params.get('id'), 10);
+  currentProductId = Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
+
+  loadProductData(currentProductId);
+  initMagnifier();
 });
