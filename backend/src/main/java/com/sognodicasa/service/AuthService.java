@@ -42,9 +42,10 @@ public class AuthService {
         User user = new User(req.getName(), req.getEmail(), hashedPassword);
         userRepository.save(user);
 
-        // 產生 JWT token 並回傳
+        // 產生 JWT token 並回傳（含角色資訊）
         String token = jwtUtil.generateToken(user.getEmail());
-        return new LoginResponse(token, user.getName(), user.getEmail());
+        String role = user.getRole() != null ? user.getRole() : "USER";
+        return new LoginResponse(token, user.getName(), user.getEmail(), role);
     }
 
     /**
@@ -60,8 +61,23 @@ public class AuthService {
             throw new IllegalArgumentException("電子郵件或密碼錯誤");
         }
 
-        // 產生 JWT token 並回傳
+        // 產生 JWT token 並回傳（含角色資訊）
         String token = jwtUtil.generateToken(user.getEmail());
-        return new LoginResponse(token, user.getName(), user.getEmail());
+        String role = user.getRole() != null ? user.getRole() : "USER";
+        return new LoginResponse(token, user.getName(), user.getEmail(), role);
+    }
+
+    /**
+     * 升級為管理員
+     * 需要正確的 adminSetupSecret 才能執行，防止任意人設定管理員
+     */
+    public void makeAdmin(String email, String secret, String adminSetupSecret) {
+        if (!adminSetupSecret.equals(secret)) {
+            throw new IllegalArgumentException("管理員設定密碼錯誤");
+        }
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("找不到此 Email：" + email));
+        user.setRole("ADMIN");
+        userRepository.save(user);
     }
 }

@@ -24,10 +24,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("找不到使用者：" + email));
 
         // 把我們的 User Entity 轉換成 Spring Security 的 UserDetails 格式
+        // roles() 會自動加上 "ROLE_" 前綴，例如 "ADMIN" → "ROLE_ADMIN"
+        String role = user.getRole() != null ? user.getRole() : "USER";
         return User.builder()
                 .username(user.getEmail())
                 .password(user.getPassword())
-                .roles("USER") // 角色：一般會員
+                .roles(role)  // 從資料庫讀取實際角色
                 .build();
     }
 }

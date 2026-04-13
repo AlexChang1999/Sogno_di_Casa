@@ -12,4 +12,5 @@ public class LoginResponse {
     private String token;  // JWT token（前端帶著它呼叫 API）
     private String name;   // 會員姓名（顯示在導覽列）
     private String email;  // 會員 Email
+    private String role;   // "USER" 或 "ADMIN"（前端判斷是否顯示後台入口）
 }

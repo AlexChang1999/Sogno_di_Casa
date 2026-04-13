@@ -41,9 +41,13 @@ async function login(email, password) {
     const data = await res.json();
     if (!res.ok) return { ok: false, msg: data.message || '登入失敗' };
 
-    // 儲存 token 與基本資訊
+    // 儲存 token 與基本資訊（含 role，admin.html 用來判斷是否顯示管理員入口）
     localStorage.setItem('forma_token', data.token);
-    localStorage.setItem('forma_user', JSON.stringify({ name: data.name, email: data.email }));
+    localStorage.setItem('forma_user', JSON.stringify({
+      name:  data.name,
+      email: data.email,
+      role:  data.role || 'USER'
+    }));
     return { ok: true, user: data };
   } catch (e) {
     return { ok: false, msg: '無法連線到伺服器，請確認後端已啟動' };
@@ -62,7 +66,11 @@ async function register(name, email, password) {
     if (!res.ok) return { ok: false, msg: data.message || '註冊失敗' };
 
     localStorage.setItem('forma_token', data.token);
-    localStorage.setItem('forma_user', JSON.stringify({ name: data.name, email: data.email }));
+    localStorage.setItem('forma_user', JSON.stringify({
+      name:  data.name,
+      email: data.email,
+      role:  data.role || 'USER'
+    }));
     return { ok: true, user: data };
   } catch (e) {
     return { ok: false, msg: '無法連線到伺服器，請確認後端已啟動' };
@@ -105,13 +113,20 @@ function updateNavAuth() {
   if (!personLink) return;
 
   if (user) {
+    // 管理員多一個「商家後台」選項
+    const adminItem = user.role === 'ADMIN'
+      ? `<li><a class="dropdown-item small" href="admin.html"><i class="bi bi-grid-3x3-gap me-1"></i>商家後台</a></li>
+         <li><hr class="dropdown-divider"></li>`
+      : '';
+
     personLink.outerHTML = `
       <div class="dropdown">
         <a href="#" class="nav-icon dropdown-toggle" data-bs-toggle="dropdown" style="text-decoration:none;">
           <i class="bi bi-person-check"></i>
           <span style="font-size:.75rem;letter-spacing:.05em;">${user.name}</span>
         </a>
-        <ul class="dropdown-menu dropdown-menu-end" style="min-width:150px;">
+        <ul class="dropdown-menu dropdown-menu-end" style="min-width:160px;">
+          ${adminItem}
           <li><a class="dropdown-item small" href="account.html">我的訂單</a></li>
           <li><hr class="dropdown-divider"></li>
           <li><a class="dropdown-item small" href="#" onclick="logout()">登出</a></li>

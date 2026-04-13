@@ -38,6 +38,10 @@ public class User {
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    // 角色：USER（一般會員）或 ADMIN（商家管理員）
+    @Column(length = 20)
+    private String role = "USER";
+
     // 一個會員有多筆訂單（一對多關聯）
     // mappedBy = "user" 表示由 Order.user 這端管理關聯
     // cascade = ALL 表示刪除會員時，訂單也一起刪除

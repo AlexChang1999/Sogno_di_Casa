@@ -5,8 +5,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -26,6 +28,7 @@ import java.util.List;
  */
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity  // 開啟 @PreAuthorize 支援，讓 Controller 可用 @PreAuthorize("hasRole('ADMIN')")
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -49,8 +52,10 @@ public class SecurityConfig {
 
             // 設定哪些路徑需要登入
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll() // 登入/註冊不需要 token
-                .anyRequest().authenticated()                // 其他都需要 token
+                .requestMatchers("/api/auth/**").permitAll()                          // 登入/註冊不需要 token
+                .requestMatchers(HttpMethod.GET, "/api/products", "/api/products/**").permitAll() // 瀏覽商品不需要登入
+                .requestMatchers("/uploads/**").permitAll()                           // 上傳的圖片可公開存取
+                .anyRequest().authenticated()                                         // 其他都需要 token
             )
 
             // 在 Spring Security 的帳密驗證之前，先執行我們的 JWT 驗證
