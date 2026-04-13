@@ -3,9 +3,8 @@
    商品資料從後端 API 讀取（Spring Boot + PostgreSQL）
 */
 
-const API_BASE = 'http://localhost:8080';
-
 // 全域商品陣列，由 loadProductsFromAPI() 填入
+// API_BASE 由 auth.js 定義（http://localhost:8080）
 let allProducts = [];
 
 let currentView = 'grid';

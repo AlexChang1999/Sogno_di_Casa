@@ -48,7 +48,7 @@ PRODUCTS_DATA.forEach((product) => {
   }
 });
 
-const DETAIL_API_BASE = 'http://localhost:8080';
+// API_BASE 由 auth.js 定義（http://localhost:8080），detail.js 直接沿用
 
 let qty = 1;
 let currentProductId = 1;
@@ -291,7 +291,7 @@ async function loadProductData(id) {
 
   // 步驟 1：嘗試從後端 API 取得
   try {
-    const res = await fetch(`${DETAIL_API_BASE}/api/products/${numId}`);
+    const res = await fetch(`${API_BASE}/api/products/${numId}`);
     if (res.ok) {
       const data = await res.json();
       let gallery = [];
