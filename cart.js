@@ -24,13 +24,16 @@ function updateCartBadge() {
 }
 
 // ── 加入購物車 ──
-function addToCart(id, name, price, qty = 1, brand = '', img = '') {
+// variant 為選填，格式：{ color: '黑色皮革', wood: '黑胡桃木' }
+function addToCart(id, name, price, qty = 1, brand = '', img = '', variant = null) {
   const cart = getCart();
-  const idx = cart.findIndex(item => item.id === id);
+  // 同一商品同一規格才合併數量；有 variant 時用複合 key 區分
+  const key = variant ? `${id}_${variant.color || ''}_${variant.wood || ''}` : id;
+  const idx = cart.findIndex(item => item._key === key);
   if (idx > -1) {
     cart[idx].qty += qty;
   } else {
-    cart.push({ id, name, price, qty, brand, img });
+    cart.push({ id, _key: key, name, price, qty, brand, img, variant });
   }
   saveCart(cart);
   showCartToast();

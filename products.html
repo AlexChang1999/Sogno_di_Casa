@@ -64,23 +64,23 @@
           <div class="filter-group">
             <h6 class="filter-sub">類別</h6>
             <div class="form-check filter-check">
-              <input class="form-check-input" type="checkbox" id="cat-all" checked onchange="filterProducts()">
+              <input class="form-check-input" type="checkbox" id="cat-all" checked onchange="handleCatAll()">
               <label class="form-check-label" for="cat-all">全部</label>
             </div>
             <div class="form-check filter-check">
-              <input class="form-check-input" type="checkbox" id="cat-chair" onchange="filterProducts()">
+              <input class="form-check-input" type="checkbox" id="cat-chair" onchange="handleCatSpecific()">
               <label class="form-check-label" for="cat-chair">椅子</label>
             </div>
             <div class="form-check filter-check">
-              <input class="form-check-input" type="checkbox" id="cat-sofa" onchange="filterProducts()">
+              <input class="form-check-input" type="checkbox" id="cat-sofa" onchange="handleCatSpecific()">
               <label class="form-check-label" for="cat-sofa">沙發</label>
             </div>
             <div class="form-check filter-check">
-              <input class="form-check-input" type="checkbox" id="cat-table" onchange="filterProducts()">
+              <input class="form-check-input" type="checkbox" id="cat-table" onchange="handleCatSpecific()">
               <label class="form-check-label" for="cat-table">桌子</label>
             </div>
             <div class="form-check filter-check">
-              <input class="form-check-input" type="checkbox" id="cat-storage" onchange="filterProducts()">
+              <input class="form-check-input" type="checkbox" id="cat-storage" onchange="handleCatSpecific()">
               <label class="form-check-label" for="cat-storage">收納</label>
             </div>
           </div>
@@ -104,12 +104,16 @@
               <input class="form-check-input" type="checkbox" id="brand-fritz" onchange="filterProducts()">
               <label class="form-check-label" for="brand-fritz">Fritz Hansen</label>
             </div>
+            <div class="form-check filter-check">
+              <input class="form-check-input" type="checkbox" id="brand-knoll" onchange="filterProducts()">
+              <label class="form-check-label" for="brand-knoll">Knoll</label>
+            </div>
           </div>
 
           <!-- Price Range -->
           <div class="filter-group">
             <h6 class="filter-sub">價格區間</h6>
-            <input type="range" class="forma-range" id="priceRange" min="0" max="300000" value="300000" step="10000" oninput="updatePrice(this.value)">
+            <input type="range" class="forma-range" id="priceRange" min="0" max="300000" value="300000" step="10000" oninput="updatePrice(this.value); filterProducts()">
             <p class="price-display">NT$ 0 — <span id="priceMax">300,000</span></p>
           </div>
 
@@ -174,6 +178,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="cart.js"></script>
+  <script src="auth.js"></script>
   <script src="products.js"></script>
 </body>
 </html>
