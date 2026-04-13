@@ -152,7 +152,7 @@ function checkout() {
   modal.show();
 }
 
-function confirmOrder() {
+async function confirmOrder() {
   const cart     = getCart();
   const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
   const discount = Math.round(subtotal * activeDiscount / 100);
@@ -161,8 +161,8 @@ function confirmOrder() {
   const tax      = Math.round(discounted * 0.05);
   const total    = discounted + shipping + tax;
 
-  // 將訂單記錄到會員資料中
-  saveOrderToUser(cart, total);
+  // 呼叫後端 API 儲存訂單到 PostgreSQL
+  await saveOrderToUser(cart, total);
   saveCart([]);
   bootstrap.Modal.getInstance(document.getElementById('checkoutModal'))?.hide();
 

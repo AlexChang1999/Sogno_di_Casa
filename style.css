@@ -673,7 +673,7 @@ button { cursor: pointer; border: none; background: none; }
 
 .magnifier-container {
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   cursor: crosshair;
   border: 1px solid var(--color-border);
   aspect-ratio: 1/1;

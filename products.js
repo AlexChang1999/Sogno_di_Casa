@@ -1,28 +1,11 @@
 /* products.js — 商品列表邏輯
    使用技術：Array methods, DOM操作, CSS Grid/Flex切換
+   商品資料從後端 API 讀取（Spring Boot + PostgreSQL）
 */
 
-const allProducts = [
-  { id: 1, name: 'Eames Lounge Chair', brand: 'Herman Miller', price: 128000, cat: 'chair', img: 'pics/Black.jpg', badge: '新品' },
-  { id: 2, name: 'LC2 Grand Confort', brand: 'Cassina', price: 245000, cat: 'sofa', img: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&q=80', badge: '' },
-  { id: 3, name: 'Series 7 Chair', brand: 'Fritz Hansen', price: 38000, cat: 'chair', img: 'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=600&q=80', badge: '熱銷' },
-  { id: 4, name: 'Noguchi Coffee Table', brand: 'Vitra', price: 96000, cat: 'table', img: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=600&q=80', badge: '' },
-  { id: 5, name: 'Aeron Chair', brand: 'Herman Miller', price: 158000, cat: 'chair', img: 'https://images.unsplash.com/photo-1592078615290-033ee584e267?w=600&q=80', badge: '' },
-  { id: 6, name: 'Tulip Dining Table', brand: 'Knoll', price: 182000, cat: 'table', img: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80', badge: '限量' },
-  { id: 7, name: 'Shell Chair', brand: 'Fritz Hansen', price: 62000, cat: 'chair', img: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80', badge: '' },
-  { id: 8, name: 'Ant Chair', brand: 'Fritz Hansen', price: 29000, cat: 'chair', img: 'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=600&q=80', badge: '' },
-  { id: 9, name: 'DSW Chair', brand: 'Vitra', price: 42000, cat: 'chair', img: 'https://images.unsplash.com/photo-1592078615290-033ee584e267?w=600&q=80', badge: '' },
-  { id: 10, name: 'Barcelona Chair', brand: 'Knoll', price: 320000, cat: 'chair', img: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80', badge: '限量' },
-  { id: 11, name: 'LC4 Chaise Longue', brand: 'Cassina', price: 285000, cat: 'sofa', img: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&q=80', badge: '' },
-  { id: 12, name: 'Florence Knoll Sofa', brand: 'Knoll', price: 198000, cat: 'sofa', img: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=600&q=80', badge: '新品' },
-];
-
-const PRODUCT_IMAGE_MAP = window.PRODUCT_IMAGE_MAP || {};
-
-allProducts.forEach((product) => {
-  const custom = PRODUCT_IMAGE_MAP[product.id];
-  if (custom && custom.img) product.img = custom.img;
-});
+// 全域商品陣列，由 loadProductsFromAPI() 填入
+// API_BASE 由 auth.js 定義（http://localhost:8080）
+let allProducts = [];
 
 let currentView = 'grid';
 
@@ -168,7 +151,56 @@ function setView(mode) {
   filterProducts();
 }
 
+// ── 從後端 API 載入商品 ──
+async function loadProductsFromAPI() {
+  const grid = document.getElementById('productGrid');
+  if (grid) {
+    grid.className = 'row g-4';
+    grid.innerHTML = `<div class="col-12 text-center py-5 text-muted">
+      <div class="spinner-border spinner-border-sm me-2" role="status"></div>載入商品中...
+    </div>`;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/api/products`);
+    if (!res.ok) throw new Error('API 回傳錯誤');
+    const data = await res.json();
+
+    // 把後端欄位（category / mainImage）對應到前端用的（cat / img）
+    allProducts = data.map(p => ({
+      id:    p.id,
+      name:  p.name  || '',
+      brand: p.brand || '',
+      price: p.price || 0,
+      cat:   p.category || '',     // API 叫 category，前端 filter 用 cat
+      img:   p.mainImage || '',    // API 叫 mainImage，前端顯示用 img
+      badge: '',                   // 目前不從 API 取，可之後擴充
+      inStock: p.inStock !== false
+    }));
+
+    // 若後端沒有商品，顯示提示
+    if (allProducts.length === 0) {
+      if (grid) grid.innerHTML = `<div class="col-12 text-center py-5 text-muted">
+        <i class="bi bi-inbox fs-2 d-block mb-3"></i>
+        <p>目前尚無商品，請先在後台新增</p>
+      </div>`;
+      document.getElementById('productCount').textContent = '0';
+      return;
+    }
+
+    filterProducts(); // 套用目前的篩選與排序後渲染
+  } catch (e) {
+    // 後端連不到時，顯示友善錯誤提示
+    if (grid) grid.innerHTML = `<div class="col-12 text-center py-5 text-muted">
+      <i class="bi bi-wifi-off fs-2 d-block mb-3"></i>
+      <p>無法連線到後端服務</p>
+      <p class="small">請先啟動 Spring Boot（./mvnw spring-boot:run）</p>
+    </div>`;
+    document.getElementById('productCount').textContent = '0';
+  }
+}
+
 // Init
 document.addEventListener('DOMContentLoaded', () => {
-  renderProducts(allProducts);
+  loadProductsFromAPI();
 });

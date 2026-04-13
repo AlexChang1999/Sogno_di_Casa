@@ -226,25 +226,36 @@
       return new URLSearchParams(location.search).get('redirect') || 'index.html';
     }
 
-    function handleLogin(e) {
+    // login() 和 register() 現在是 async，所以表單處理也改成 async
+    async function handleLogin(e) {
       e.preventDefault();
+      const btn = e.target.querySelector('button[type=submit]');
+      btn.textContent = '登入中...'; btn.disabled = true;
+
       const email    = document.getElementById('loginEmail').value.trim();
       const password = document.getElementById('loginPassword').value;
-      const result   = login(email, password);
+      const result   = await login(email, password);
+
+      btn.textContent = '登入'; btn.disabled = false;
       if (!result.ok) { showMsg(result.msg, 'error'); return; }
       window.location.href = getRedirect();
     }
 
-    function handleRegister(e) {
+    async function handleRegister(e) {
       e.preventDefault();
-      const name    = document.getElementById('regName').value.trim();
-      const email   = document.getElementById('regEmail').value.trim();
+      const name     = document.getElementById('regName').value.trim();
+      const email    = document.getElementById('regEmail').value.trim();
       const password = document.getElementById('regPassword').value;
       const confirm  = document.getElementById('regPasswordConfirm').value;
 
       if (password !== confirm) { showMsg('兩次輸入的密碼不一致', 'error'); return; }
 
-      const result = register(name, email, password);
+      const btn = e.target.querySelector('button[type=submit]');
+      btn.textContent = '建立中...'; btn.disabled = true;
+
+      const result = await register(name, email, password);
+
+      btn.textContent = '建立帳號'; btn.disabled = false;
       if (!result.ok) { showMsg(result.msg, 'error'); return; }
 
       showMsg('註冊成功！正在跳轉...', 'success');

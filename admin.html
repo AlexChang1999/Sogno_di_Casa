@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FORMA | 商家管理後台</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --sidebar: #161616;
+      --card: #1e1e1e;
+      --border: #2a2a2a;
+      --text: #e8e0d4;
+      --muted: #7a7269;
+      --accent: #c8b89a;
+      --danger: #c0392b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      margin: 0;
+    }
+
+    /* ── 側邊欄 ── */
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      width: 230px;
+      height: 100vh;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+    }
+    .sidebar-logo {
+      padding: 28px 24px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-logo .brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      letter-spacing: .2em;
+      color: var(--text);
+    }
+    .sidebar-logo .sub {
+      font-size: .6rem;
+      letter-spacing: .25em;
+      color: var(--muted);
+      margin-top: 2px;
+      text-transform: uppercase;
+    }
+    .sidebar-nav {
+      padding: 16px 12px;
+      flex: 1;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 6px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .82rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      transition: all .2s;
+      margin-bottom: 4px;
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+    .nav-item:hover { color: var(--text); background: rgba(255,255,255,.04); }
+    .nav-item.active { color: var(--text); background: rgba(200,184,154,.12); }
+    .nav-item i { font-size: 1rem; }
+    .sidebar-footer {
+      padding: 16px;
+      border-top: 1px solid var(--border);
+      font-size: .75rem;
+    }
+    .sidebar-footer .admin-email {
+      color: var(--muted);
+      margin-bottom: 10px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* ── 主內容區 ── */
+    .main {
+      margin-left: 230px;
+      padding: 32px 36px;
+      min-height: 100vh;
+    }
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+    .page-header h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem;
+      letter-spacing: .05em;
+      color: var(--text);
+      margin: 0;
+    }
+    .count-badge {
+      background: var(--border);
+      color: var(--muted);
+      font-size: .7rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+
+    /* ── 按鈕 ── */
+    .btn-primary-admin {
+      background: var(--accent);
+      color: #111;
+      border: none;
+      padding: 9px 22px;
+      font-family: 'Jost', sans-serif;
+      font-size: .78rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: opacity .2s;
+    }
+    .btn-primary-admin:hover { opacity: .85; }
+    .btn-outline-admin {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 7px 18px;
+      font-family: 'Jost', sans-serif;
+      font-size: .75rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .btn-outline-admin:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── 商品表格 ── */
+    .product-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .84rem;
+    }
+    .product-table th {
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      font-size: .65rem;
+      color: var(--muted);
+      font-weight: 400;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+    .product-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .product-table tr:hover td { background: rgba(255,255,255,.02); }
+    .product-table .product-name { font-weight: 400; color: var(--text); }
+    .product-table .product-desc {
+      font-size: .72rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .product-thumb {
+      width: 56px;
+      height: 56px;
+      object-fit: cover;
+      border-radius: 4px;
+      background: var(--border);
+    }
+    .cat-badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 3px;
+      font-size: .67rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .stock-badge {
+      font-size: .7rem;
+      letter-spacing: .05em;
+    }
+    .stock-yes { color: #6dbf87; }
+    .stock-no  { color: #d9534f; }
+    .action-btn {
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      padding: 5px 12px;
+      border-radius: 3px;
+      font-size: .72rem;
+      cursor: pointer;
+      transition: all .15s;
+      margin-right: 4px;
+    }
+    .action-btn:hover { color: var(--text); border-color: #444; }
+    .action-btn.del:hover { color: #d9534f; border-color: #d9534f; }
+    .empty-row td {
+      text-align: center;
+      color: var(--muted);
+      padding: 60px;
+      font-size: .85rem;
+    }
+
+    /* ── Modal ── */
+    .modal-content {
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    .modal-header, .modal-footer {
+      border-color: var(--border) !important;
+    }
+    .modal-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem;
+      letter-spacing: .05em;
+    }
+    .form-label {
+      font-size: .72rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .form-control, .form-select {
+      background: #111 !important;
+      color: var(--text) !important;
+      border-color: var(--border) !important;
+      font-family: 'Jost', sans-serif;
+      font-size: .85rem;
+    }
+    .form-control:focus, .form-select:focus {
+      box-shadow: 0 0 0 2px rgba(200,184,154,.25);
+      border-color: var(--accent) !important;
+    }
+    .form-control::placeholder { color: var(--muted) !important; }
+
+    /* 圖片上傳區 */
+    .upload-zone {
+      border: 1px dashed var(--border);
+      border-radius: 6px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .2s;
+    }
+    .upload-zone:hover { border-color: var(--accent); }
+    .upload-zone input[type="file"] { display: none; }
+
+    /* 顏色款式列 */
+    .variant-row {
+      background: rgba(255,255,255,.025);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .variant-preview {
+      width: 44px;
+      height: 44px;
+      object-fit: cover;
+      border-radius: 4px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+    .variant-upload-btn {
+      white-space: nowrap;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: .72rem;
+      cursor: pointer;
+      transition: all .15s;
+      flex-shrink: 0;
+    }
+    .variant-upload-btn:hover { color: var(--text); border-color: #444; }
+    .variant-del-btn {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      padding: 6px 8px;
+      cursor: pointer;
+      transition: color .15s;
+      flex-shrink: 0;
+    }
+    .variant-del-btn:hover { color: #d9534f; }
+
+    /* 設定頁 */
+    .setting-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 28px;
+      max-width: 480px;
+      margin-bottom: 20px;
+    }
+    .setting-card h5 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      letter-spacing: .05em;
+      margin-bottom: 6px;
+    }
+    .setting-card p {
+      font-size: .82rem;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    /* 通知 Toast */
+    .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
+    .admin-toast {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-size: .82rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,.5);
+      animation: slideIn .2s ease;
+      margin-bottom: 8px;
+    }
+    .admin-toast.success { border-left: 3px solid #6dbf87; }
+    .admin-toast.error   { border-left: 3px solid #d9534f; }
+    @keyframes slideIn { from { opacity:0; transform: translateX(20px); } to { opacity:1; transform: translateX(0); } }
+
+    /* 載入中 */
+    .loading-row td {
+      text-align: center;
+      padding: 60px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── 通知 Toast ─── -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ─── 側邊欄 ─── -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="brand">FORMA</div>
+    <div class="sub">Admin Panel</div>
+  </div>
+  <nav class="sidebar-nav">
+    <button class="nav-item active" onclick="showSection('products', this)">
+      <i class="bi bi-grid-3x3-gap"></i> 商品管理
+    </button>
+    <button class="nav-item" onclick="showSection('orders', this)">
+      <i class="bi bi-receipt"></i> 訂單查覽
+    </button>
+    <button class="nav-item" onclick="showSection('settings', this)">
+      <i class="bi bi-gear"></i> 設定
+    </button>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="admin-email" id="adminEmail">載入中...</div>
+    <a href="index.html" class="btn-outline-admin d-block text-center text-decoration-none">
+      ← 返回網站
+    </a>
+  </div>
+</aside>
+
+<!-- ─── 主內容區 ─── -->
+<main class="main">
+
+  <!-- 商品管理 -->
+  <section id="section-products">
+    <div class="page-header">
+      <h2>商品管理 <span class="count-badge" id="productCount">0</span></h2>
+      <button class="btn-primary-admin" onclick="openAddModal()">
+        <i class="bi bi-plus-lg me-1"></i> 新增商品
+      </button>
+    </div>
+
+    <div style="overflow-x:auto;">
+      <table class="product-table">
+        <thead>
+          <tr>
+            <th style="width:70px;">圖片</th>
+            <th>商品資訊</th>
+            <th>品牌</th>
+            <th>類別</th>
+            <th>售價</th>
+            <th>庫存</th>
+            <th style="width:130px;">操作</th>
+          </tr>
+        </thead>
+        <tbody id="productTableBody">
+          <tr class="loading-row"><td colspan="7"><i class="bi bi-arrow-repeat me-2"></i>載入中...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 訂單查覽 -->
+  <section id="section-orders" style="display:none;">
+    <div class="page-header">
+      <h2>訂單查覽</h2>
+    </div>
+    <div id="orderContent">
+      <div style="color:var(--muted); font-size:.9rem; padding:40px 0;">
+        <i class="bi bi-info-circle me-2"></i>目前每位會員可在「我的訂單」頁查看自己的訂單。<br>
+        如需查看所有訂單，可直接查詢 PostgreSQL 資料庫的 <code>orders</code> 資料表。
+      </div>
+    </div>
+  </section>
+
+  <!-- 設定 -->
+  <section id="section-settings" style="display:none;">
+    <div class="page-header">
+      <h2>設定</h2>
+    </div>
+
+    <div class="setting-card">
+      <h5><i class="bi bi-shield-lock me-2"></i>升級管理員帳號</h5>
+      <p>輸入要升級的帳號 Email 與管理員設定密碼（在 application.properties 的 <code>app.admin-setup-secret</code>）</p>
+      <div class="mb-3">
+        <label class="form-label">帳號 Email</label>
+        <input type="email" class="form-control" id="setupEmail" placeholder="admin@forma.com">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">管理員設定密碼</label>
+        <input type="password" class="form-control" id="setupSecret" placeholder="FORMA_ADMIN_2025">
+      </div>
+      <button class="btn-primary-admin" onclick="setupAdmin()">升級為管理員</button>
+    </div>
+
+    <div class="setting-card">
+      <h5><i class="bi bi-door-open me-2"></i>登出</h5>
+      <p>登出後台，返回一般會員狀態。</p>
+      <button class="btn-outline-admin" onclick="doLogout()">登出後台</button>
+    </div>
+  </section>
+
+</main>
+
+<!-- ─── 新增 / 編輯商品 Modal ─── -->
+<div class="modal fade" id="productModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalTitle">新增商品</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <form id="productForm" onsubmit="return false;">
+
+          <!-- 基本資料 -->
+          <div class="row g-3 mb-4">
+            <div class="col-md-8">
+              <label class="form-label">商品名稱 *</label>
+              <input type="text" class="form-control" id="f_name" placeholder="例：Eames Lounge Chair" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">品牌</label>
+              <input type="text" class="form-control" id="f_brand" placeholder="例：Herman Miller">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">類別</label>
+              <select class="form-select" id="f_category">
+                <option value="">未分類</option>
+                <option value="chair">椅子</option>
+                <option value="sofa">沙發</option>
+                <option value="table">桌子</option>
+                <option value="storage">收納</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">售價 (NT$) *</label>
+              <input type="number" class="form-control" id="f_price" min="0" placeholder="128000" required>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="f_inStock" checked>
+                <label class="form-check-label" for="f_inStock" style="font-size:.82rem;">有現貨</label>
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label">商品說明</label>
+              <textarea class="form-control" id="f_description" rows="3"
+                placeholder="描述材質、尺寸、設計故事..."></textarea>
+            </div>
+          </div>
+
+          <!-- 主圖 -->
+          <div class="mb-4">
+            <label class="form-label">主圖（顯示於列表頁）</label>
+            <div class="d-flex gap-3 align-items-start">
+              <div class="flex-grow-1">
+                <input type="text" class="form-control mb-2" id="f_mainImage"
+                  placeholder="貼上圖片 URL，或點右側「上傳」"
+                  oninput="updateMainPreview(this.value)">
+                <label class="upload-zone" style="padding:12px; text-align:left;">
+                  <i class="bi bi-cloud-upload me-2"></i>
+                  <span style="font-size:.8rem; color:var(--muted);">點擊選擇圖片上傳（JPG / PNG）</span>
+                  <input type="file" accept="image/*" onchange="uploadMainImage(this)">
+                </label>
+              </div>
+              <div style="flex-shrink:0;">
+                <img id="mainImagePreview" src=""
+                  style="width:110px; height:110px; object-fit:cover; border-radius:6px; background:var(--border); display:none;">
+                <div id="mainImagePlaceholder"
+                  style="width:110px; height:110px; background:var(--border); border-radius:6px; display:flex; align-items:center; justify-content:center;">
+                  <i class="bi bi-image" style="font-size:2rem; color:var(--muted);"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 顏色款式 -->
+          <div class="mb-2">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <label class="form-label mb-0">顏色款式</label>
+                <div style="font-size:.73rem; color:var(--muted); margin-top:2px;">
+                  每種顏色有獨立圖片，顧客可在商品頁切換
+                </div>
+              </div>
+              <button type="button" class="btn-outline-admin" onclick="addVariantRow()">
+                <i class="bi bi-plus"></i> 新增顏色
+              </button>
+            </div>
+            <div id="variantRows"></div>
+            <div id="variantEmpty" style="font-size:.8rem; color:var(--muted); padding:16px; text-align:center; border:1px dashed var(--border); border-radius:6px;">
+              尚未新增顏色款式 — 點「新增顏色」開始設定
+            </div>
+          </div>
+
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-outline-admin" data-bs-dismiss="modal">取消</button>
+        <button type="button" class="btn-primary-admin" id="saveBtn" onclick="saveProduct()">
+          <i class="bi bi-check-lg me-1"></i> 儲存商品
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── 刪除確認 Modal ─── -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+  <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-content text-center">
+      <div class="modal-body py-4 px-4">
+        <i class="bi bi-exclamation-triangle" style="font-size:2.5rem; color:#c0392b; display:block; margin-bottom:16px;"></i>
+        <p style="font-size:.95rem; margin-bottom:4px;">確定要刪除這項商品？</p>
+        <p style="font-size:.78rem; color:var(--muted);">此操作無法復原</p>
+      </div>
+      <div class="modal-footer justify-content-center border-0 pb-4">
+        <button class="btn-outline-admin" data-bs-dismiss="modal">取消</button>
+        <button class="btn-primary-admin" id="confirmDeleteBtn"
+          style="background:#c0392b; margin-left:8px;">刪除</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>
