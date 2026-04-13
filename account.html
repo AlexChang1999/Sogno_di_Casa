@@ -111,40 +111,57 @@
   <script>
     // 未登入則導向登入頁
     const user = getCurrentUser();
-    if (!user) window.location.href = 'login.html?redirect=account.html';
+    if (!user) {
+      sessionStorage.setItem('loginRedirect', 'account.html');
+      window.location.href = 'login.html';
+    }
 
     document.getElementById('accName').textContent  = user?.name  || '';
     document.getElementById('accEmail').textContent = user?.email || '';
 
     const orderList = document.getElementById('orderList');
-    const orders    = user?.orders || [];
 
-    if (orders.length === 0) {
-      orderList.innerHTML = `
-        <div class="no-orders">
-          <i class="bi bi-bag-x"></i>
-          <p>目前還沒有任何訂單</p>
-          <a href="products.html" class="btn-forma mt-3 d-inline-block">開始選購</a>
-        </div>`;
-    } else {
-      // 最新訂單排最前
-      const sorted = [...orders].reverse();
-      orderList.innerHTML = sorted.map(o => `
-        <div class="order-card">
-          <div class="order-meta">
-            <span class="order-id">${o.id}</span>
-            <span class="order-date">${o.date}</span>
-            <span class="order-total">NT$ ${o.total.toLocaleString()}</span>
-          </div>
-          ${o.items.map(item => `
-            <div class="order-item-row">
-              <span class="order-item-name">${item.brand ? item.brand + ' · ' : ''}${item.name} × ${item.qty}</span>
-              <span class="order-item-price">NT$ ${(item.price * item.qty).toLocaleString()}</span>
+    // 顯示載入中
+    orderList.innerHTML = `<p style="color:var(--color-muted);text-align:center;padding:2rem;">載入中...</p>`;
+
+    // 從後端 API 取得訂單（需要 JWT token）
+    authFetch('http://localhost:8080/api/orders')
+      .then(res => {
+        if (!res.ok) throw new Error('無法取得訂單');
+        return res.json();
+      })
+      .then(orders => {
+        if (orders.length === 0) {
+          orderList.innerHTML = `
+            <div class="no-orders">
+              <i class="bi bi-bag-x"></i>
+              <p>目前還沒有任何訂單</p>
+              <a href="products.html" class="btn-forma mt-3 d-inline-block">開始選購</a>
+            </div>`;
+        } else {
+          orderList.innerHTML = orders.map(o => `
+            <div class="order-card">
+              <div class="order-meta">
+                <span class="order-id">${o.id}</span>
+                <span class="order-date">${o.date}</span>
+                <span class="order-total">NT$ ${Number(o.total).toLocaleString()}</span>
+              </div>
+              ${o.items.map(item => `
+                <div class="order-item-row">
+                  <span class="order-item-name">
+                    ${item.brand ? item.brand + ' · ' : ''}${item.productName} × ${item.qty}
+                    ${item.color ? `<span style="color:var(--color-muted);font-size:.78rem;">（${[item.color, item.wood].filter(Boolean).join(' · ')}）</span>` : ''}
+                  </span>
+                  <span class="order-item-price">NT$ ${(Number(item.price) * item.qty).toLocaleString()}</span>
+                </div>
+              `).join('')}
             </div>
-          `).join('')}
-        </div>
-      `).join('');
-    }
+          `).join('');
+        }
+      })
+      .catch(() => {
+        orderList.innerHTML = `<p style="color:#c0392b;text-align:center;padding:2rem;">無法連線到伺服器，請確認後端已啟動。</p>`;
+      });
   </script>
 </body>
 </html>

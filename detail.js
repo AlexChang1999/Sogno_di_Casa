@@ -13,20 +13,20 @@ const PRODUCT_PRICE = 128000;
 // 每種顏色對應的主圖與縮圖組合
 const COLOR_IMAGES = {
   '黑色皮革': {
-    main: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=900&q=90',
-    thumb: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=200&q=70'
+    main: './pics/Black.jpg',
+    thumb: './pics/Black.jpg'
   },
   '棕色皮革': {
-    main: 'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=900&q=90',
-    thumb: 'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=200&q=70'
+    main: './pics/Brown.jpg',
+    thumb: './pics/Brown.jpg'
   },
   '駝色皮革': {
-    main: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=900&q=90',
-    thumb: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=200&q=70'
+    main: './pics/camel.jpg',
+    thumb: './pics/camel.jpg'
   },
   '深藍皮革': {
-    main: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=900&q=90',
-    thumb: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=200&q=70'
+    main: './pics/Navy_blue.jpg',
+    thumb: './pics/Navy_blue.jpg'
   }
 };
 
