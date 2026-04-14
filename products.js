@@ -86,7 +86,7 @@ function filterProducts() {
   const anyBrandChecked = brandHM || brandCassina || brandVitra || brandFritz || brandKnoll;
 
   // ── 價格上限 ──
-  const maxPrice = parseInt(document.getElementById('priceRange')?.value || '300000', 10);
+  const maxPrice = parseInt(document.getElementById('priceRange')?.value || '10000000', 10);
 
   let filtered = allProducts.filter(p => {
     const passCategory = catAll || !anyCatChecked ||
