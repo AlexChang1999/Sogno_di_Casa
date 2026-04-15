@@ -19,346 +19,110 @@
       --danger: #c0392b;
     }
     * { box-sizing: border-box; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Jost', sans-serif;
-      font-weight: 300;
-      margin: 0;
-    }
+    body { background: var(--bg); color: var(--text); font-family: 'Jost', sans-serif; font-weight: 300; margin: 0; }
 
     /* ── 側邊欄 ── */
-    .sidebar {
-      position: fixed;
-      top: 0; left: 0;
-      width: 230px;
-      height: 100vh;
-      background: var(--sidebar);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      z-index: 100;
-    }
-    .sidebar-logo {
-      padding: 28px 24px 20px;
-      border-bottom: 1px solid var(--border);
-    }
-    .sidebar-logo .brand {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.6rem;
-      letter-spacing: .2em;
-      color: var(--text);
-    }
-    .sidebar-logo .sub {
-      font-size: .6rem;
-      letter-spacing: .25em;
-      color: var(--muted);
-      margin-top: 2px;
-      text-transform: uppercase;
-    }
-    .sidebar-nav {
-      padding: 16px 12px;
-      flex: 1;
-    }
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 14px;
-      border-radius: 6px;
-      color: var(--muted);
-      text-decoration: none;
-      font-size: .82rem;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      transition: all .2s;
-      margin-bottom: 4px;
-      cursor: pointer;
-      border: none;
-      background: none;
-      width: 100%;
-      text-align: left;
-    }
+    .sidebar { position: fixed; top: 0; left: 0; width: 230px; height: 100vh; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; }
+    .sidebar-logo { padding: 28px 24px 20px; border-bottom: 1px solid var(--border); }
+    .sidebar-logo .brand { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; letter-spacing: .2em; color: var(--text); }
+    .sidebar-logo .sub { font-size: .6rem; letter-spacing: .25em; color: var(--muted); margin-top: 2px; text-transform: uppercase; }
+    .sidebar-nav { padding: 16px 12px; flex: 1; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 6px; color: var(--muted); text-decoration: none; font-size: .82rem; letter-spacing: .08em; text-transform: uppercase; transition: all .2s; margin-bottom: 4px; cursor: pointer; border: none; background: none; width: 100%; text-align: left; }
     .nav-item:hover { color: var(--text); background: rgba(255,255,255,.04); }
     .nav-item.active { color: var(--text); background: rgba(200,184,154,.12); }
     .nav-item i { font-size: 1rem; }
-    .sidebar-footer {
-      padding: 16px;
-      border-top: 1px solid var(--border);
-      font-size: .75rem;
-    }
-    .sidebar-footer .admin-email {
-      color: var(--muted);
-      margin-bottom: 10px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
+    .sidebar-footer { padding: 16px; border-top: 1px solid var(--border); font-size: .75rem; }
+    .sidebar-footer .admin-email { color: var(--muted); margin-bottom: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
     /* ── 主內容區 ── */
-    .main {
-      margin-left: 230px;
-      padding: 32px 36px;
-      min-height: 100vh;
-    }
-    .page-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 28px;
-    }
-    .page-header h2 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.8rem;
-      letter-spacing: .05em;
-      color: var(--text);
-      margin: 0;
-    }
-    .count-badge {
-      background: var(--border);
-      color: var(--muted);
-      font-size: .7rem;
-      padding: 3px 10px;
-      border-radius: 20px;
-      margin-left: 10px;
-      vertical-align: middle;
-    }
+    .main { margin-left: 230px; padding: 32px 36px; min-height: 100vh; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+    .page-header h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; letter-spacing: .05em; color: var(--text); margin: 0; }
+    .count-badge { background: var(--border); color: var(--muted); font-size: .7rem; padding: 3px 10px; border-radius: 20px; margin-left: 10px; vertical-align: middle; }
 
     /* ── 按鈕 ── */
-    .btn-primary-admin {
-      background: var(--accent);
-      color: #111;
-      border: none;
-      padding: 9px 22px;
-      font-family: 'Jost', sans-serif;
-      font-size: .78rem;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: opacity .2s;
-    }
+    .btn-primary-admin { background: var(--accent); color: #111; border: none; padding: 9px 22px; font-family: 'Jost', sans-serif; font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; border-radius: 4px; cursor: pointer; transition: opacity .2s; }
     .btn-primary-admin:hover { opacity: .85; }
-    .btn-outline-admin {
-      background: transparent;
-      color: var(--text);
-      border: 1px solid var(--border);
-      padding: 7px 18px;
-      font-family: 'Jost', sans-serif;
-      font-size: .75rem;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all .2s;
-    }
+    .btn-outline-admin { background: transparent; color: var(--text); border: 1px solid var(--border); padding: 7px 18px; font-family: 'Jost', sans-serif; font-size: .75rem; letter-spacing: .1em; text-transform: uppercase; border-radius: 4px; cursor: pointer; transition: all .2s; }
     .btn-outline-admin:hover { border-color: var(--accent); color: var(--accent); }
 
     /* ── 商品表格 ── */
-    .product-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: .84rem;
-    }
-    .product-table th {
-      text-transform: uppercase;
-      letter-spacing: .1em;
-      font-size: .65rem;
-      color: var(--muted);
-      font-weight: 400;
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--border);
-      text-align: left;
-    }
-    .product-table td {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--border);
-      vertical-align: middle;
-    }
+    .product-table { width: 100%; border-collapse: collapse; font-size: .84rem; }
+    .product-table th { text-transform: uppercase; letter-spacing: .1em; font-size: .65rem; color: var(--muted); font-weight: 400; padding: 12px 16px; border-bottom: 1px solid var(--border); text-align: left; }
+    .product-table td { padding: 14px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
     .product-table tr:hover td { background: rgba(255,255,255,.02); }
     .product-table .product-name { font-weight: 400; color: var(--text); }
-    .product-table .product-desc {
-      font-size: .72rem;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-    .product-thumb {
-      width: 56px;
-      height: 56px;
-      object-fit: cover;
-      border-radius: 4px;
-      background: var(--border);
-    }
-    .cat-badge {
-      display: inline-block;
-      padding: 2px 10px;
-      border-radius: 3px;
-      font-size: .67rem;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      border: 1px solid var(--border);
-      color: var(--muted);
-    }
-    .stock-badge {
-      font-size: .7rem;
-      letter-spacing: .05em;
-    }
+    .product-table .product-desc { font-size: .72rem; color: var(--muted); margin-top: 2px; }
+    .product-thumb { width: 56px; height: 56px; object-fit: cover; border-radius: 4px; background: var(--border); }
+    .cat-badge { display: inline-block; padding: 2px 10px; border-radius: 3px; font-size: .67rem; letter-spacing: .08em; text-transform: uppercase; border: 1px solid var(--border); color: var(--muted); }
+    .stock-badge { font-size: .7rem; letter-spacing: .05em; }
     .stock-yes { color: #6dbf87; }
     .stock-no  { color: #d9534f; }
-    .action-btn {
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--muted);
-      padding: 5px 12px;
-      border-radius: 3px;
-      font-size: .72rem;
-      cursor: pointer;
-      transition: all .15s;
-      margin-right: 4px;
-    }
+    .action-btn { border: 1px solid var(--border); background: transparent; color: var(--muted); padding: 5px 12px; border-radius: 3px; font-size: .72rem; cursor: pointer; transition: all .15s; margin-right: 4px; }
     .action-btn:hover { color: var(--text); border-color: #444; }
     .action-btn.del:hover { color: #d9534f; border-color: #d9534f; }
-    .empty-row td {
-      text-align: center;
-      color: var(--muted);
-      padding: 60px;
-      font-size: .85rem;
-    }
+    .empty-row td { text-align: center; color: var(--muted); padding: 60px; font-size: .85rem; }
+    .flag-badge { display: inline-block; font-size: .62rem; padding: 2px 7px; border-radius: 3px; margin: 1px; letter-spacing: .05em; }
+    .flag-featured { background: rgba(200,184,154,.15); color: var(--accent); border: 1px solid rgba(200,184,154,.3); }
+    .flag-classic  { background: rgba(109,191,135,.1); color: #6dbf87; border: 1px solid rgba(109,191,135,.25); }
+
+    /* ── 訂單表格 ── */
+    .order-table { width: 100%; border-collapse: collapse; font-size: .84rem; }
+    .order-table th { text-transform: uppercase; letter-spacing: .1em; font-size: .65rem; color: var(--muted); font-weight: 400; padding: 12px 16px; border-bottom: 1px solid var(--border); text-align: left; }
+    .order-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .order-table tr:hover td { background: rgba(255,255,255,.02); }
+    .status-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: .67rem; letter-spacing: .07em; text-transform: uppercase; }
+    .status-PENDING   { background: rgba(200,184,154,.12); color: var(--accent); }
+    .status-CONFIRMED { background: rgba(52,152,219,.12); color: #5dade2; }
+    .status-SHIPPING  { background: rgba(241,196,15,.1);  color: #f4d03f; }
+    .status-DELIVERED { background: rgba(109,191,135,.12); color: #6dbf87; }
+    .status-select { background: #111; color: var(--text); border: 1px solid var(--border); padding: 4px 8px; border-radius: 4px; font-size: .75rem; cursor: pointer; }
+    .status-select:focus { outline: none; border-color: var(--accent); }
 
     /* ── Modal ── */
-    .modal-content {
-      background: var(--card);
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-    }
-    .modal-header, .modal-footer {
-      border-color: var(--border) !important;
-    }
-    .modal-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.3rem;
-      letter-spacing: .05em;
-    }
-    .form-label {
-      font-size: .72rem;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
-    .form-control, .form-select {
-      background: #111 !important;
-      color: var(--text) !important;
-      border-color: var(--border) !important;
-      font-family: 'Jost', sans-serif;
-      font-size: .85rem;
-    }
-    .form-control:focus, .form-select:focus {
-      box-shadow: 0 0 0 2px rgba(200,184,154,.25);
-      border-color: var(--accent) !important;
-    }
+    .modal-content { background: var(--card); color: var(--text); border: 1px solid var(--border); border-radius: 8px; }
+    .modal-header, .modal-footer { border-color: var(--border) !important; }
+    .modal-title { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; letter-spacing: .05em; }
+    .form-label { font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    .form-control, .form-select { background: #111 !important; color: var(--text) !important; border-color: var(--border) !important; font-family: 'Jost', sans-serif; font-size: .85rem; }
+    .form-control:focus, .form-select:focus { box-shadow: 0 0 0 2px rgba(200,184,154,.25); border-color: var(--accent) !important; }
     .form-control::placeholder { color: var(--muted) !important; }
+    .form-check-input { background-color: #111; border-color: var(--border); }
+    .form-check-input:checked { background-color: var(--accent); border-color: var(--accent); }
 
     /* 圖片上傳區 */
-    .upload-zone {
-      border: 1px dashed var(--border);
-      border-radius: 6px;
-      padding: 20px;
-      text-align: center;
-      cursor: pointer;
-      transition: border-color .2s;
-    }
+    .upload-zone { border: 1px dashed var(--border); border-radius: 6px; padding: 20px; text-align: center; cursor: pointer; transition: border-color .2s; }
     .upload-zone:hover { border-color: var(--accent); }
     .upload-zone input[type="file"] { display: none; }
 
     /* 顏色款式列 */
-    .variant-row {
-      background: rgba(255,255,255,.025);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 10px 12px;
-      margin-bottom: 8px;
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-    .variant-preview {
-      width: 44px;
-      height: 44px;
-      object-fit: cover;
-      border-radius: 4px;
-      background: var(--border);
-      flex-shrink: 0;
-    }
-    .variant-upload-btn {
-      white-space: nowrap;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--muted);
-      padding: 6px 12px;
-      border-radius: 4px;
-      font-size: .72rem;
-      cursor: pointer;
-      transition: all .15s;
-      flex-shrink: 0;
-    }
+    .variant-row { background: rgba(255,255,255,.025); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; margin-bottom: 8px; display: flex; gap: 8px; align-items: center; }
+    .variant-preview { width: 44px; height: 44px; object-fit: cover; border-radius: 4px; background: var(--border); flex-shrink: 0; }
+    .variant-upload-btn { white-space: nowrap; border: 1px solid var(--border); background: transparent; color: var(--muted); padding: 6px 12px; border-radius: 4px; font-size: .72rem; cursor: pointer; transition: all .15s; flex-shrink: 0; }
     .variant-upload-btn:hover { color: var(--text); border-color: #444; }
-    .variant-del-btn {
-      border: none;
-      background: transparent;
-      color: var(--muted);
-      padding: 6px 8px;
-      cursor: pointer;
-      transition: color .15s;
-      flex-shrink: 0;
-    }
+    .variant-del-btn { border: none; background: transparent; color: var(--muted); padding: 6px 8px; cursor: pointer; transition: color .15s; flex-shrink: 0; }
     .variant-del-btn:hover { color: #d9534f; }
 
+    /* 木材列 */
+    .wood-row { background: rgba(255,255,255,.025); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; margin-bottom: 8px; display: flex; gap: 8px; align-items: center; }
+
     /* 設定頁 */
-    .setting-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 28px;
-      max-width: 480px;
-      margin-bottom: 20px;
-    }
-    .setting-card h5 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.2rem;
-      letter-spacing: .05em;
-      margin-bottom: 6px;
-    }
-    .setting-card p {
-      font-size: .82rem;
-      color: var(--muted);
-      margin-bottom: 20px;
-    }
+    .setting-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 28px; max-width: 480px; margin-bottom: 20px; }
+    .setting-card h5 { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; letter-spacing: .05em; margin-bottom: 6px; }
+    .setting-card p { font-size: .82rem; color: var(--muted); margin-bottom: 20px; }
 
     /* 通知 Toast */
     .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
-    .admin-toast {
-      background: var(--card);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 12px 20px;
-      border-radius: 6px;
-      font-size: .82rem;
-      box-shadow: 0 4px 20px rgba(0,0,0,.5);
-      animation: slideIn .2s ease;
-      margin-bottom: 8px;
-    }
+    .admin-toast { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 12px 20px; border-radius: 6px; font-size: .82rem; box-shadow: 0 4px 20px rgba(0,0,0,.5); animation: slideIn .2s ease; margin-bottom: 8px; }
     .admin-toast.success { border-left: 3px solid #6dbf87; }
     .admin-toast.error   { border-left: 3px solid #d9534f; }
     @keyframes slideIn { from { opacity:0; transform: translateX(20px); } to { opacity:1; transform: translateX(0); } }
+    .loading-row td { text-align: center; padding: 60px; color: var(--muted); }
 
-    /* 載入中 */
-    .loading-row td {
-      text-align: center;
-      padding: 60px;
-      color: var(--muted);
-    }
+    /* 訂單明細展開 */
+    .order-detail-row td { background: rgba(255,255,255,.015); padding: 12px 20px; }
+    .order-items-list { font-size: .8rem; color: var(--muted); }
+    .order-items-list li { padding: 3px 0; }
   </style>
 </head>
 <body>
@@ -377,7 +141,7 @@
       <i class="bi bi-grid-3x3-gap"></i> 商品管理
     </button>
     <button class="nav-item" onclick="showSection('orders', this)">
-      <i class="bi bi-receipt"></i> 訂單查覽
+      <i class="bi bi-receipt"></i> 訂單管理
     </button>
     <button class="nav-item" onclick="showSection('settings', this)">
       <i class="bi bi-gear"></i> 設定
@@ -394,7 +158,7 @@
 <!-- ─── 主內容區 ─── -->
 <main class="main">
 
-  <!-- 商品管理 -->
+  <!-- ══ 商品管理 ══ -->
   <section id="section-products">
     <div class="page-header">
       <h2>商品管理 <span class="count-badge" id="productCount">0</span></h2>
@@ -402,7 +166,6 @@
         <i class="bi bi-plus-lg me-1"></i> 新增商品
       </button>
     </div>
-
     <div style="overflow-x:auto;">
       <table class="product-table">
         <thead>
@@ -412,39 +175,54 @@
             <th>品牌</th>
             <th>類別</th>
             <th>售價</th>
+            <th>標記</th>
             <th>庫存</th>
             <th style="width:130px;">操作</th>
           </tr>
         </thead>
         <tbody id="productTableBody">
+          <tr class="loading-row"><td colspan="8"><i class="bi bi-arrow-repeat me-2"></i>載入中...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ══ 訂單管理 ══ -->
+  <section id="section-orders" style="display:none;">
+    <div class="page-header">
+      <h2>訂單管理 <span class="count-badge" id="orderCount">0</span></h2>
+      <button class="btn-outline-admin" onclick="loadOrders()">
+        <i class="bi bi-arrow-repeat me-1"></i> 重新整理
+      </button>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="order-table">
+        <thead>
+          <tr>
+            <th style="width:30px;"></th>
+            <th>訂單編號</th>
+            <th>日期</th>
+            <th>收件人</th>
+            <th>聯絡電話</th>
+            <th>總金額</th>
+            <th>配送狀態</th>
+          </tr>
+        </thead>
+        <tbody id="orderTableBody">
           <tr class="loading-row"><td colspan="7"><i class="bi bi-arrow-repeat me-2"></i>載入中...</td></tr>
         </tbody>
       </table>
     </div>
   </section>
 
-  <!-- 訂單查覽 -->
-  <section id="section-orders" style="display:none;">
-    <div class="page-header">
-      <h2>訂單查覽</h2>
-    </div>
-    <div id="orderContent">
-      <div style="color:var(--muted); font-size:.9rem; padding:40px 0;">
-        <i class="bi bi-info-circle me-2"></i>目前每位會員可在「我的訂單」頁查看自己的訂單。<br>
-        如需查看所有訂單，可直接查詢 PostgreSQL 資料庫的 <code>orders</code> 資料表。
-      </div>
-    </div>
-  </section>
-
-  <!-- 設定 -->
+  <!-- ══ 設定 ══ -->
   <section id="section-settings" style="display:none;">
     <div class="page-header">
       <h2>設定</h2>
     </div>
-
     <div class="setting-card">
       <h5><i class="bi bi-shield-lock me-2"></i>升級管理員帳號</h5>
-      <p>輸入要升級的帳號 Email 與管理員設定密碼（在 application.properties 的 <code>app.admin-setup-secret</code>）</p>
+      <p>輸入要升級的帳號 Email 與管理員設定密碼</p>
       <div class="mb-3">
         <label class="form-label">帳號 Email</label>
         <input type="email" class="form-control" id="setupEmail" placeholder="admin@forma.com">
@@ -455,7 +233,6 @@
       </div>
       <button class="btn-primary-admin" onclick="setupAdmin()">升級為管理員</button>
     </div>
-
     <div class="setting-card">
       <h5><i class="bi bi-door-open me-2"></i>登出</h5>
       <p>登出後台，返回一般會員狀態。</p>
@@ -500,8 +277,8 @@
               <label class="form-label">售價 (NT$) *</label>
               <input type="number" class="form-control" id="f_price" min="0" placeholder="128000" required>
             </div>
-            <div class="col-md-4 d-flex align-items-end">
-              <div class="form-check form-switch">
+            <div class="col-md-4 d-flex align-items-end gap-3">
+              <div class="form-check form-switch mb-1">
                 <input class="form-check-input" type="checkbox" id="f_inStock" checked>
                 <label class="form-check-label" for="f_inStock" style="font-size:.82rem;">有現貨</label>
               </div>
@@ -510,6 +287,53 @@
               <label class="form-label">商品說明</label>
               <textarea class="form-control" id="f_description" rows="3"
                 placeholder="描述材質、尺寸、設計故事..."></textarea>
+            </div>
+          </div>
+
+          <!-- 首頁標記 -->
+          <div class="mb-4 p-3" style="background:rgba(255,255,255,.02); border:1px solid var(--border); border-radius:6px;">
+            <label class="form-label mb-3">首頁展示設定</label>
+            <div class="d-flex gap-4">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="f_isFeatured">
+                <label class="form-check-label" for="f_isFeatured" style="font-size:.85rem;">
+                  <i class="bi bi-star-fill me-1" style="color:var(--accent);"></i>本季主打商品
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="f_isClassic">
+                <label class="form-check-label" for="f_isClassic" style="font-size:.85rem;">
+                  <i class="bi bi-award-fill me-1" style="color:#6dbf87;"></i>設計經典
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 商品尺寸 -->
+          <div class="mb-4">
+            <label class="form-label">商品尺寸（公分，非必填）</label>
+            <div class="row g-2">
+              <div class="col-4">
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text" style="background:#111; border-color:var(--border); color:var(--muted); font-size:.75rem;">寬</span>
+                  <input type="number" class="form-control" id="f_widthCm" min="0" placeholder="80">
+                  <span class="input-group-text" style="background:#111; border-color:var(--border); color:var(--muted); font-size:.75rem;">cm</span>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text" style="background:#111; border-color:var(--border); color:var(--muted); font-size:.75rem;">深</span>
+                  <input type="number" class="form-control" id="f_depthCm" min="0" placeholder="80">
+                  <span class="input-group-text" style="background:#111; border-color:var(--border); color:var(--muted); font-size:.75rem;">cm</span>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text" style="background:#111; border-color:var(--border); color:var(--muted); font-size:.75rem;">高</span>
+                  <input type="number" class="form-control" id="f_heightCm" min="0" placeholder="85">
+                  <span class="input-group-text" style="background:#111; border-color:var(--border); color:var(--muted); font-size:.75rem;">cm</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -539,7 +363,7 @@
           </div>
 
           <!-- 顏色款式 -->
-          <div class="mb-2">
+          <div class="mb-4">
             <div class="d-flex justify-content-between align-items-center mb-3">
               <div>
                 <label class="form-label mb-0">顏色款式</label>
@@ -554,6 +378,25 @@
             <div id="variantRows"></div>
             <div id="variantEmpty" style="font-size:.8rem; color:var(--muted); padding:16px; text-align:center; border:1px dashed var(--border); border-radius:6px;">
               尚未新增顏色款式 — 點「新增顏色」開始設定
+            </div>
+          </div>
+
+          <!-- 木材選項 -->
+          <div class="mb-2">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <label class="form-label mb-0">木材選項（非必填）</label>
+                <div style="font-size:.73rem; color:var(--muted); margin-top:2px;">
+                  如商品有木材可選，可在此設定選項
+                </div>
+              </div>
+              <button type="button" class="btn-outline-admin" onclick="addWoodRow()">
+                <i class="bi bi-plus"></i> 新增木材
+              </button>
+            </div>
+            <div id="woodRows"></div>
+            <div id="woodEmpty" style="font-size:.8rem; color:var(--muted); padding:12px; text-align:center; border:1px dashed var(--border); border-radius:6px;">
+              無木材選項
             </div>
           </div>
 
@@ -580,8 +423,7 @@
       </div>
       <div class="modal-footer justify-content-center border-0 pb-4">
         <button class="btn-outline-admin" data-bs-dismiss="modal">取消</button>
-        <button class="btn-primary-admin" id="confirmDeleteBtn"
-          style="background:#c0392b; margin-left:8px;">刪除</button>
+        <button class="btn-primary-admin" id="confirmDeleteBtn" style="background:#c0392b; margin-left:8px;">刪除</button>
       </div>
     </div>
   </div>

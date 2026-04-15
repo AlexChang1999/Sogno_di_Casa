@@ -18,7 +18,13 @@ public class ProductDto {
     private Integer price;
     private String description;
     private String mainImage;
-    private String galleryJson;  // JSON 字串，前端解析成陣列
+    private String galleryJson;       // 顏色款式 JSON 字串
+    private String woodOptionsJson;   // 木材選項 JSON 字串
+    private Integer widthCm;          // 寬（公分）
+    private Integer depthCm;          // 深（公分）
+    private Integer heightCm;         // 高（公分）
+    private Boolean isFeatured;       // 是否為本季主打
+    private Boolean isClassic;        // 是否為設計經典
     private Boolean inStock;
     private LocalDateTime createdAt;
 }

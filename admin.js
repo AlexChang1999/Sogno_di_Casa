@@ -1,28 +1,19 @@
-/* admin.js — 商家管理後台邏輯
-   功能：商品 CRUD、圖片上傳、管理員設定
-*/
+/* admin.js — 商家管理後台邏輯 */
 
 const API_BASE = 'http://localhost:8080';
 
 let productModal, deleteModal;
-let editingProductId = null;  // null = 新增模式；有值 = 編輯模式
+let editingProductId = null;
 
 // ── 頁面初始化 ──
 document.addEventListener('DOMContentLoaded', () => {
   checkAuth();
-
-  // 建立 Bootstrap Modal 實例
   productModal = new bootstrap.Modal(document.getElementById('productModal'));
   deleteModal  = new bootstrap.Modal(document.getElementById('deleteModal'));
-
-  // 主圖 URL 輸入框 → 即時預覽
   document.getElementById('f_mainImage').addEventListener('input', function () {
     updateMainPreview(this.value);
   });
-
-  // 監聽 Modal 關閉，重設表單
   document.getElementById('productModal').addEventListener('hidden.bs.modal', resetForm);
-
   loadProducts();
 });
 
@@ -30,14 +21,11 @@ document.addEventListener('DOMContentLoaded', () => {
 function checkAuth() {
   const user  = JSON.parse(localStorage.getItem('forma_user') || 'null');
   const token = localStorage.getItem('forma_token');
-
   if (!user || !token || user.role !== 'ADMIN') {
-    // 不是管理員，導向登入頁
     sessionStorage.setItem('loginRedirect', 'admin.html');
     window.location.href = 'login.html';
     return;
   }
-  // 顯示管理員 Email
   document.getElementById('adminEmail').textContent = user.email;
 }
 
@@ -61,6 +49,9 @@ function showSection(name, btn) {
   });
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
   if (btn) btn.classList.add('active');
+
+  // 切換到訂單頁時自動載入
+  if (name === 'orders') loadOrders();
 }
 
 // ── 登出 ──
@@ -75,7 +66,6 @@ function doLogout() {
 // 商品管理
 // ════════════════════════════════
 
-// ── 載入所有商品 ──
 async function loadProducts() {
   const token = localStorage.getItem('forma_token');
   try {
@@ -86,13 +76,12 @@ async function loadProducts() {
     renderProductTable(products);
   } catch (e) {
     document.getElementById('productTableBody').innerHTML =
-      `<tr class="loading-row"><td colspan="7">
+      `<tr class="loading-row"><td colspan="8">
         <i class="bi bi-wifi-off me-2"></i>無法連線到後端（請確認 Spring Boot 已啟動）
        </td></tr>`;
   }
 }
 
-// ── 渲染商品表格 ──
 function renderProductTable(products) {
   const tbody  = document.getElementById('productTableBody');
   const catMap = { chair: '椅子', sofa: '沙發', table: '桌子', storage: '收納' };
@@ -101,7 +90,7 @@ function renderProductTable(products) {
 
   if (products.length === 0) {
     tbody.innerHTML = `<tr class="empty-row">
-      <td colspan="7">
+      <td colspan="8">
         <i class="bi bi-inbox" style="font-size:2rem; display:block; margin-bottom:12px;"></i>
         尚無商品 — 點擊右上角「新增商品」開始吧
       </td>
@@ -109,52 +98,48 @@ function renderProductTable(products) {
     return;
   }
 
-  tbody.innerHTML = products.map(p => `
+  tbody.innerHTML = products.map(p => {
+    // 標記（本季主打 / 設計經典）
+    const flags = [
+      p.isFeatured ? `<span class="flag-badge flag-featured"><i class="bi bi-star-fill me-1"></i>主打</span>` : '',
+      p.isClassic  ? `<span class="flag-badge flag-classic"><i class="bi bi-award-fill me-1"></i>經典</span>`  : ''
+    ].join('');
+
+    return `
     <tr>
-      <td>
-        <img src="${p.mainImage || ''}" class="product-thumb"
-             alt="${p.name}"
-             onerror="this.style.opacity='0'">
-      </td>
+      <td><img src="${p.mainImage || ''}" class="product-thumb" alt="${p.name}" onerror="this.style.opacity='0'"></td>
       <td>
         <div class="product-name">${p.name}</div>
-        ${p.description
-          ? `<div class="product-desc">${p.description.substring(0, 55)}${p.description.length > 55 ? '...' : ''}</div>`
-          : ''}
+        ${p.description ? `<div class="product-desc">${p.description.substring(0, 55)}${p.description.length > 55 ? '...' : ''}</div>` : ''}
       </td>
       <td style="color:var(--muted);">${p.brand || '—'}</td>
       <td><span class="cat-badge">${catMap[p.category] || p.category || '—'}</span></td>
       <td style="white-space:nowrap;">NT$ ${(p.price || 0).toLocaleString()}</td>
+      <td>${flags || '<span style="color:var(--muted);font-size:.75rem;">—</span>'}</td>
       <td>
         ${p.inStock
           ? '<span class="stock-badge stock-yes"><i class="bi bi-check-circle me-1"></i>有貨</span>'
           : '<span class="stock-badge stock-no"><i class="bi bi-x-circle me-1"></i>無貨</span>'}
       </td>
       <td>
-        <button class="action-btn" onclick="openEditModal(${p.id})">
-          <i class="bi bi-pencil"></i> 編輯
-        </button>
-        <button class="action-btn del" onclick="confirmDelete(${p.id}, '${p.name.replace(/'/g, "\\'")}')">
-          <i class="bi bi-trash"></i>
-        </button>
+        <button class="action-btn" onclick="openEditModal(${p.id})"><i class="bi bi-pencil"></i> 編輯</button>
+        <button class="action-btn del" onclick="confirmDelete(${p.id}, '${p.name.replace(/'/g, "\\'")}')"><i class="bi bi-trash"></i></button>
       </td>
-    </tr>
-  `).join('');
+    </tr>`;
+  }).join('');
 }
 
 
 // ════════════════════════════════
-// 新增 / 編輯 Modal
+// 新增 / 編輯商品 Modal
 // ════════════════════════════════
 
-// ── 開啟「新增商品」Modal ──
 function openAddModal() {
   editingProductId = null;
   document.getElementById('modalTitle').textContent = '新增商品';
   productModal.show();
 }
 
-// ── 開啟「編輯商品」Modal，並填入現有資料 ──
 async function openEditModal(id) {
   editingProductId = id;
   document.getElementById('modalTitle').textContent = '編輯商品';
@@ -170,19 +155,31 @@ async function openEditModal(id) {
     document.getElementById('f_description').value = p.description || '';
     document.getElementById('f_mainImage').value   = p.mainImage   || '';
     document.getElementById('f_inStock').checked   = p.inStock !== false;
+    document.getElementById('f_isFeatured').checked = p.isFeatured === true;
+    document.getElementById('f_isClassic').checked  = p.isClassic  === true;
+    document.getElementById('f_widthCm').value  = p.widthCm  || '';
+    document.getElementById('f_depthCm').value  = p.depthCm  || '';
+    document.getElementById('f_heightCm').value = p.heightCm || '';
 
     updateMainPreview(p.mainImage || '');
 
-    // 載入顏色款式
+    // 顏色款式
     document.getElementById('variantRows').innerHTML = '';
     if (p.galleryJson) {
       try {
-        JSON.parse(p.galleryJson).forEach(item =>
-          addVariantRow(item.color || '', item.full || '')
-        );
+        JSON.parse(p.galleryJson).forEach(item => addVariantRow(item.color || '', item.full || ''));
       } catch (e) {}
     }
     updateVariantEmpty();
+
+    // 木材選項
+    document.getElementById('woodRows').innerHTML = '';
+    if (p.woodOptionsJson) {
+      try {
+        JSON.parse(p.woodOptionsJson).forEach(item => addWoodRow(item.wood || ''));
+      } catch (e) {}
+    }
+    updateWoodEmpty();
 
     productModal.show();
   } catch (e) {
@@ -190,16 +187,18 @@ async function openEditModal(id) {
   }
 }
 
-// ── 重設表單（Modal 關閉時呼叫）──
 function resetForm() {
   document.getElementById('productForm').reset();
-  document.getElementById('f_inStock').checked = true;
+  document.getElementById('f_inStock').checked    = true;
+  document.getElementById('f_isFeatured').checked = false;
+  document.getElementById('f_isClassic').checked  = false;
   document.getElementById('variantRows').innerHTML = '';
+  document.getElementById('woodRows').innerHTML    = '';
   updateMainPreview('');
   updateVariantEmpty();
+  updateWoodEmpty();
 }
 
-// ── 儲存商品（新增 or 更新）──
 async function saveProduct() {
   const name  = document.getElementById('f_name').value.trim();
   const price = document.getElementById('f_price').value;
@@ -208,24 +207,33 @@ async function saveProduct() {
     return;
   }
 
-  const gallery = collectVariants();
-
-  // 若主圖空白但有顏色款式，自動使用第一張顏色圖
-  const mainImage = document.getElementById('f_mainImage').value.trim()
+  const gallery     = collectVariants();
+  const woodOptions = collectWoods();
+  const mainImage   = document.getElementById('f_mainImage').value.trim()
     || (gallery.length > 0 ? gallery[0].full : '');
+
+  const widthCm  = document.getElementById('f_widthCm').value;
+  const depthCm  = document.getElementById('f_depthCm').value;
+  const heightCm = document.getElementById('f_heightCm').value;
 
   const payload = {
     name,
-    brand:       document.getElementById('f_brand').value.trim(),
-    category:    document.getElementById('f_category').value,
-    price:       parseInt(price),
-    description: document.getElementById('f_description').value.trim(),
+    brand:          document.getElementById('f_brand').value.trim(),
+    category:       document.getElementById('f_category').value,
+    price:          parseInt(price),
+    description:    document.getElementById('f_description').value.trim(),
     mainImage,
-    galleryJson: gallery.length ? JSON.stringify(gallery) : null,
-    inStock:     document.getElementById('f_inStock').checked
+    galleryJson:    gallery.length     ? JSON.stringify(gallery)     : null,
+    woodOptionsJson: woodOptions.length ? JSON.stringify(woodOptions) : null,
+    widthCm:        widthCm  ? parseInt(widthCm)  : null,
+    depthCm:        depthCm  ? parseInt(depthCm)  : null,
+    heightCm:       heightCm ? parseInt(heightCm) : null,
+    isFeatured:     document.getElementById('f_isFeatured').checked,
+    isClassic:      document.getElementById('f_isClassic').checked,
+    inStock:        document.getElementById('f_inStock').checked
   };
 
-  const btn    = document.getElementById('saveBtn');
+  const btn = document.getElementById('saveBtn');
   btn.disabled = true;
   btn.textContent = '儲存中...';
 
@@ -275,7 +283,6 @@ function confirmDelete(id, name) {
 // 顏色款式（Variants）
 // ════════════════════════════════
 
-// ── 新增一列顏色款式 ──
 function addVariantRow(colorName = '', imageUrl = '') {
   const row = document.createElement('div');
   row.className = 'variant-row';
@@ -283,63 +290,187 @@ function addVariantRow(colorName = '', imageUrl = '') {
     <img src="${imageUrl}" class="variant-preview"
          style="${imageUrl ? '' : 'opacity:0;'}"
          onerror="this.style.opacity='0'">
-    <input type="text"
-           class="form-control form-control-sm variant-color"
-           placeholder="顏色名稱（如：黑色）"
-           style="flex:1;"
-           value="${colorName}">
-    <input type="text"
-           class="form-control form-control-sm variant-url"
-           placeholder="圖片 URL（或點右側上傳）"
-           style="flex:2;"
-           value="${imageUrl}"
+    <input type="text" class="form-control form-control-sm variant-color"
+           placeholder="顏色名稱（如：黑色）" style="flex:1;" value="${colorName}">
+    <input type="text" class="form-control form-control-sm variant-url"
+           placeholder="圖片 URL（或點右側上傳）" style="flex:2;" value="${imageUrl}"
            oninput="syncVariantPreview(this)">
     <label class="variant-upload-btn">
       <i class="bi bi-cloud-upload me-1"></i>上傳
-      <input type="file" accept="image/*" style="display:none;"
-             onchange="uploadVariantImage(this)">
+      <input type="file" accept="image/*" style="display:none;" onchange="uploadVariantImage(this)">
     </label>
-    <button type="button" class="variant-del-btn" title="移除"
-            onclick="removeVariantRow(this)">
+    <button type="button" class="variant-del-btn" onclick="removeVariantRow(this)">
       <i class="bi bi-x-lg"></i>
     </button>
   `;
-
   document.getElementById('variantRows').appendChild(row);
   updateVariantEmpty();
 }
 
-// ── 移除顏色款式列 ──
 function removeVariantRow(btn) {
   btn.closest('.variant-row').remove();
   updateVariantEmpty();
 }
 
-// ── 同步顏色款式的圖片預覽 ──
 function syncVariantPreview(input) {
   const preview = input.closest('.variant-row').querySelector('.variant-preview');
-  preview.src   = input.value;
+  preview.src = input.value;
   preview.style.opacity = input.value ? '1' : '0';
 }
 
-// ── 收集所有顏色款式成 gallery 陣列 ──
 function collectVariants() {
   const gallery = [];
   document.querySelectorAll('#variantRows .variant-row').forEach(row => {
     const color = row.querySelector('.variant-color')?.value.trim() || '';
     const url   = row.querySelector('.variant-url')?.value.trim()   || '';
-    if (url) {
-      gallery.push({ color, thumb: url, full: url });
-    }
+    if (url) gallery.push({ color, thumb: url, full: url });
   });
   return gallery;
 }
 
-// ── 更新「尚未新增顏色」提示的顯示狀態 ──
 function updateVariantEmpty() {
-  const empty = document.getElementById('variantEmpty');
-  const rows  = document.querySelectorAll('#variantRows .variant-row').length;
-  empty.style.display = rows === 0 ? 'block' : 'none';
+  const rows = document.querySelectorAll('#variantRows .variant-row').length;
+  document.getElementById('variantEmpty').style.display = rows === 0 ? 'block' : 'none';
+}
+
+
+// ════════════════════════════════
+// 木材選項（Woods）
+// ════════════════════════════════
+
+function addWoodRow(woodName = '') {
+  const row = document.createElement('div');
+  row.className = 'wood-row';
+  row.innerHTML = `
+    <i class="bi bi-tree" style="color:var(--muted); flex-shrink:0;"></i>
+    <input type="text" class="form-control form-control-sm wood-name"
+           placeholder="木材名稱（如：胡桃木）" style="flex:1;" value="${woodName}">
+    <button type="button" class="variant-del-btn" onclick="removeWoodRow(this)">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  `;
+  document.getElementById('woodRows').appendChild(row);
+  updateWoodEmpty();
+}
+
+function removeWoodRow(btn) {
+  btn.closest('.wood-row').remove();
+  updateWoodEmpty();
+}
+
+function collectWoods() {
+  const woods = [];
+  document.querySelectorAll('#woodRows .wood-row').forEach(row => {
+    const name = row.querySelector('.wood-name')?.value.trim() || '';
+    if (name) woods.push({ wood: name });
+  });
+  return woods;
+}
+
+function updateWoodEmpty() {
+  const rows = document.querySelectorAll('#woodRows .wood-row').length;
+  document.getElementById('woodEmpty').style.display = rows === 0 ? 'block' : 'none';
+}
+
+
+// ════════════════════════════════
+// 訂單管理
+// ════════════════════════════════
+
+const STATUS_MAP = {
+  PENDING:   { label: '待處理', cls: 'status-PENDING' },
+  CONFIRMED: { label: '已確認', cls: 'status-CONFIRMED' },
+  SHIPPING:  { label: '配送中', cls: 'status-SHIPPING' },
+  DELIVERED: { label: '已送達', cls: 'status-DELIVERED' }
+};
+
+async function loadOrders() {
+  document.getElementById('orderTableBody').innerHTML =
+    `<tr class="loading-row"><td colspan="7"><i class="bi bi-arrow-repeat me-2"></i>載入中...</td></tr>`;
+
+  try {
+    const res    = await adminFetch(`${API_BASE}/api/orders/all`);
+    const orders = await res.json();
+    renderOrderTable(orders);
+  } catch (e) {
+    document.getElementById('orderTableBody').innerHTML =
+      `<tr class="loading-row"><td colspan="7"><i class="bi bi-wifi-off me-2"></i>無法連線到後端</td></tr>`;
+  }
+}
+
+function renderOrderTable(orders) {
+  document.getElementById('orderCount').textContent = orders.length;
+
+  if (orders.length === 0) {
+    document.getElementById('orderTableBody').innerHTML =
+      `<tr class="empty-row"><td colspan="7"><i class="bi bi-inbox" style="font-size:2rem; display:block; margin-bottom:12px;"></i>目前尚無訂單</td></tr>`;
+    return;
+  }
+
+  document.getElementById('orderTableBody').innerHTML = orders.map(o => {
+    const st = STATUS_MAP[o.status] || STATUS_MAP.PENDING;
+    const options = Object.entries(STATUS_MAP).map(([val, info]) =>
+      `<option value="${val}" ${o.status === val ? 'selected' : ''}>${info.label}</option>`
+    ).join('');
+
+    return `
+      <tr>
+        <td>
+          <button class="action-btn" style="padding:3px 8px;" onclick="toggleOrderDetail('detail-${o.rawId}')">
+            <i class="bi bi-chevron-down" style="font-size:.7rem;"></i>
+          </button>
+        </td>
+        <td style="font-family:monospace; font-size:.82rem;">${o.id}</td>
+        <td style="color:var(--muted); font-size:.82rem;">${o.date}</td>
+        <td>
+          <div style="font-size:.85rem;">${o.recipientName || '—'}</div>
+          <div style="font-size:.72rem; color:var(--muted);">${o.recipientAddress || ''}</div>
+        </td>
+        <td style="font-size:.82rem; color:var(--muted);">${o.recipientPhone || '—'}</td>
+        <td style="white-space:nowrap; font-size:.85rem;">NT$ ${Number(o.total).toLocaleString()}</td>
+        <td>
+          <select class="status-select" onchange="updateOrderStatus(${o.rawId}, this.value)">
+            ${options}
+          </select>
+        </td>
+      </tr>
+      <tr id="detail-${o.rawId}" style="display:none;" class="order-detail-row">
+        <td colspan="7">
+          <div style="font-size:.78rem; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:.08em;">訂單明細</div>
+          <ul class="order-items-list list-unstyled mb-1">
+            ${o.items.map(item => `
+              <li><i class="bi bi-dot"></i>${item.productName}
+                ${item.color ? `<span style="color:var(--accent)"> · ${item.color}</span>` : ''}
+                ${item.wood  ? `<span style="color:#6dbf87"> · ${item.wood}</span>`  : ''}
+                × ${item.qty} — NT$ ${Number(item.price).toLocaleString()}
+              </li>`).join('')}
+          </ul>
+          ${o.note ? `<div style="font-size:.75rem; color:var(--muted); margin-top:6px;"><i class="bi bi-chat-left-text me-1"></i>備註：${o.note}</div>` : ''}
+        </td>
+      </tr>`;
+  }).join('');
+}
+
+function toggleOrderDetail(id) {
+  const row = document.getElementById(id);
+  if (!row) return;
+  row.style.display = row.style.display === 'none' ? 'table-row' : 'none';
+}
+
+async function updateOrderStatus(rawId, status) {
+  try {
+    const res = await adminFetch(`${API_BASE}/api/orders/${rawId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status })
+    });
+    if (res.ok) {
+      showToast('訂單狀態已更新', 'success');
+    } else {
+      showToast('更新失敗', 'error');
+    }
+  } catch (e) {
+    showToast('無法連線到後端', 'error');
+  }
 }
 
 
@@ -347,7 +478,6 @@ function updateVariantEmpty() {
 // 圖片上傳
 // ════════════════════════════════
 
-// ── 上傳主圖 ──
 async function uploadMainImage(input) {
   if (!input.files[0]) return;
   const url = await uploadFile(input.files[0]);
@@ -358,7 +488,6 @@ async function uploadMainImage(input) {
   }
 }
 
-// ── 上傳顏色款式圖片 ──
 async function uploadVariantImage(input) {
   if (!input.files[0]) return;
   const url = await uploadFile(input.files[0]);
@@ -366,31 +495,25 @@ async function uploadVariantImage(input) {
     const row     = input.closest('.variant-row');
     const urlInp  = row.querySelector('.variant-url');
     const preview = row.querySelector('.variant-preview');
-    urlInp.value      = url;
-    preview.src       = url;
+    urlInp.value = url;
+    preview.src   = url;
     preview.style.opacity = '1';
     showToast('顏色圖片上傳成功', 'success');
   }
 }
 
-// ── 通用：上傳單一檔案到後端，回傳 URL ──
 async function uploadFile(file) {
   const token    = localStorage.getItem('forma_token');
   const formData = new FormData();
   formData.append('file', file);
-
   try {
     const res  = await fetch(`${API_BASE}/api/products/upload-image`, {
       method:  'POST',
       headers: { 'Authorization': `Bearer ${token}` },
       body:    formData
-      // 注意：上傳檔案時不設 Content-Type，讓瀏覽器自動設定 multipart boundary
     });
     const data = await res.json();
-    if (!res.ok) {
-      showToast('上傳失敗：' + (data.message || res.status), 'error');
-      return null;
-    }
+    if (!res.ok) { showToast('上傳失敗：' + (data.message || res.status), 'error'); return null; }
     return data.url;
   } catch (e) {
     showToast('上傳失敗，請確認後端已啟動', 'error');
@@ -398,13 +521,12 @@ async function uploadFile(file) {
   }
 }
 
-// ── 更新主圖預覽 ──
 function updateMainPreview(url) {
   const preview     = document.getElementById('mainImagePreview');
   const placeholder = document.getElementById('mainImagePlaceholder');
   if (url) {
-    preview.src           = url;
-    preview.style.display = 'block';
+    preview.src = url;
+    preview.style.display     = 'block';
     placeholder.style.display = 'none';
   } else {
     preview.style.display     = 'none';
@@ -420,11 +542,7 @@ function updateMainPreview(url) {
 async function setupAdmin() {
   const email  = document.getElementById('setupEmail').value.trim();
   const secret = document.getElementById('setupSecret').value.trim();
-  if (!email || !secret) {
-    showToast('請填寫 Email 和管理員設定密碼', 'error');
-    return;
-  }
-
+  if (!email || !secret) { showToast('請填寫 Email 和管理員設定密碼', 'error'); return; }
   try {
     const res  = await fetch(`${API_BASE}/api/auth/setup-admin`, {
       method:  'POST',
@@ -453,12 +571,8 @@ function showToast(msg, type = 'success') {
   const container = document.getElementById('toastContainer');
   const toast     = document.createElement('div');
   toast.className = `admin-toast ${type}`;
-  toast.innerHTML = `
-    <i class="bi ${type === 'success' ? 'bi-check-circle' : 'bi-exclamation-circle'} me-2"></i>
-    ${msg}
-  `;
+  toast.innerHTML = `<i class="bi ${type === 'success' ? 'bi-check-circle' : 'bi-exclamation-circle'} me-2"></i>${msg}`;
   container.appendChild(toast);
-  // 3 秒後自動消失
   setTimeout(() => {
     toast.style.opacity    = '0';
     toast.style.transition = 'opacity .3s';

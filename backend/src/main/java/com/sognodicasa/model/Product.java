@@ -48,6 +48,29 @@ public class Product {
     @Column(name = "gallery_json", columnDefinition = "TEXT")
     private String galleryJson;
 
+    // 木材選項 JSON 陣列（非必填），格式：
+    // [{"wood":"胡桃木"},{"wood":"橡木"},...]
+    @Column(name = "wood_options_json", columnDefinition = "TEXT")
+    private String woodOptionsJson;
+
+    // 商品尺寸（公分，非必填）
+    @Column(name = "width_cm")
+    private Integer widthCm;
+
+    @Column(name = "depth_cm")
+    private Integer depthCm;
+
+    @Column(name = "height_cm")
+    private Integer heightCm;
+
+    // 是否為「本季主打商品」（首頁展示）
+    @Column(name = "is_featured")
+    private Boolean isFeatured = false;
+
+    // 是否為「設計經典」（首頁展示）
+    @Column(name = "is_classic")
+    private Boolean isClassic = false;
+
     // 是否有庫存
     @Column(name = "in_stock")
     private Boolean inStock = true;
