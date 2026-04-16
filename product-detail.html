@@ -72,24 +72,12 @@
               <div class="magnifier-result" id="magnifierResult"></div>
             </div>
 
-            <!-- Thumbnail Strip -->
+            <!-- Thumbnail Strip（由 JS 動態填入，最多4張） -->
             <div class="thumb-strip" id="thumbStrip">
-              <img class="thumb active"
-                   src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=200&q=70"
-                   data-full="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=900&q=90"
-                   onclick="switchImage(this)" alt="view 1">
-              <img class="thumb"
-                   src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=200&q=70"
-                   data-full="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=900&q=90"
-                   onclick="switchImage(this)" alt="view 2">
-              <img class="thumb"
-                   src="https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=200&q=70"
-                   data-full="https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=900&q=90"
-                   onclick="switchImage(this)" alt="view 3">
-              <img class="thumb"
-                   src="https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=200&q=70"
-                   data-full="https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=900&q=90"
-                   onclick="switchImage(this)" alt="view 4">
+              <img class="thumb active" src="" data-full="" onclick="switchImage(this)" alt="view 1" style="display:none;">
+              <img class="thumb" src="" data-full="" onclick="switchImage(this)" alt="view 2" style="display:none;">
+              <img class="thumb" src="" data-full="" onclick="switchImage(this)" alt="view 3" style="display:none;">
+              <img class="thumb" src="" data-full="" onclick="switchImage(this)" alt="view 4" style="display:none;">
             </div>
 
             <p class="magnifier-hint"><i class="bi bi-zoom-in me-1"></i> 滑鼠移至圖片可放大查看細節</p>
@@ -119,25 +107,16 @@
               提供五年品質保固。
             </p>
 
-            <!-- Color Options -->
-            <div class="option-group">
-              <h6 class="option-label">顏色 <span class="option-selected" id="colorSelected">黑色皮革</span></h6>
-              <div class="color-swatches">
-                <button class="swatch active" style="background:#1a1a1a;" onclick="selectColor(this,'黑色皮革')" title="黑色皮革"></button>
-                <button class="swatch" style="background:#8B6355;" onclick="selectColor(this,'棕色皮革')" title="棕色皮革"></button>
-                <button class="swatch" style="background:#C4A882;" onclick="selectColor(this,'駝色皮革')" title="駝色皮革"></button>
-                <button class="swatch" style="background:#2C3E50;" onclick="selectColor(this,'深藍皮革')" title="深藍皮革"></button>
-              </div>
+            <!-- Color Options（由 JS 動態產生，無資料時自動隱藏） -->
+            <div class="option-group" id="colorSection" style="display:none;">
+              <h6 class="option-label">顏色 <span class="option-selected" id="colorSelected"></span></h6>
+              <div class="color-swatches" id="colorSwatchGroup"></div>
             </div>
 
-            <!-- Material -->
-            <div class="option-group">
-              <h6 class="option-label">木材 <span class="option-selected" id="woodSelected">黑胡桃木</span></h6>
-              <div class="d-flex gap-2 flex-wrap">
-                <button class="opt-btn active" onclick="selectOption(this, 'woodSelected', '黑胡桃木')">黑胡桃木</button>
-                <button class="opt-btn" onclick="selectOption(this, 'woodSelected', '白梣木')">白梣木</button>
-                <button class="opt-btn" onclick="selectOption(this, 'woodSelected', '淺胡桃木')">淺胡桃木</button>
-              </div>
+            <!-- Wood Options（由 JS 動態產生，無資料時自動隱藏） -->
+            <div class="option-group" id="woodSection" style="display:none;">
+              <h6 class="option-label">木材 <span class="option-selected" id="woodSelected"></span></h6>
+              <div class="d-flex gap-2 flex-wrap" id="woodBtnGroup"></div>
             </div>
 
             <!-- Quantity -->
@@ -325,10 +304,8 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="product-images.js"></script>
   <script src="cart.js"></script>
   <script src="auth.js"></script>
-  <script src="product-images.js"></script>
   <script src="detail.js"></script>
 </body>
 </html>

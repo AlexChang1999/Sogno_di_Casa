@@ -83,6 +83,7 @@ public class ProductService {
         if (req.getDescription()    != null) p.setDescription(req.getDescription());
         if (req.getMainImage()      != null) p.setMainImage(req.getMainImage());
         if (req.getGalleryJson()    != null) p.setGalleryJson(req.getGalleryJson());
+        if (req.getColorsJson()     != null) p.setColorsJson(req.getColorsJson());
         if (req.getWoodOptionsJson()!= null) p.setWoodOptionsJson(req.getWoodOptionsJson());
         if (req.getWidthCm()        != null) p.setWidthCm(req.getWidthCm());
         if (req.getDepthCm()        != null) p.setDepthCm(req.getDepthCm());
@@ -103,6 +104,7 @@ public class ProductService {
         dto.setDescription(p.getDescription());
         dto.setMainImage(p.getMainImage());
         dto.setGalleryJson(p.getGalleryJson());
+        dto.setColorsJson(p.getColorsJson());
         dto.setWoodOptionsJson(p.getWoodOptionsJson());
         dto.setWidthCm(p.getWidthCm());
         dto.setDepthCm(p.getDepthCm());

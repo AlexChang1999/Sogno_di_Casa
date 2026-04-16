@@ -43,10 +43,15 @@ public class Product {
     @Column(name = "main_image", length = 500)
     private String mainImage;
 
-    // 顏色款式 JSON 陣列，格式：
-    // [{"color":"黑色","thumb":"http://...","full":"http://..."},...]
+    // 商品圖片 JSON 陣列（最多4張），格式：
+    // [{"url":"http://..."},{"url":"http://..."},...]
     @Column(name = "gallery_json", columnDefinition = "TEXT")
     private String galleryJson;
+
+    // 顏色選項 JSON 陣列，格式：
+    // [{"name":"黑色皮革","hex":"#1a1a1a"},...]
+    @Column(name = "colors_json", columnDefinition = "TEXT")
+    private String colorsJson;
 
     // 木材選項 JSON 陣列（非必填），格式：
     // [{"wood":"胡桃木"},{"wood":"橡木"},...]

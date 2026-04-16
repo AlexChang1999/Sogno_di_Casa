@@ -1,5 +1,9 @@
 /* detail.js — 商品詳情功能
    所有商品資料全部從後端 API 動態載入，不再使用硬編碼資料
+   資料架構：
+     galleryJson    → 圖片陣列 [{url:"..."}, ...]（最多4張）
+     colorsJson     → 顏色選項 [{name:"...", hex:"#..."}]
+     woodOptionsJson→ 木材選項 [{wood:"..."}]
 */
 
 // API_BASE 由 auth.js 定義（http://localhost:8080）
@@ -7,7 +11,6 @@
 let qty = 1;
 let currentProductId = 1;
 let currentProductPrice = 0;
-let dynamicColorImages = {}; // 由 API gallery 建立的顏色 → 圖片對照表
 
 // ── 放大鏡功能 ──
 function initMagnifier() {
@@ -63,35 +66,11 @@ function changeQty(delta) {
   document.getElementById('qtyNum').textContent = qty;
 }
 
-// ── 顏色選擇 ──
+// ── 顏色選擇（只更新標籤，顏色與圖片分離） ──
 function selectColor(btn, name) {
-  document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('#colorSwatchGroup .swatch').forEach(s => s.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('colorSelected').textContent = name;
-
-  // 使用從 API gallery 建立的動態對照表
-  const colorData = dynamicColorImages[name];
-  if (!colorData) return;
-
-  const mainImg    = document.getElementById('mainImage');
-  const result     = document.getElementById('magnifierResult');
-  const firstThumb = document.querySelector('.thumb');
-
-  mainImg.style.opacity = '0';
-  setTimeout(() => {
-    const src = colorData.main || colorData.full;
-    mainImg.src = src;
-    mainImg.style.opacity = '1';
-    if (result) result.style.backgroundImage = `url('${src}')`;
-  }, 150);
-
-  if (firstThumb) {
-    const src = colorData.main || colorData.full;
-    firstThumb.src = colorData.thumb || src;
-    firstThumb.dataset.full = src;
-    document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
-    firstThumb.classList.add('active');
-  }
 }
 
 // ── 選項選擇（木材等）──
@@ -118,51 +97,93 @@ function addToCartDetail() {
   );
 }
 
-// ── 根據 gallery 動態產生顏色色票按鈕 ──
-function generateColorButtons(gallery) {
-  const colorItems = gallery.filter(item => item.color);
-  if (colorItems.length === 0) return;
+// ── 根據 colorsJson 產生顏色色票按鈕（有就顯示，無就隱藏） ──
+function generateColorButtons(colors) {
+  const section     = document.getElementById('colorSection');
+  const swatchGroup = document.getElementById('colorSwatchGroup');
+  const colorLabel  = document.getElementById('colorSelected');
 
-  const swatchGroup = document.querySelector('.swatch-group');
-  if (!swatchGroup) return;
+  if (!section || !swatchGroup) return;
 
-  swatchGroup.innerHTML = colorItems.map((item, i) => `
-    <button class="swatch ${i === 0 ? 'active' : ''}"
-            onclick="selectColor(this, '${item.color}')"
-            title="${item.color}"
-            style="background-image:url('${item.thumb || item.full}'); background-size:cover; background-position:center;">
-    </button>
-  `).join('');
-
-  const colorLabel = document.getElementById('colorSelected');
-  if (colorLabel) colorLabel.textContent = colorItems[0].color;
-}
-
-// ── 根據 woodOptionsJson 動態產生木材按鈕 ──
-function generateWoodButtons(woodOptions) {
-  const woodGroup = document.querySelector('.wood-option-group');
-  if (!woodGroup) return;
-
-  if (!woodOptions || woodOptions.length === 0) {
-    // 沒有木材選項，隱藏整個木材區塊
-    const woodSection = document.getElementById('woodSection');
-    if (woodSection) woodSection.style.display = 'none';
+  // 沒有設定顏色 → 隱藏整個顏色區塊
+  if (!colors || colors.length === 0) {
+    section.style.display = 'none';
     return;
   }
 
-  // 有木材選項，顯示區塊並產生按鈕
-  const woodSection = document.getElementById('woodSection');
-  if (woodSection) woodSection.style.display = '';
+  // 有顏色資料 → 顯示並產生色票
+  section.style.display = '';
 
-  woodGroup.innerHTML = woodOptions.map((item, i) => `
+  swatchGroup.innerHTML = colors.map((item, i) => {
+    const hex  = item.hex  || '#cccccc';
+    const name = item.name || '';
+    return `
+      <button class="swatch ${i === 0 ? 'active' : ''}"
+              onclick="selectColor(this, '${name}')"
+              title="${name}"
+              style="background:${hex};">
+      </button>
+    `;
+  }).join('');
+
+  // 預設選中第一個顏色
+  if (colorLabel) colorLabel.textContent = colors[0].name || '';
+}
+
+// ── 根據 woodOptionsJson 產生木材按鈕（有就顯示，無就隱藏） ──
+function generateWoodButtons(woodOptions) {
+  const section  = document.getElementById('woodSection');
+  const btnGroup = document.getElementById('woodBtnGroup');
+  const woodLabel= document.getElementById('woodSelected');
+
+  if (!section || !btnGroup) return;
+
+  // 沒有木材選項 → 隱藏
+  if (!woodOptions || woodOptions.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+
+  // 有木材選項 → 顯示並產生按鈕
+  section.style.display = '';
+
+  btnGroup.innerHTML = woodOptions.map((item, i) => `
     <button class="opt-btn ${i === 0 ? 'active' : ''}"
             onclick="selectOption(this, 'woodSelected', '${item.wood}')">
       ${item.wood}
     </button>
   `).join('');
 
-  const woodLabel = document.getElementById('woodSelected');
-  if (woodLabel && woodOptions.length > 0) woodLabel.textContent = woodOptions[0].wood;
+  if (woodLabel) woodLabel.textContent = woodOptions[0].wood || '';
+}
+
+// ── 同步縮圖列（從 galleryJson 圖片陣列填入，最多4張） ──
+function syncThumbStrip(images, mainImageUrl) {
+  const thumbEls = document.querySelectorAll('#thumbStrip .thumb');
+  const mainImg  = document.getElementById('mainImage');
+
+  // 若後端沒有圖片資料，只用主圖填第一格
+  const imgs = (images && images.length > 0)
+    ? images
+    : (mainImageUrl ? [{ url: mainImageUrl }] : []);
+
+  thumbEls.forEach((el, i) => {
+    const img = imgs[i];
+    if (img && img.url) {
+      el.src          = img.url;
+      el.dataset.full = img.url;
+      el.style.display = '';
+      el.classList.toggle('active', i === 0);
+    } else {
+      // 沒有這張圖 → 隱藏
+      el.style.display = 'none';
+    }
+  });
+
+  // 主圖顯示第一張（若有）
+  if (mainImg && imgs.length > 0) {
+    mainImg.src = imgs[0].url;
+  }
 }
 
 // ── 顯示商品尺寸 ──
@@ -186,24 +207,6 @@ function renderDimensions(product) {
   if (el) el.textContent = parts.join('  ×  ');
 }
 
-// ── 同步縮圖列 ──
-function syncThumbStrip(product) {
-  const strip = document.getElementById('thumbStrip');
-  if (!strip || !product.img) return;
-
-  const thumbs = strip.querySelectorAll('.thumb');
-  const slides = product.gallery && product.gallery.length
-    ? product.gallery
-    : [{ thumb: product.img, full: product.img }];
-
-  thumbs.forEach((el, i) => {
-    const g = slides[i] || slides[0];
-    el.src = g.thumb;
-    el.dataset.full = g.full;
-    el.classList.toggle('active', i === 0);
-  });
-}
-
 // ── 從後端 API 動態載入商品資料 ──
 async function loadProductData(id) {
   const numId = Number(id);
@@ -214,72 +217,58 @@ async function loadProductData(id) {
     if (!res.ok) throw new Error('API 回傳錯誤');
     const data = await res.json();
 
-    // 解析 galleryJson
-    let gallery = [];
+    // 解析圖片陣列（galleryJson）
+    let images = [];
     if (data.galleryJson) {
-      try { gallery = JSON.parse(data.galleryJson); } catch (e) {}
+      try { images = JSON.parse(data.galleryJson); } catch (e) {}
     }
 
-    // 解析 woodOptionsJson
+    // 解析顏色選項（colorsJson）
+    let colors = [];
+    if (data.colorsJson) {
+      try { colors = JSON.parse(data.colorsJson); } catch (e) {}
+    }
+
+    // 解析木材選項（woodOptionsJson）
     let woodOptions = [];
     if (data.woodOptionsJson) {
       try { woodOptions = JSON.parse(data.woodOptionsJson); } catch (e) {}
     }
 
-    const product = {
-      id:          data.id,
-      name:        data.name        || '',
-      brand:       data.brand       || '',
-      price:       data.price       || 0,
-      img:         data.mainImage   || '',
-      gallery,
-      woodOptions,
-      description: data.description || '',
-      widthCm:     data.widthCm,
-      depthCm:     data.depthCm,
-      heightCm:    data.heightCm,
-    };
-
-    // 建立顏色 → 圖片對照表
-    dynamicColorImages = {};
-    if (gallery.length > 0) {
-      gallery.forEach(item => {
-        if (item.color) {
-          dynamicColorImages[item.color] = { main: item.full, thumb: item.thumb };
-        }
-      });
-      generateColorButtons(gallery);
-    }
-
-    // 產生木材按鈕
-    generateWoodButtons(woodOptions);
-
-    // 更新 DOM
+    // 更新基本文字資訊
     const brandEl    = document.getElementById('detailBrand');
     const nameEl     = document.getElementById('detailName');
     const priceEl    = document.getElementById('detailPrice');
-    const mainImg    = document.getElementById('mainImage');
     const breadcrumb = document.getElementById('breadcrumbProduct');
     const descEl     = document.getElementById('detailDescription');
+    const mainImg    = document.getElementById('mainImage');
 
-    if (brandEl)    brandEl.textContent = product.brand;
-    if (nameEl)     nameEl.textContent  = product.name;
-    if (priceEl)    priceEl.textContent = `NT$ ${product.price.toLocaleString()}`;
-    if (breadcrumb) breadcrumb.textContent = product.name;
-    if (mainImg && product.img) mainImg.src = product.img;
-    if (descEl && product.description) descEl.textContent = product.description;
+    if (brandEl)    brandEl.textContent = data.brand       || '';
+    if (nameEl)     nameEl.textContent  = data.name        || '';
+    if (priceEl)    priceEl.textContent = `NT$ ${(data.price || 0).toLocaleString()}`;
+    if (breadcrumb) breadcrumb.textContent = data.name     || '';
+    if (descEl && data.description) descEl.textContent = data.description;
 
-    document.title      = `${product.name} — FORMA`;
-    currentProductPrice = product.price;
+    // 先把主圖設好（syncThumbStrip 會用第一張圖片覆蓋）
+    if (mainImg && data.mainImage) mainImg.src = data.mainImage;
 
-    // 顯示尺寸
-    renderDimensions(product);
+    document.title      = `${data.name || '商品'} — FORMA`;
+    currentProductPrice = data.price || 0;
 
-    syncThumbStrip(product);
+    // 圖片縮圖列（galleryJson 的圖片，若無則用 mainImage）
+    syncThumbStrip(images, data.mainImage);
+
+    // 顏色選項（colorsJson，有就顯示，無就隱藏）
+    generateColorButtons(colors);
+
+    // 木材選項（woodOptionsJson，有就顯示，無就隱藏）
+    generateWoodButtons(woodOptions);
+
+    // 商品尺寸
+    renderDimensions({ widthCm: data.widthCm, depthCm: data.depthCm, heightCm: data.heightCm });
 
   } catch (e) {
     console.warn('[detail.js] 無法從 API 載入商品，請確認後端已啟動。', e);
-    // 顯示提示
     const nameEl = document.getElementById('detailName');
     if (nameEl) nameEl.textContent = '商品載入失敗，請確認後端已啟動';
   }

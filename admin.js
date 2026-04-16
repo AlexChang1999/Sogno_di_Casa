@@ -163,14 +163,23 @@ async function openEditModal(id) {
 
     updateMainPreview(p.mainImage || '');
 
-    // 顏色款式
-    document.getElementById('variantRows').innerHTML = '';
+    // 商品圖片（最多4張）
+    document.getElementById('imageSlots').innerHTML = '';
     if (p.galleryJson) {
       try {
-        JSON.parse(p.galleryJson).forEach(item => addVariantRow(item.color || '', item.full || ''));
+        JSON.parse(p.galleryJson).forEach(item => addImageSlot(item.url || ''));
       } catch (e) {}
     }
-    updateVariantEmpty();
+    updateImageSlotUI();
+
+    // 顏色選項
+    document.getElementById('colorRows').innerHTML = '';
+    if (p.colorsJson) {
+      try {
+        JSON.parse(p.colorsJson).forEach(item => addColorRow(item.name || '', item.hex || '#cccccc'));
+      } catch (e) {}
+    }
+    updateColorEmpty();
 
     // 木材選項
     document.getElementById('woodRows').innerHTML = '';
@@ -192,10 +201,12 @@ function resetForm() {
   document.getElementById('f_inStock').checked    = true;
   document.getElementById('f_isFeatured').checked = false;
   document.getElementById('f_isClassic').checked  = false;
-  document.getElementById('variantRows').innerHTML = '';
+  document.getElementById('imageSlots').innerHTML  = '';
+  document.getElementById('colorRows').innerHTML   = '';
   document.getElementById('woodRows').innerHTML    = '';
   updateMainPreview('');
-  updateVariantEmpty();
+  updateImageSlotUI();
+  updateColorEmpty();
   updateWoodEmpty();
 }
 
@@ -207,10 +218,10 @@ async function saveProduct() {
     return;
   }
 
-  const gallery     = collectVariants();
+  const images      = collectImages();
+  const colors      = collectColors();
   const woodOptions = collectWoods();
-  const mainImage   = document.getElementById('f_mainImage').value.trim()
-    || (gallery.length > 0 ? gallery[0].full : '');
+  const mainImage   = document.getElementById('f_mainImage').value.trim();
 
   const widthCm  = document.getElementById('f_widthCm').value;
   const depthCm  = document.getElementById('f_depthCm').value;
@@ -218,19 +229,20 @@ async function saveProduct() {
 
   const payload = {
     name,
-    brand:          document.getElementById('f_brand').value.trim(),
-    category:       document.getElementById('f_category').value,
-    price:          parseInt(price),
-    description:    document.getElementById('f_description').value.trim(),
-    mainImage,
-    galleryJson:    gallery.length     ? JSON.stringify(gallery)     : null,
-    woodOptionsJson: woodOptions.length ? JSON.stringify(woodOptions) : null,
-    widthCm:        widthCm  ? parseInt(widthCm)  : null,
-    depthCm:        depthCm  ? parseInt(depthCm)  : null,
-    heightCm:       heightCm ? parseInt(heightCm) : null,
-    isFeatured:     document.getElementById('f_isFeatured').checked,
-    isClassic:      document.getElementById('f_isClassic').checked,
-    inStock:        document.getElementById('f_inStock').checked
+    brand:           document.getElementById('f_brand').value.trim(),
+    category:        document.getElementById('f_category').value,
+    price:           parseInt(price),
+    description:     document.getElementById('f_description').value.trim(),
+    mainImage:       mainImage || null,
+    galleryJson:     images.length       ? JSON.stringify(images)       : null,
+    colorsJson:      colors.length       ? JSON.stringify(colors)       : null,
+    woodOptionsJson: woodOptions.length  ? JSON.stringify(woodOptions)  : null,
+    widthCm:         widthCm  ? parseInt(widthCm)  : null,
+    depthCm:         depthCm  ? parseInt(depthCm)  : null,
+    heightCm:        heightCm ? parseInt(heightCm) : null,
+    isFeatured:      document.getElementById('f_isFeatured').checked,
+    isClassic:       document.getElementById('f_isClassic').checked,
+    inStock:         document.getElementById('f_inStock').checked
   };
 
   const btn = document.getElementById('saveBtn');
@@ -280,57 +292,118 @@ function confirmDelete(id, name) {
 
 
 // ════════════════════════════════
-// 顏色款式（Variants）
+// 商品圖片（最多4張）
 // ════════════════════════════════
 
-function addVariantRow(colorName = '', imageUrl = '') {
-  const row = document.createElement('div');
-  row.className = 'variant-row';
-  row.innerHTML = `
-    <img src="${imageUrl}" class="variant-preview"
-         style="${imageUrl ? '' : 'opacity:0;'}"
+function addImageSlot(imageUrl = '') {
+  const slots = document.querySelectorAll('#imageSlots .image-slot');
+  if (slots.length >= 4) { showToast('最多只能設定 4 張圖片', 'error'); return; }
+
+  const slot = document.createElement('div');
+  slot.className = 'image-slot';
+  slot.style.cssText = 'display:flex; align-items:center; gap:10px;';
+  slot.innerHTML = `
+    <img src="${imageUrl}" class="slot-preview"
+         style="width:60px;height:60px;object-fit:cover;border-radius:4px;background:var(--border);${imageUrl ? '' : 'opacity:0;'}"
          onerror="this.style.opacity='0'">
-    <input type="text" class="form-control form-control-sm variant-color"
-           placeholder="顏色名稱（如：黑色）" style="flex:1;" value="${colorName}">
-    <input type="text" class="form-control form-control-sm variant-url"
-           placeholder="圖片 URL（或點右側上傳）" style="flex:2;" value="${imageUrl}"
-           oninput="syncVariantPreview(this)">
+    <input type="text" class="form-control form-control-sm slot-url"
+           placeholder="圖片 URL，或點右側上傳" style="flex:1;" value="${imageUrl}"
+           oninput="syncSlotPreview(this)">
     <label class="variant-upload-btn">
       <i class="bi bi-cloud-upload me-1"></i>上傳
-      <input type="file" accept="image/*" style="display:none;" onchange="uploadVariantImage(this)">
+      <input type="file" accept="image/*" style="display:none;" onchange="uploadImageSlot(this)">
     </label>
-    <button type="button" class="variant-del-btn" onclick="removeVariantRow(this)">
+    <button type="button" class="variant-del-btn" onclick="removeImageSlot(this)">
       <i class="bi bi-x-lg"></i>
     </button>
   `;
-  document.getElementById('variantRows').appendChild(row);
-  updateVariantEmpty();
+  document.getElementById('imageSlots').appendChild(slot);
+  updateImageSlotUI();
 }
 
-function removeVariantRow(btn) {
-  btn.closest('.variant-row').remove();
-  updateVariantEmpty();
+function removeImageSlot(btn) {
+  btn.closest('.image-slot').remove();
+  updateImageSlotUI();
 }
 
-function syncVariantPreview(input) {
-  const preview = input.closest('.variant-row').querySelector('.variant-preview');
+function syncSlotPreview(input) {
+  const preview = input.closest('.image-slot').querySelector('.slot-preview');
   preview.src = input.value;
   preview.style.opacity = input.value ? '1' : '0';
 }
 
-function collectVariants() {
-  const gallery = [];
-  document.querySelectorAll('#variantRows .variant-row').forEach(row => {
-    const color = row.querySelector('.variant-color')?.value.trim() || '';
-    const url   = row.querySelector('.variant-url')?.value.trim()   || '';
-    if (url) gallery.push({ color, thumb: url, full: url });
+function collectImages() {
+  const images = [];
+  document.querySelectorAll('#imageSlots .image-slot').forEach(slot => {
+    const url = slot.querySelector('.slot-url')?.value.trim() || '';
+    if (url) images.push({ url });
   });
-  return gallery;
+  return images;
 }
 
-function updateVariantEmpty() {
-  const rows = document.querySelectorAll('#variantRows .variant-row').length;
-  document.getElementById('variantEmpty').style.display = rows === 0 ? 'block' : 'none';
+function updateImageSlotUI() {
+  const count  = document.querySelectorAll('#imageSlots .image-slot').length;
+  const empty  = document.getElementById('imageSlotEmpty');
+  const addBtn = document.getElementById('btnAddImageSlot');
+  if (empty)  empty.style.display  = count === 0 ? 'block' : 'none';
+  if (addBtn) addBtn.style.display = count >= 4  ? 'none'  : '';
+}
+
+
+// ════════════════════════════════
+// 顏色選項
+// ════════════════════════════════
+
+function addColorRow(colorName = '', colorHex = '#cccccc') {
+  const row = document.createElement('div');
+  row.className = 'color-row';
+  row.style.cssText = 'display:flex; align-items:center; gap:10px; margin-bottom:8px;';
+  row.innerHTML = `
+    <input type="color" class="color-hex-picker"
+           value="${colorHex}"
+           style="width:40px;height:34px;padding:2px;border:1px solid var(--border);border-radius:4px;background:var(--bg);cursor:pointer;"
+           title="選擇顏色">
+    <input type="text" class="form-control form-control-sm color-name"
+           placeholder="顏色名稱（例：黑色皮革）" style="flex:1;" value="${colorName}">
+    <input type="text" class="form-control form-control-sm color-hex"
+           placeholder="#1a1a1a" style="width:100px;" value="${colorHex}"
+           oninput="syncColorPicker(this)">
+    <button type="button" class="variant-del-btn" onclick="removeColorRow(this)">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  `;
+  // 讓 color picker 同步更新 hex 文字輸入框
+  const picker  = row.querySelector('.color-hex-picker');
+  const hexInput= row.querySelector('.color-hex');
+  picker.addEventListener('input', () => { hexInput.value = picker.value; });
+
+  document.getElementById('colorRows').appendChild(row);
+  updateColorEmpty();
+}
+
+function removeColorRow(btn) {
+  btn.closest('.color-row').remove();
+  updateColorEmpty();
+}
+
+function syncColorPicker(hexInput) {
+  const picker = hexInput.closest('.color-row').querySelector('.color-hex-picker');
+  if (/^#[0-9A-Fa-f]{6}$/.test(hexInput.value)) picker.value = hexInput.value;
+}
+
+function collectColors() {
+  const colors = [];
+  document.querySelectorAll('#colorRows .color-row').forEach(row => {
+    const name = row.querySelector('.color-name')?.value.trim() || '';
+    const hex  = row.querySelector('.color-hex')?.value.trim()  || '#cccccc';
+    if (name) colors.push({ name, hex });
+  });
+  return colors;
+}
+
+function updateColorEmpty() {
+  const rows = document.querySelectorAll('#colorRows .color-row').length;
+  document.getElementById('colorEmpty').style.display = rows === 0 ? 'block' : 'none';
 }
 
 
@@ -488,17 +561,17 @@ async function uploadMainImage(input) {
   }
 }
 
-async function uploadVariantImage(input) {
+async function uploadImageSlot(input) {
   if (!input.files[0]) return;
   const url = await uploadFile(input.files[0]);
   if (url) {
-    const row     = input.closest('.variant-row');
-    const urlInp  = row.querySelector('.variant-url');
-    const preview = row.querySelector('.variant-preview');
-    urlInp.value = url;
-    preview.src   = url;
+    const slot    = input.closest('.image-slot');
+    const urlInp  = slot.querySelector('.slot-url');
+    const preview = slot.querySelector('.slot-preview');
+    urlInp.value         = url;
+    preview.src          = url;
     preview.style.opacity = '1';
-    showToast('顏色圖片上傳成功', 'success');
+    showToast('圖片上傳成功', 'success');
   }
 }
 

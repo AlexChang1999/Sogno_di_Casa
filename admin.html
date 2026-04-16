@@ -362,22 +362,37 @@
             </div>
           </div>
 
-          <!-- 顏色款式 -->
+          <!-- 商品圖片（最多4張，對應詳情頁縮圖列） -->
+          <div class="mb-4">
+            <label class="form-label mb-1">商品圖片（最多 4 張）</label>
+            <div style="font-size:.73rem; color:var(--muted); margin-bottom:12px;">
+              這些圖片會顯示在商品詳情頁的縮圖列，與主圖分開管理
+            </div>
+            <div id="imageSlots" style="display:flex; flex-direction:column; gap:10px;"></div>
+            <button type="button" class="btn-outline-admin mt-2" id="btnAddImageSlot" onclick="addImageSlot()">
+              <i class="bi bi-plus"></i> 新增圖片
+            </button>
+            <div id="imageSlotEmpty" style="font-size:.8rem; color:var(--muted); padding:12px; text-align:center; border:1px dashed var(--border); border-radius:6px; margin-top:8px;">
+              尚未設定商品圖片 — 點「新增圖片」上傳
+            </div>
+          </div>
+
+          <!-- 顏色選項 -->
           <div class="mb-4">
             <div class="d-flex justify-content-between align-items-center mb-3">
               <div>
-                <label class="form-label mb-0">顏色款式</label>
+                <label class="form-label mb-0">顏色選項（非必填）</label>
                 <div style="font-size:.73rem; color:var(--muted); margin-top:2px;">
-                  每種顏色有獨立圖片，顧客可在商品頁切換
+                  顧客在商品頁可看到的顏色色票，填入名稱與代表色
                 </div>
               </div>
-              <button type="button" class="btn-outline-admin" onclick="addVariantRow()">
+              <button type="button" class="btn-outline-admin" onclick="addColorRow()">
                 <i class="bi bi-plus"></i> 新增顏色
               </button>
             </div>
-            <div id="variantRows"></div>
-            <div id="variantEmpty" style="font-size:.8rem; color:var(--muted); padding:16px; text-align:center; border:1px dashed var(--border); border-radius:6px;">
-              尚未新增顏色款式 — 點「新增顏色」開始設定
+            <div id="colorRows"></div>
+            <div id="colorEmpty" style="font-size:.8rem; color:var(--muted); padding:12px; text-align:center; border:1px dashed var(--border); border-radius:6px;">
+              無顏色選項
             </div>
           </div>
 
