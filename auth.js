@@ -85,7 +85,8 @@ function logout() {
 }
 
 // ── 儲存訂單到後端（由 cart-page.js 呼叫）──
-async function saveOrderToUser(cartItems, total) {
+// shipping: { recipientName, recipientPhone, recipientAddress, note }
+async function saveOrderToUser(cartItems, total, shipping = {}) {
   const items = cartItems.map(i => ({
     productId:   i.id,
     productName: i.name,
@@ -99,7 +100,14 @@ async function saveOrderToUser(cartItems, total) {
   try {
     await authFetch(`${API_BASE}/api/orders`, {
       method: 'POST',
-      body: JSON.stringify({ items, total })
+      body: JSON.stringify({
+        items,
+        total,
+        recipientName:    shipping.recipientName    || '',
+        recipientPhone:   shipping.recipientPhone   || '',
+        recipientAddress: shipping.recipientAddress || '',
+        note:             shipping.note             || ''
+      })
     });
   } catch (e) {
     console.error('訂單儲存失敗', e);

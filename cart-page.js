@@ -153,26 +153,38 @@ function checkout() {
 }
 
 async function confirmOrder() {
-  const cart     = getCart();
-  const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
-  const discount = Math.round(subtotal * activeDiscount / 100);
-  const discounted = subtotal - discount;
-  const shipping = discounted >= 50000 ? 0 : 3000;
-  const tax      = Math.round(discounted * 0.05);
-  const total    = discounted + shipping + tax;
+  // 收件資訊驗證
+  const recipientName    = document.getElementById('recipientName')?.value.trim()    || '';
+  const recipientPhone   = document.getElementById('recipientPhone')?.value.trim()   || '';
+  const recipientAddress = document.getElementById('recipientAddress')?.value.trim() || '';
+  const note             = document.getElementById('orderNote')?.value.trim()        || '';
 
-  // 呼叫後端 API 儲存訂單到 PostgreSQL
-  await saveOrderToUser(cart, total);
+  if (!recipientName || !recipientPhone || !recipientAddress) {
+    alert('請填寫收件人姓名、聯絡電話與收件地址');
+    return;
+  }
+
+  const cart       = getCart();
+  const subtotal   = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const discount   = Math.round(subtotal * activeDiscount / 100);
+  const discounted = subtotal - discount;
+  const shipping   = discounted >= 50000 ? 0 : 3000;
+  const tax        = Math.round(discounted * 0.05);
+  const total      = discounted + shipping + tax;
+
+  // 呼叫後端 API 儲存訂單（含收件資訊）
+  await saveOrderToUser(cart, total, { recipientName, recipientPhone, recipientAddress, note });
+
   saveCart([]);
   bootstrap.Modal.getInstance(document.getElementById('checkoutModal'))?.hide();
 
   const user = getCurrentUser();
-  // 顯示成功訊息
   document.querySelector('.container').innerHTML = `
     <div class="text-center py-5" style="animation: fadeInUp .5s ease both;">
       <i class="bi bi-check-circle" style="font-size:4rem;color:var(--color-accent);display:block;margin-bottom:1.5rem;"></i>
       <h2 style="font-family:var(--font-display);font-weight:300;font-size:2.2rem;margin-bottom:1rem;">訂單已確認</h2>
       <p style="color:var(--color-muted);margin-bottom:.5rem;">感謝您的訂購，<strong>${user?.name || ''}</strong>！</p>
+      <p style="color:var(--color-muted);margin-bottom:.5rem;">配送地址：${recipientAddress}</p>
       <p style="color:var(--color-muted);margin-bottom:2rem;">我們將於 1-2 個工作天內以 ${user?.email || ''} 與您確認配送細節。</p>
       <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
         <a href="account.html" class="btn-forma">查看我的訂單</a>

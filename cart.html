@@ -139,25 +139,74 @@
 
   <!-- Checkout Modal -->
   <div id="checkoutModal" class="modal fade" tabindex="-1" data-bs-backdrop="static">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content forma-modal">
         <div class="modal-header border-0">
-          <h5 class="modal-title">確認結帳</h5>
+          <h5 class="modal-title">結帳資訊</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
-        <div class="modal-body">
-          <div style="background:var(--color-bg);padding:1rem;margin-bottom:1rem;font-size:.85rem;">
+        <div class="modal-body px-4">
+
+          <!-- 訂單摘要 -->
+          <div style="background:var(--color-bg);padding:1rem;margin-bottom:1.5rem;font-size:.85rem;">
             <div style="display:flex;justify-content:space-between;margin-bottom:.3rem;">
-              <span style="color:var(--color-muted);">會員姓名</span>
-              <strong id="modalUserName">—</strong>
+              <span style="color:var(--color-muted);">會員</span>
+              <span><strong id="modalUserName">—</strong>（<span id="modalUserEmail">—</span>）</span>
             </div>
             <div style="display:flex;justify-content:space-between;">
-              <span style="color:var(--color-muted);">電子郵件</span>
-              <span id="modalUserEmail" style="color:var(--color-dark);">—</span>
+              <span style="color:var(--color-muted);">訂單</span>
+              <span>共 <strong id="modalItemCount">0</strong> 件，合計 <strong id="modalTotal">NT$ 0</strong>（含稅及運費）</span>
             </div>
           </div>
-          <p style="font-size:.9rem;">共 <strong id="modalItemCount">0</strong> 件商品，合計 <strong id="modalTotal">NT$ 0</strong>（含稅及運費）。</p>
-          <p class="text-muted small">訂單確認後將以電子郵件通知配送細節。此為展示頁面，實際結帳需串接金流服務。</p>
+
+          <!-- 收件資訊 -->
+          <p style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--color-muted);margin-bottom:1rem;">
+            <i class="bi bi-truck me-1"></i>宅配到府 — 收件資訊
+          </p>
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label style="font-size:.78rem;color:var(--color-muted);display:block;margin-bottom:4px;">收件人姓名 *</label>
+              <input type="text" id="recipientName" class="form-control form-control-sm"
+                     placeholder="王小明" required
+                     style="background:var(--color-bg);border-color:#ddd;font-size:.88rem;">
+            </div>
+            <div class="col-md-6">
+              <label style="font-size:.78rem;color:var(--color-muted);display:block;margin-bottom:4px;">聯絡電話 *</label>
+              <input type="tel" id="recipientPhone" class="form-control form-control-sm"
+                     placeholder="0912-345-678" required
+                     style="background:var(--color-bg);border-color:#ddd;font-size:.88rem;">
+            </div>
+            <div class="col-12">
+              <label style="font-size:.78rem;color:var(--color-muted);display:block;margin-bottom:4px;">收件地址 *</label>
+              <input type="text" id="recipientAddress" class="form-control form-control-sm"
+                     placeholder="台中市西區台灣大道一段..." required
+                     style="background:var(--color-bg);border-color:#ddd;font-size:.88rem;">
+            </div>
+            <div class="col-12">
+              <label style="font-size:.78rem;color:var(--color-muted);display:block;margin-bottom:4px;">備註（非必填）</label>
+              <input type="text" id="orderNote" class="form-control form-control-sm"
+                     placeholder="例：請勿按電鈴"
+                     style="background:var(--color-bg);border-color:#ddd;font-size:.88rem;">
+            </div>
+          </div>
+
+          <!-- 付款方式（預留 API 口） -->
+          <p style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--color-muted);margin-bottom:.8rem;">
+            <i class="bi bi-credit-card me-1"></i>付款方式
+          </p>
+          <div style="display:flex;gap:.75rem;margin-bottom:.5rem;">
+            <label style="display:flex;align-items:center;gap:.5rem;padding:.6rem 1rem;border:1px solid #ddd;border-radius:4px;cursor:pointer;font-size:.85rem;flex:1;">
+              <input type="radio" name="payMethod" value="cash" checked> 貨到付款
+            </label>
+            <label style="display:flex;align-items:center;gap:.5rem;padding:.6rem 1rem;border:1px solid #ddd;border-radius:4px;cursor:pointer;font-size:.85rem;flex:1;opacity:.5;">
+              <input type="radio" name="payMethod" value="credit_card" disabled>
+              <i class="bi bi-credit-card me-1"></i>信用卡（即將開放）
+            </label>
+          </div>
+          <p class="text-muted" style="font-size:.75rem;margin-top:.5rem;">
+            <i class="bi bi-info-circle me-1"></i>信用卡金流串接開發中，目前僅支援貨到付款。
+          </p>
+
         </div>
         <div class="modal-footer border-0">
           <button type="button" class="btn-forma-outline-sm" data-bs-dismiss="modal">取消</button>
