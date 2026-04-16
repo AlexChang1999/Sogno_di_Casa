@@ -3,18 +3,22 @@ package com.sognodicasa.service;
 import com.sognodicasa.dto.LoginRequest;
 import com.sognodicasa.dto.LoginResponse;
 import com.sognodicasa.dto.RegisterRequest;
+import com.sognodicasa.dto.SendCodeRequest;
 import com.sognodicasa.model.User;
 import com.sognodicasa.repository.UserRepository;
 import com.sognodicasa.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
- * 會員驗證服務：處理註冊與登入邏輯
- *
- * Service 層負責「商業邏輯」，不直接處理 HTTP 請求
- * Controller 呼叫 Service，Service 呼叫 Repository
+ * 會員驗證服務：處理註冊、登入、Email 驗證碼邏輯
  */
 @Service
 @RequiredArgsConstructor
@@ -23,28 +27,93 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final EmailService emailService;
+
+    @Value("${app.verification.expire-minutes:10}")
+    private int expireMinutes;
 
     /**
-     * 註冊新會員
-     * @return 登入 token（註冊成功後自動登入）
+     * 暫存待驗證的註冊資料
+     * key   = email
+     * value = [name, hashedPassword, code, expiresAt]
+     *
+     * ConcurrentHashMap：執行緒安全，多個請求同時存取不會出錯
      */
-    public LoginResponse register(RegisterRequest req) {
+    private final Map<String, String[]> pendingRegistrations = new ConcurrentHashMap<>();
+
+    /**
+     * 步驟 1：發送 Email 驗證碼
+     * 暫存 name + hashedPassword + code，等用戶輸入驗證碼後才正式建立帳號
+     */
+    public void sendVerificationCode(SendCodeRequest req) {
         // 檢查 Email 是否已被使用
         if (userRepository.existsByEmail(req.getEmail())) {
             throw new IllegalArgumentException("此 Email 已被註冊");
         }
 
-        // 用 BCrypt 把密碼加密（不可存明文！）
-        // 例如：「password123」→「$2a$10$...」（無法反推回原始密碼）
-        String hashedPassword = passwordEncoder.encode(req.getPassword());
+        // 產生 6 位數隨機驗證碼
+        String code = String.format("%06d", new Random().nextInt(1_000_000));
 
-        // 建立並儲存會員
-        User user = new User(req.getName(), req.getEmail(), hashedPassword);
+        // 密碼先加密，暫存（不在記憶體中存明文）
+        String hashedPwd = passwordEncoder.encode(req.getPassword());
+
+        // 計算過期時間
+        String expiresAt = LocalDateTime.now().plusMinutes(expireMinutes).toString();
+
+        // 暫存到記憶體（若已有舊的驗證碼，覆蓋掉）
+        pendingRegistrations.put(req.getEmail(), new String[]{
+            req.getName(), hashedPwd, code, expiresAt
+        });
+
+        // 發送 Email
+        emailService.sendVerificationCode(req.getEmail(), code);
+    }
+
+    /**
+     * 步驟 2：驗證碼正確 → 正式建立帳號
+     */
+    public LoginResponse register(RegisterRequest req) {
+        String email = req.getEmail();
+        String code  = req.getCode();
+
+        // 取出暫存資料
+        String[] pending = pendingRegistrations.get(email);
+        if (pending == null) {
+            throw new IllegalArgumentException("請先發送驗證碼，或驗證碼已過期");
+        }
+
+        String name       = pending[0];
+        String hashedPwd  = pending[1];
+        String savedCode  = pending[2];
+        String expiresAt  = pending[3];
+
+        // 檢查驗證碼是否過期
+        if (LocalDateTime.now().isAfter(LocalDateTime.parse(expiresAt))) {
+            pendingRegistrations.remove(email);
+            throw new IllegalArgumentException("驗證碼已過期，請重新發送");
+        }
+
+        // 比對驗證碼（不區分空白）
+        if (!savedCode.equals(code.trim())) {
+            throw new IllegalArgumentException("驗證碼錯誤，請再次確認");
+        }
+
+        // 再次確認 Email 是否已被搶先註冊
+        if (userRepository.existsByEmail(email)) {
+            pendingRegistrations.remove(email);
+            throw new IllegalArgumentException("此 Email 已被註冊");
+        }
+
+        // 正式建立帳號
+        User user = new User(name, email, hashedPwd);
         userRepository.save(user);
 
-        // 產生 JWT token 並回傳（含角色資訊）
+        // 清除暫存資料
+        pendingRegistrations.remove(email);
+
+        // 產生 JWT token
         String token = jwtUtil.generateToken(user.getEmail());
-        String role = user.getRole() != null ? user.getRole() : "USER";
+        String role  = user.getRole() != null ? user.getRole() : "USER";
         return new LoginResponse(token, user.getName(), user.getEmail(), role);
     }
 
@@ -52,24 +121,20 @@ public class AuthService {
      * 會員登入
      */
     public LoginResponse login(LoginRequest req) {
-        // 查找會員
         User user = userRepository.findByEmail(req.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("電子郵件或密碼錯誤"));
 
-        // 比對密碼（BCrypt 雜湊比對）
         if (!passwordEncoder.matches(req.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("電子郵件或密碼錯誤");
         }
 
-        // 產生 JWT token 並回傳（含角色資訊）
         String token = jwtUtil.generateToken(user.getEmail());
-        String role = user.getRole() != null ? user.getRole() : "USER";
+        String role  = user.getRole() != null ? user.getRole() : "USER";
         return new LoginResponse(token, user.getName(), user.getEmail(), role);
     }
 
     /**
      * 升級為管理員
-     * 需要正確的 adminSetupSecret 才能執行，防止任意人設定管理員
      */
     public void makeAdmin(String email, String secret, String adminSetupSecret) {
         if (!adminSetupSecret.equals(secret)) {

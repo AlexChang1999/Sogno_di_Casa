@@ -80,6 +80,12 @@
       <optional>true</optional>
     </dependency>
 
+    <!-- Email 發送（驗證碼用） -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-mail</artifactId>
+    </dependency>
+
     <!-- 測試 -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
