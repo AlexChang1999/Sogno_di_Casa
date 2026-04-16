@@ -1,2 +1,2 @@
 @echo off
-bash "%~dp0start.sh"
+bash start.sh

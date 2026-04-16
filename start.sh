@@ -15,9 +15,10 @@ NC='\033[0m'
 # 專案根目錄（這個檔案所在的位置）
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-# 前後端目錄（直接使用目前這個 worktree）
-BACKEND_DIR="$SCRIPT_DIR/backend"
-FRONTEND_DIR="$SCRIPT_DIR"
+# 前後端目錄（目前在 crazy-carson worktree，之後合併到 main 後兩者都改為 "$SCRIPT_DIR/..."）
+WORKTREE_DIR="$SCRIPT_DIR/.claude/worktrees/crazy-carson"
+BACKEND_DIR="$WORKTREE_DIR/backend"
+FRONTEND_DIR="$WORKTREE_DIR"
 
 echo -e "${CYAN}================================================${NC}"
 echo -e "${CYAN}  Sogno di Casa — 啟動開發環境${NC}"
