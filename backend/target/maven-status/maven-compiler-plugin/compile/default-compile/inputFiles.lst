@@ -5,6 +5,7 @@ D:\Projects\Sogno di Casa\.claude\worktrees\funny-golick\backend\src\main\java\c
 D:\Projects\Sogno di Casa\.claude\worktrees\funny-golick\backend\src\main\java\com\sognodicasa\model\Product.java
 D:\Projects\Sogno di Casa\.claude\worktrees\funny-golick\backend\src\main\java\com\sognodicasa\security\UserDetailsServiceImpl.java
 D:\Projects\Sogno di Casa\.claude\worktrees\funny-golick\backend\src\main\java\com\sognodicasa\config\SecurityConfig.java
+D:\Projects\Sogno di Casa\.claude\worktrees\funny-golick\backend\src\main\java\com\sognodicasa\service\EmailService.java
 D:\Projects\Sogno di Casa\.claude\worktrees\funny-golick\backend\src\main\java\com\sognodicasa\repository\UserRepository.java
 D:\Projects\Sogno di Casa\.claude\worktrees\funny-golick\backend\src\main\java\com\sognodicasa\model\User.java
 D:\Projects\Sogno di Casa\.claude\worktrees\funny-golick\backend\src\main\java\com\sognodicasa\dto\ProductDto.java
@@ -14,6 +15,7 @@ D:\Projects\Sogno di Casa\.claude\worktrees\funny-golick\backend\src\main\java\c
 D:\Projects\Sogno di Casa\.claude\worktrees\funny-golick\backend\src\main\java\com\sognodicasa\model\OrderItem.java
 D:\Projects\Sogno di Casa\.claude\worktrees\funny-golick\backend\src\main\java\com\sognodicasa\dto\LoginResponse.java
 D:\Projects\Sogno di Casa\.claude\worktrees\funny-golick\backend\src\main\java\com\sognodicasa\dto\OrderRequest.java
+D:\Projects\Sogno di Casa\.claude\worktrees\funny-golick\backend\src\main\java\com\sognodicasa\dto\SendCodeRequest.java
 D:\Projects\Sogno di Casa\.claude\worktrees\funny-golick\backend\src\main\java\com\sognodicasa\security\JwtUtil.java
 D:\Projects\Sogno di Casa\.claude\worktrees\funny-golick\backend\src\main\java\com\sognodicasa\SognoDiCasaApplication.java
 D:\Projects\Sogno di Casa\.claude\worktrees\funny-golick\backend\src\main\java\com\sognodicasa\repository\OrderRepository.java

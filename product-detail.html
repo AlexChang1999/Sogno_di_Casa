@@ -63,7 +63,7 @@
             <!-- Main image with magnifier -->
             <div class="magnifier-container" id="magnifierContainer">
               <img id="mainImage"
-                   src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=900&q=90"
+                   src=""
                    alt="Product Image"
                    class="gallery-main-img">
               <!-- Magnifier lens -->
@@ -87,25 +87,12 @@
         <!-- RIGHT: Product Info -->
         <div class="col-12 col-lg-6">
           <div class="product-detail-info">
-            <p class="detail-brand" id="detailBrand">Herman Miller</p>
-            <h1 class="detail-name" id="detailName">Eames Lounge Chair & Ottoman</h1>
+            <p class="detail-brand" id="detailBrand"></p>
+            <h1 class="detail-name" id="detailName">載入中...</h1>
 
-            <div class="detail-rating">
-              <i class="bi bi-star-fill"></i>
-              <i class="bi bi-star-fill"></i>
-              <i class="bi bi-star-fill"></i>
-              <i class="bi bi-star-fill"></i>
-              <i class="bi bi-star-half"></i>
-              <span class="rating-count">(128 則評價)</span>
-            </div>
+            <p class="detail-price" id="detailPrice"></p>
 
-            <p class="detail-price" id="detailPrice">NT$ 128,000</p>
-
-            <p class="detail-desc">
-              由 Charles & Ray Eames 於 1956 年設計，融合黑胡桃木外殼與真皮坐墊，
-              是現代家具史上最具代表性的作品之一。每件均在美國密西根州手工製造，
-              提供五年品質保固。
-            </p>
+            <p class="detail-desc" id="detailDescription"></p>
 
             <!-- Color Options（由 JS 動態產生，無資料時自動隱藏） -->
             <div class="option-group" id="colorSection" style="display:none;">
@@ -167,120 +154,30 @@
           <li class="nav-item">
             <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabStory">品牌故事</button>
           </li>
-          <li class="nav-item">
-            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabReview">評價 (128)</button>
-          </li>
         </ul>
         <div class="tab-content forma-tab-content">
           <div class="tab-pane fade show active" id="tabSpec">
-            <div class="row g-3 spec-grid">
-              <div class="col-6 col-md-3"><div class="spec-item"><span class="spec-key">尺寸</span><span class="spec-val">84 × 84 × 84 cm</span></div></div>
-              <div class="col-6 col-md-3"><div class="spec-item"><span class="spec-key">重量</span><span class="spec-val">約 31 kg</span></div></div>
-              <div class="col-6 col-md-3"><div class="spec-item"><span class="spec-key">材質</span><span class="spec-val">真皮 / 胡桃木</span></div></div>
-              <div class="col-6 col-md-3"><div class="spec-item"><span class="spec-key">原產地</span><span class="spec-val">美國密西根州</span></div></div>
-              <div class="col-6 col-md-3"><div class="spec-item"><span class="spec-key">設計師</span><span class="spec-val">Charles & Ray Eames</span></div></div>
-              <div class="col-6 col-md-3"><div class="spec-item"><span class="spec-key">年份</span><span class="spec-val">1956 年首發</span></div></div>
-              <div class="col-6 col-md-3"><div class="spec-item"><span class="spec-key">座高</span><span class="spec-val">40 cm</span></div></div>
-              <div class="col-6 col-md-3"><div class="spec-item"><span class="spec-key">保固</span><span class="spec-val">5 年</span></div></div>
+            <!-- 規格表由 detail.js renderSpecs() 動態填入 -->
+            <div class="row g-3 spec-grid" id="specGrid">
+              <div class="col-12 text-muted" style="font-size:.85rem;">載入中...</div>
             </div>
           </div>
           <div class="tab-pane fade" id="tabStory">
-            <div class="story-content">
-              <p>Herman Miller 成立於 1905 年，是美國最具代表性的辦公與居家家具品牌之一。與設計師 Charles 及 Ray Eames 長達數十年的合作，創造出無數改變家具設計史的經典作品。</p>
-              <p>Eames Lounge Chair 自 1956 年問世以來，被 MoMA 永久收藏，象徵著現代設計與精湛工藝的完美結合。每件產品均在美國手工製作，融入最高標準的品質控制。</p>
-            </div>
-          </div>
-          <div class="tab-pane fade" id="tabReview">
-            <div class="review-list">
-              <div class="review-item">
-                <div class="d-flex justify-content-between">
-                  <strong>陳 O 宇</strong>
-                  <span class="review-stars">★★★★★</span>
-                </div>
-                <p class="review-date">2025 年 3 月</p>
-                <p class="review-text">品質超乎預期，坐起來非常舒適，是我買過最值得的家具投資。</p>
-              </div>
-              <div class="review-item">
-                <div class="d-flex justify-content-between">
-                  <strong>林 O 如</strong>
-                  <span class="review-stars">★★★★☆</span>
-                </div>
-                <p class="review-date">2025 年 2 月</p>
-                <p class="review-text">外觀非常漂亮，安裝服務也很專業，客廳質感提升了很多。</p>
-              </div>
+            <!-- 品牌故事由 detail.js renderBrandStory() 動態填入 -->
+            <div class="story-content" id="storyContent">
+              <p style="color:#999;">載入中...</p>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Related Products -->
-      <div class="mt-6">
+      <!-- Related Products（由 JS 動態載入同類別商品） -->
+      <div class="mt-6" id="relatedSection" style="display:none;">
         <div class="section-header">
           <span class="section-label">您可能也喜歡</span>
           <h2 class="section-title">相關商品</h2>
         </div>
-        <div class="row g-4">
-          <div class="col-12 col-md-6 col-lg-3">
-            <div class="product-card" onclick="window.location='product-detail.html?id=2'">
-              <div class="product-img-wrap">
-                <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&q=80" class="product-img" alt="LC2 Sofa">
-                <div class="product-overlay">
-                  <button class="btn-overlay" onclick="event.stopPropagation(); addToCart(2,'LC2 Grand Confort',245000)"><i class="bi bi-bag-plus me-1"></i> 加入購物車</button>
-                </div>
-              </div>
-              <div class="product-info">
-                <p class="product-brand">Cassina</p>
-                <h3 class="product-name">LC2 Grand Confort</h3>
-                <p class="product-price">NT$ 245,000</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-12 col-md-6 col-lg-3">
-            <div class="product-card" onclick="window.location='product-detail.html?id=3'">
-              <div class="product-img-wrap">
-                <img src="https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=600&q=80" class="product-img" alt="Series 7">
-                <div class="product-overlay">
-                  <button class="btn-overlay" onclick="event.stopPropagation(); addToCart(3,'Series 7 Chair',38000)"><i class="bi bi-bag-plus me-1"></i> 加入購物車</button>
-                </div>
-              </div>
-              <div class="product-info">
-                <p class="product-brand">Fritz Hansen</p>
-                <h3 class="product-name">Series 7 Chair</h3>
-                <p class="product-price">NT$ 38,000</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-12 col-md-6 col-lg-3">
-            <div class="product-card" onclick="window.location='product-detail.html?id=4'">
-              <div class="product-img-wrap">
-                <img src="https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=600&q=80" class="product-img" alt="Noguchi">
-                <div class="product-overlay">
-                  <button class="btn-overlay" onclick="event.stopPropagation(); addToCart(4,'Noguchi Coffee Table',96000)"><i class="bi bi-bag-plus me-1"></i> 加入購物車</button>
-                </div>
-              </div>
-              <div class="product-info">
-                <p class="product-brand">Vitra</p>
-                <h3 class="product-name">Noguchi Coffee Table</h3>
-                <p class="product-price">NT$ 96,000</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-12 col-md-6 col-lg-3">
-            <div class="product-card" onclick="window.location='product-detail.html?id=5'">
-              <div class="product-img-wrap">
-                <img src="https://images.unsplash.com/photo-1592078615290-033ee584e267?w=600&q=80" class="product-img" alt="Aeron">
-                <div class="product-overlay">
-                  <button class="btn-overlay" onclick="event.stopPropagation(); addToCart(5,'Aeron Chair',158000)"><i class="bi bi-bag-plus me-1"></i> 加入購物車</button>
-                </div>
-              </div>
-              <div class="product-info">
-                <p class="product-brand">Herman Miller</p>
-                <h3 class="product-name">Aeron Chair</h3>
-                <p class="product-price">NT$ 158,000</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <div class="row g-4" id="relatedGrid"></div>
       </div>
     </div>
   </section>

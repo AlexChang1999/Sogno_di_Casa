@@ -1,9 +1,11 @@
 /* detail.js — 商品詳情功能
    所有商品資料全部從後端 API 動態載入，不再使用硬編碼資料
    資料架構：
-     galleryJson    → 圖片陣列 [{url:"..."}, ...]（最多4張）
-     colorsJson     → 顏色選項 [{name:"...", hex:"#..."}]
-     woodOptionsJson→ 木材選項 [{wood:"..."}]
+     galleryJson     → 圖片陣列 [{url:"..."}, ...]（最多4張）
+     colorsJson      → 顏色選項 [{name:"...", hex:"#..."}]
+     woodOptionsJson → 木材選項 [{wood:"..."}]
+     specsJson       → 規格     [{key:"...", value:"..."}]
+     brandStory      → 品牌故事（純文字）
 */
 
 // API_BASE 由 auth.js 定義（http://localhost:8080）
@@ -11,6 +13,14 @@
 let qty = 1;
 let currentProductId = 1;
 let currentProductPrice = 0;
+
+// ── 輔助：修正圖片路徑 ──
+// 後端上傳的圖片路徑是 /uploads/xxx.jpg，需要加上 API_BASE 前綴
+function fixImgUrl(url) {
+  if (!url) return '';
+  if (url.startsWith('/uploads')) return API_BASE + url;
+  return url;
+}
 
 // ── 放大鏡功能 ──
 function initMagnifier() {
@@ -105,13 +115,11 @@ function generateColorButtons(colors) {
 
   if (!section || !swatchGroup) return;
 
-  // 沒有設定顏色 → 隱藏整個顏色區塊
   if (!colors || colors.length === 0) {
     section.style.display = 'none';
     return;
   }
 
-  // 有顏色資料 → 顯示並產生色票
   section.style.display = '';
 
   swatchGroup.innerHTML = colors.map((item, i) => {
@@ -126,7 +134,6 @@ function generateColorButtons(colors) {
     `;
   }).join('');
 
-  // 預設選中第一個顏色
   if (colorLabel) colorLabel.textContent = colors[0].name || '';
 }
 
@@ -138,13 +145,11 @@ function generateWoodButtons(woodOptions) {
 
   if (!section || !btnGroup) return;
 
-  // 沒有木材選項 → 隱藏
   if (!woodOptions || woodOptions.length === 0) {
     section.style.display = 'none';
     return;
   }
 
-  // 有木材選項 → 顯示並產生按鈕
   section.style.display = '';
 
   btnGroup.innerHTML = woodOptions.map((item, i) => `
@@ -162,7 +167,6 @@ function syncThumbStrip(images, mainImageUrl) {
   const thumbEls = document.querySelectorAll('#thumbStrip .thumb');
   const mainImg  = document.getElementById('mainImage');
 
-  // 若後端沒有圖片資料，只用主圖填第一格
   const imgs = (images && images.length > 0)
     ? images
     : (mainImageUrl ? [{ url: mainImageUrl }] : []);
@@ -170,19 +174,18 @@ function syncThumbStrip(images, mainImageUrl) {
   thumbEls.forEach((el, i) => {
     const img = imgs[i];
     if (img && img.url) {
-      el.src          = img.url;
-      el.dataset.full = img.url;
+      const src = fixImgUrl(img.url);
+      el.src          = src;
+      el.dataset.full = src;
       el.style.display = '';
       el.classList.toggle('active', i === 0);
     } else {
-      // 沒有這張圖 → 隱藏
       el.style.display = 'none';
     }
   });
 
-  // 主圖顯示第一張（若有）
   if (mainImg && imgs.length > 0) {
-    mainImg.src = imgs[0].url;
+    mainImg.src = fixImgUrl(imgs[0].url);
   }
 }
 
@@ -207,6 +210,46 @@ function renderDimensions(product) {
   if (el) el.textContent = parts.join('  ×  ');
 }
 
+// ── 動態渲染規格表（specsJson） ──
+function renderSpecs(specsJson) {
+  const specGrid = document.getElementById('specGrid');
+  if (!specGrid) return;
+
+  let specs = [];
+  if (specsJson) {
+    try { specs = JSON.parse(specsJson); } catch (e) {}
+  }
+
+  if (specs.length === 0) {
+    specGrid.innerHTML = '<div class="col-12 text-muted" style="font-size:.85rem;">尚未設定商品規格</div>';
+    return;
+  }
+
+  specGrid.innerHTML = specs.map(s => `
+    <div class="col-6 col-md-3">
+      <div class="spec-item">
+        <span class="spec-key">${s.key || ''}</span>
+        <span class="spec-val">${s.value || ''}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── 動態渲染品牌故事 ──
+function renderBrandStory(brandStory) {
+  const storyContent = document.getElementById('storyContent');
+  if (!storyContent) return;
+
+  if (!brandStory) {
+    storyContent.innerHTML = '<p style="color:#999;">尚未設定品牌故事</p>';
+    return;
+  }
+
+  // 將換行轉為段落
+  const paragraphs = brandStory.split('\n').filter(p => p.trim());
+  storyContent.innerHTML = paragraphs.map(p => `<p>${p}</p>`).join('');
+}
+
 // ── 從後端 API 動態載入商品資料 ──
 async function loadProductData(id) {
   const numId = Number(id);
@@ -217,19 +260,15 @@ async function loadProductData(id) {
     if (!res.ok) throw new Error('API 回傳錯誤');
     const data = await res.json();
 
-    // 解析圖片陣列（galleryJson）
+    // 解析 JSON 欄位
     let images = [];
     if (data.galleryJson) {
       try { images = JSON.parse(data.galleryJson); } catch (e) {}
     }
-
-    // 解析顏色選項（colorsJson）
     let colors = [];
     if (data.colorsJson) {
       try { colors = JSON.parse(data.colorsJson); } catch (e) {}
     }
-
-    // 解析木材選項（woodOptionsJson）
     let woodOptions = [];
     if (data.woodOptionsJson) {
       try { woodOptions = JSON.parse(data.woodOptionsJson); } catch (e) {}
@@ -247,25 +286,31 @@ async function loadProductData(id) {
     if (nameEl)     nameEl.textContent  = data.name        || '';
     if (priceEl)    priceEl.textContent = `NT$ ${(data.price || 0).toLocaleString()}`;
     if (breadcrumb) breadcrumb.textContent = data.name     || '';
-    if (descEl && data.description) descEl.textContent = data.description;
+    if (descEl)     descEl.textContent  = data.description || '';
 
-    // 先把主圖設好（syncThumbStrip 會用第一張圖片覆蓋）
-    if (mainImg && data.mainImage) mainImg.src = data.mainImage;
+    // 主圖路徑修正
+    if (mainImg && data.mainImage) mainImg.src = fixImgUrl(data.mainImage);
 
     document.title      = `${data.name || '商品'} — FORMA`;
     currentProductPrice = data.price || 0;
 
-    // 圖片縮圖列（galleryJson 的圖片，若無則用 mainImage）
+    // 圖片縮圖列
     syncThumbStrip(images, data.mainImage);
 
-    // 顏色選項（colorsJson，有就顯示，無就隱藏）
+    // 顏色選項
     generateColorButtons(colors);
 
-    // 木材選項（woodOptionsJson，有就顯示，無就隱藏）
+    // 木材選項
     generateWoodButtons(woodOptions);
 
     // 商品尺寸
     renderDimensions({ widthCm: data.widthCm, depthCm: data.depthCm, heightCm: data.heightCm });
+
+    // 規格表（從 specsJson 動態載入）
+    renderSpecs(data.specsJson);
+
+    // 品牌故事（從 brandStory 動態載入）
+    renderBrandStory(data.brandStory);
 
   } catch (e) {
     console.warn('[detail.js] 無法從 API 載入商品，請確認後端已啟動。', e);

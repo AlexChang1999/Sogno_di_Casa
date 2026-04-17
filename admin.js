@@ -181,6 +181,18 @@ async function openEditModal(id) {
     }
     updateColorEmpty();
 
+    // 規格
+    document.getElementById('specRows').innerHTML = '';
+    if (p.specsJson) {
+      try {
+        JSON.parse(p.specsJson).forEach(item => addSpecRow(item.key || '', item.value || ''));
+      } catch (e) {}
+    }
+    updateSpecEmpty();
+
+    // 品牌故事
+    document.getElementById('f_brandStory').value = p.brandStory || '';
+
     // 木材選項
     document.getElementById('woodRows').innerHTML = '';
     if (p.woodOptionsJson) {
@@ -203,10 +215,13 @@ function resetForm() {
   document.getElementById('f_isClassic').checked  = false;
   document.getElementById('imageSlots').innerHTML  = '';
   document.getElementById('colorRows').innerHTML   = '';
+  document.getElementById('specRows').innerHTML    = '';
+  document.getElementById('f_brandStory').value    = '';
   document.getElementById('woodRows').innerHTML    = '';
   updateMainPreview('');
   updateImageSlotUI();
   updateColorEmpty();
+  updateSpecEmpty();
   updateWoodEmpty();
 }
 
@@ -220,8 +235,10 @@ async function saveProduct() {
 
   const images      = collectImages();
   const colors      = collectColors();
+  const specs       = collectSpecs();
   const woodOptions = collectWoods();
   const mainImage   = document.getElementById('f_mainImage').value.trim();
+  const brandStory  = document.getElementById('f_brandStory').value.trim();
 
   const widthCm  = document.getElementById('f_widthCm').value;
   const depthCm  = document.getElementById('f_depthCm').value;
@@ -236,6 +253,8 @@ async function saveProduct() {
     mainImage:       mainImage || null,
     galleryJson:     images.length       ? JSON.stringify(images)       : null,
     colorsJson:      colors.length       ? JSON.stringify(colors)       : null,
+    specsJson:       specs.length        ? JSON.stringify(specs)        : null,
+    brandStory:      brandStory || null,
     woodOptionsJson: woodOptions.length  ? JSON.stringify(woodOptions)  : null,
     widthCm:         widthCm  ? parseInt(widthCm)  : null,
     depthCm:         depthCm  ? parseInt(depthCm)  : null,
@@ -404,6 +423,53 @@ function collectColors() {
 function updateColorEmpty() {
   const rows = document.querySelectorAll('#colorRows .color-row').length;
   document.getElementById('colorEmpty').style.display = rows === 0 ? 'block' : 'none';
+}
+
+
+// ════════════════════════════════
+// 商品規格（Specs）— key-value 列編輯器
+// ════════════════════════════════
+
+// 新增一列規格（key / value 兩個輸入框 + 刪除鈕）
+function addSpecRow(key = '', value = '') {
+  const row = document.createElement('div');
+  row.className = 'spec-row';
+  row.style.cssText = 'display:flex; align-items:center; gap:10px; margin-bottom:8px;';
+  row.innerHTML = `
+    <input type="text" class="form-control form-control-sm spec-key"
+           placeholder="規格名稱（例：尺寸）" style="width:140px;" value="${key}">
+    <input type="text" class="form-control form-control-sm spec-value"
+           placeholder="規格內容（例：W84 × D84 × H84 cm）" style="flex:1;" value="${value}">
+    <button type="button" class="variant-del-btn" onclick="removeSpecRow(this)">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  `;
+  document.getElementById('specRows').appendChild(row);
+  updateSpecEmpty();
+}
+
+// 刪除一列規格
+function removeSpecRow(btn) {
+  btn.closest('.spec-row').remove();
+  updateSpecEmpty();
+}
+
+// 收集所有規格列，回傳 [{key, value}, ...]（空 key 或空 value 都跳過）
+function collectSpecs() {
+  const specs = [];
+  document.querySelectorAll('#specRows .spec-row').forEach(row => {
+    const key   = row.querySelector('.spec-key')?.value.trim()   || '';
+    const value = row.querySelector('.spec-value')?.value.trim() || '';
+    if (key && value) specs.push({ key, value });
+  });
+  return specs;
+}
+
+// 切換空狀態提示
+function updateSpecEmpty() {
+  const rows = document.querySelectorAll('#specRows .spec-row').length;
+  const empty = document.getElementById('specEmpty');
+  if (empty) empty.style.display = rows === 0 ? 'block' : 'none';
 }
 
 

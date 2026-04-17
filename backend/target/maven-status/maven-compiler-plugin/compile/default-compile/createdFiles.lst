@@ -10,6 +10,7 @@ com\sognodicasa\security\JwtFilter.class
 com\sognodicasa\model\OrderItem.class
 com\sognodicasa\service\ProductService.class
 com\sognodicasa\repository\OrderRepository.class
+com\sognodicasa\dto\SendCodeRequest.class
 com\sognodicasa\repository\UserRepository.class
 com\sognodicasa\dto\LoginRequest.class
 com\sognodicasa\model\User.class
@@ -19,6 +20,7 @@ com\sognodicasa\service\OrderService.class
 com\sognodicasa\dto\ProductRequest.class
 com\sognodicasa\service\AuthService.class
 com\sognodicasa\security\JwtUtil.class
+com\sognodicasa\service\EmailService.class
 com\sognodicasa\model\Product.class
 com\sognodicasa\config\SecurityConfig.class
 com\sognodicasa\controller\OrderController.class

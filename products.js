@@ -173,7 +173,9 @@ async function loadProductsFromAPI() {
       brand: p.brand || '',
       price: p.price || 0,
       cat:   p.category || '',     // API 叫 category，前端 filter 用 cat
-      img:   p.mainImage || '',    // API 叫 mainImage，前端顯示用 img
+      img:   p.mainImage
+               ? (p.mainImage.startsWith('/uploads') ? API_BASE + p.mainImage : p.mainImage)
+               : '',                  // API 叫 mainImage，需加上後端位址前綴
       badge: '',                   // 目前不從 API 取，可之後擴充
       inStock: p.inStock !== false
     }));

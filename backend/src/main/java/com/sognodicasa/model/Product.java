@@ -53,6 +53,15 @@ public class Product {
     @Column(name = "colors_json", columnDefinition = "TEXT")
     private String colorsJson;
 
+    // 商品規格 JSON（key-value pairs），格式：
+    // [{"key":"尺寸","value":"84 × 84 × 84 cm"},{"key":"重量","value":"約 31 kg"}]
+    @Column(name = "specs_json", columnDefinition = "TEXT")
+    private String specsJson;
+
+    // 品牌故事（可在商品詳情頁的「品牌故事」分頁顯示）
+    @Column(name = "brand_story", columnDefinition = "TEXT")
+    private String brandStory;
+
     // 木材選項 JSON 陣列（非必填），格式：
     // [{"wood":"胡桃木"},{"wood":"橡木"},...]
     @Column(name = "wood_options_json", columnDefinition = "TEXT")

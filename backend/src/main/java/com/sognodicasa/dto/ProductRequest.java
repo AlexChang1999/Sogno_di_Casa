@@ -17,6 +17,8 @@ public class ProductRequest {
     private String mainImage;
     private String galleryJson;     // 商品圖片 JSON 字串（最多4張）
     private String colorsJson;      // 顏色選項 JSON 字串（非必填）
+    private String specsJson;      // 商品規格 JSON 字串（非必填）
+    private String brandStory;     // 品牌故事（非必填）
     private String woodOptionsJson; // 木材選項 JSON 字串（非必填）
     private Integer widthCm;        // 寬（公分，非必填）
     private Integer depthCm;        // 深（公分，非必填）
