@@ -85,29 +85,19 @@
             </div>
           </div>
 
-          <!-- Brand -->
+          <!-- Brand（由 products.js 動態從 API 載入，超過 10 個可展開） -->
           <div class="filter-group">
             <h6 class="filter-sub">品牌</h6>
-            <div class="form-check filter-check">
-              <input class="form-check-input" type="checkbox" id="brand-hm" onchange="filterProducts()">
-              <label class="form-check-label" for="brand-hm">Herman Miller</label>
+            <div id="brandList">
+              <div class="text-muted" style="font-size:.8rem;">載入中...</div>
             </div>
-            <div class="form-check filter-check">
-              <input class="form-check-input" type="checkbox" id="brand-cassina" onchange="filterProducts()">
-              <label class="form-check-label" for="brand-cassina">Cassina</label>
-            </div>
-            <div class="form-check filter-check">
-              <input class="form-check-input" type="checkbox" id="brand-vitra" onchange="filterProducts()">
-              <label class="form-check-label" for="brand-vitra">Vitra</label>
-            </div>
-            <div class="form-check filter-check">
-              <input class="form-check-input" type="checkbox" id="brand-fritz" onchange="filterProducts()">
-              <label class="form-check-label" for="brand-fritz">Fritz Hansen</label>
-            </div>
-            <div class="form-check filter-check">
-              <input class="form-check-input" type="checkbox" id="brand-knoll" onchange="filterProducts()">
-              <label class="form-check-label" for="brand-knoll">Knoll</label>
-            </div>
+            <button type="button"
+                    id="brandToggle"
+                    class="btn btn-link btn-sm p-0 mt-1"
+                    style="display:none; font-size:.8rem; text-decoration:none; color:var(--color-gold,#b08d57);"
+                    onclick="toggleBrandExpand()">
+              顯示更多
+            </button>
           </div>
 
           <!-- Price Range -->

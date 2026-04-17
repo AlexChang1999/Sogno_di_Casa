@@ -9,6 +9,64 @@ let allProducts = [];
 
 let currentView = 'grid';
 
+// 品牌清單展開狀態（品牌超過 10 個時才會用到）
+let brandExpanded = false;
+const BRAND_COLLAPSE_LIMIT = 10;
+
+// 從 allProducts 抽取不重複品牌並渲染 checkbox 清單
+function renderBrandList() {
+  const listEl   = document.getElementById('brandList');
+  const toggleEl = document.getElementById('brandToggle');
+  if (!listEl) return;
+
+  // 取出所有非空品牌並去重
+  const brands = [...new Set(allProducts.map(p => p.brand).filter(b => b && b.trim()))].sort();
+
+  if (brands.length === 0) {
+    listEl.innerHTML = '<div class="text-muted" style="font-size:.8rem;">目前沒有品牌資料</div>';
+    if (toggleEl) toggleEl.style.display = 'none';
+    return;
+  }
+
+  // 產生 checkbox（用編號 id 避免品牌名含特殊字元出問題；品牌原值存在 data-brand）
+  listEl.innerHTML = brands.map((brand, i) => {
+    const hidden = !brandExpanded && i >= BRAND_COLLAPSE_LIMIT;
+    const safeBrand = brand.replace(/"/g, '&quot;');
+    return `
+      <div class="form-check filter-check brand-check-row" data-extra="${i >= BRAND_COLLAPSE_LIMIT ? '1' : '0'}" style="${hidden ? 'display:none;' : ''}">
+        <input class="form-check-input brand-check" type="checkbox"
+               id="brand-${i}" data-brand="${safeBrand}" onchange="filterProducts()">
+        <label class="form-check-label" for="brand-${i}">${brand}</label>
+      </div>
+    `;
+  }).join('');
+
+  // 超過門檻才顯示展開鈕
+  if (toggleEl) {
+    if (brands.length > BRAND_COLLAPSE_LIMIT) {
+      toggleEl.style.display = '';
+      toggleEl.textContent = brandExpanded
+        ? '收起'
+        : `顯示更多（${brands.length - BRAND_COLLAPSE_LIMIT}）`;
+    } else {
+      toggleEl.style.display = 'none';
+    }
+  }
+}
+
+// 切換「顯示更多 / 收起」
+function toggleBrandExpand() {
+  brandExpanded = !brandExpanded;
+  document.querySelectorAll('#brandList .brand-check-row[data-extra="1"]').forEach(el => {
+    el.style.display = brandExpanded ? '' : 'none';
+  });
+  const toggleEl = document.getElementById('brandToggle');
+  if (toggleEl) {
+    const extraCount = document.querySelectorAll('#brandList .brand-check-row[data-extra="1"]').length;
+    toggleEl.textContent = brandExpanded ? '收起' : `顯示更多（${extraCount}）`;
+  }
+}
+
 function renderProducts(products) {
   const grid = document.getElementById('productGrid');
   document.getElementById('productCount').textContent = products.length;
@@ -77,13 +135,10 @@ function filterProducts() {
   const catStorage = document.getElementById('cat-storage')?.checked;
   const anyCatChecked = catChair || catSofa || catTable || catStorage;
 
-  // ── 品牌篩選 ──
-  const brandHM      = document.getElementById('brand-hm')?.checked;
-  const brandCassina = document.getElementById('brand-cassina')?.checked;
-  const brandVitra   = document.getElementById('brand-vitra')?.checked;
-  const brandFritz   = document.getElementById('brand-fritz')?.checked;
-  const brandKnoll   = document.getElementById('brand-knoll')?.checked;
-  const anyBrandChecked = brandHM || brandCassina || brandVitra || brandFritz || brandKnoll;
+  // ── 品牌篩選（動態：收集所有被勾選的 .brand-check 的 data-brand 值）──
+  const checkedBrands = [...document.querySelectorAll('#brandList .brand-check:checked')]
+    .map(el => el.dataset.brand);
+  const anyBrandChecked = checkedBrands.length > 0;
 
   // ── 價格上限 ──
   const maxPrice = parseInt(document.getElementById('priceRange')?.value || '10000000', 10);
@@ -95,12 +150,7 @@ function filterProducts() {
       (catTable   && p.cat === 'table')   ||
       (catStorage && p.cat === 'storage');
 
-    const passBrand = !anyBrandChecked ||
-      (brandHM      && p.brand === 'Herman Miller') ||
-      (brandCassina && p.brand === 'Cassina')       ||
-      (brandVitra   && p.brand === 'Vitra')         ||
-      (brandFritz   && p.brand === 'Fritz Hansen')  ||
-      (brandKnoll   && p.brand === 'Knoll');
+    const passBrand = !anyBrandChecked || checkedBrands.includes(p.brand);
 
     const passPrice = p.price <= maxPrice;
 
@@ -179,6 +229,9 @@ async function loadProductsFromAPI() {
       badge: '',                   // 目前不從 API 取，可之後擴充
       inStock: p.inStock !== false
     }));
+
+    // 載入完資料後，先根據商品資料動態生成左側品牌清單
+    renderBrandList();
 
     // 若後端沒有商品，顯示提示
     if (allProducts.length === 0) {
