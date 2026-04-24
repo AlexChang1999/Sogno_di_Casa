@@ -25,7 +25,7 @@ function renderProducts(products) {
     grid.className = 'row g-4';
     grid.innerHTML = products.map(p => `
       <div class="col-6 col-md-4 col-lg-4">
-        <div class="product-card" onclick="window.location='product-detail.html?id=${p.id}'">
+        <div class="product-card" onclick="window.location='product-detail.html#id=${p.id}'">
           <div class="product-img-wrap">
             <img src="${p.img}" class="product-img" alt="${p.name}" loading="lazy">
             <div class="product-overlay">
@@ -49,7 +49,7 @@ function renderProducts(products) {
     grid.innerHTML = products.map(p => `
       <div class="col-12">
         <div class="product-list-item d-flex gap-4 align-items-center py-3 border-bottom"
-             onclick="window.location='product-detail.html?id=${p.id}'" style="cursor:pointer;">
+             onclick="window.location='product-detail.html#id=${p.id}'" style="cursor:pointer;">
           <img src="${p.img}" style="width:100px;height:100px;object-fit:cover;flex-shrink:0;background:var(--color-cream);" alt="${p.name}">
           <div class="flex-grow-1">
             <p class="product-brand mb-1">${p.brand}</p>
@@ -77,13 +77,11 @@ function filterProducts() {
   const catStorage = document.getElementById('cat-storage')?.checked;
   const anyCatChecked = catChair || catSofa || catTable || catStorage;
 
-  // ── 品牌篩選 ──
-  const brandHM      = document.getElementById('brand-hm')?.checked;
-  const brandCassina = document.getElementById('brand-cassina')?.checked;
-  const brandVitra   = document.getElementById('brand-vitra')?.checked;
-  const brandFritz   = document.getElementById('brand-fritz')?.checked;
-  const brandKnoll   = document.getElementById('brand-knoll')?.checked;
-  const anyBrandChecked = brandHM || brandCassina || brandVitra || brandFritz || brandKnoll;
+  // ── 品牌篩選（動態從 #brandFilters 抓勾選的品牌名）──
+  const checkedBrands = Array.from(
+    document.querySelectorAll('#brandFilters input[type="checkbox"]:checked')
+  ).map(cb => cb.dataset.brand);
+  const anyBrandChecked = checkedBrands.length > 0;
 
   // ── 價格上限 ──
   const maxPrice = parseInt(document.getElementById('priceRange')?.value || '10000000', 10);
@@ -95,12 +93,7 @@ function filterProducts() {
       (catTable   && p.cat === 'table')   ||
       (catStorage && p.cat === 'storage');
 
-    const passBrand = !anyBrandChecked ||
-      (brandHM      && p.brand === 'Herman Miller') ||
-      (brandCassina && p.brand === 'Cassina')       ||
-      (brandVitra   && p.brand === 'Vitra')         ||
-      (brandFritz   && p.brand === 'Fritz Hansen')  ||
-      (brandKnoll   && p.brand === 'Knoll');
+    const passBrand = !anyBrandChecked || checkedBrands.includes(p.brand);
 
     const passPrice = p.price <= maxPrice;
 
@@ -151,6 +144,40 @@ function setView(mode) {
   filterProducts();
 }
 
+// ── 依後端商品資料動態產生品牌篩選 checkbox ──
+// 規則：A→Z 排序，最多 8 個，實際有幾個品牌就顯示幾個
+function renderBrandFilters(products) {
+  const container = document.getElementById('brandFilters');
+  if (!container) return;
+
+  // 抽出不重複且非空的品牌名
+  const brandSet = new Set();
+  products.forEach(p => {
+    if (p.brand && p.brand.trim()) brandSet.add(p.brand.trim());
+  });
+
+  // A→Z 排序（localeCompare 也支援中文），最多取 8 個
+  const brands = Array.from(brandSet).sort((a, b) => a.localeCompare(b)).slice(0, 8);
+
+  if (brands.length === 0) {
+    container.innerHTML = `<div style="font-size:.8rem; color:#999;">尚無品牌資料</div>`;
+    return;
+  }
+
+  container.innerHTML = brands.map((b, i) => {
+    const safeId = `brand-${i}`;
+    // data-brand 存真正的品牌名，filterProducts 會讀這個比對
+    return `
+      <div class="form-check filter-check">
+        <input class="form-check-input" type="checkbox" id="${safeId}"
+               data-brand="${b.replace(/"/g, '&quot;')}"
+               onchange="filterProducts()">
+        <label class="form-check-label" for="${safeId}">${b}</label>
+      </div>
+    `;
+  }).join('');
+}
+
 // ── 從後端 API 載入商品 ──
 async function loadProductsFromAPI() {
   const grid = document.getElementById('productGrid');
@@ -185,9 +212,11 @@ async function loadProductsFromAPI() {
         <p>目前尚無商品，請先在後台新增</p>
       </div>`;
       document.getElementById('productCount').textContent = '0';
+      renderBrandFilters([]);
       return;
     }
 
+    renderBrandFilters(allProducts);
     filterProducts(); // 套用目前的篩選與排序後渲染
   } catch (e) {
     // 後端連不到時，顯示友善錯誤提示

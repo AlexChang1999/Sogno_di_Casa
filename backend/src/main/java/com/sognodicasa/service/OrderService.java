@@ -20,13 +20,7 @@ public class OrderService {
     private final UserRepository userRepository;
 
     /**
-     * 建立新訂單
-     * @param email 目前登入的會員 Email（從 JWT 解析）
-     * @param req   前端傳來的訂單資料
-     * @return 儲存後的訂單
-     *
-     * @Transactional：確保訂單主檔和所有商品明細一起存入，
-     * 若中途出錯則全部 rollback（不會存到一半）
+     * 建立新訂單（含收件資訊）
      */
     @Transactional
     public Order createOrder(String email, OrderRequest req) {
@@ -35,6 +29,13 @@ public class OrderService {
 
         // 建立訂單主檔
         Order order = new Order(user, req.getTotal());
+
+        // 帶入收件資訊
+        order.setRecipientName(req.getRecipientName());
+        order.setRecipientPhone(req.getRecipientPhone());
+        order.setRecipientAddress(req.getRecipientAddress());
+        order.setNote(req.getNote());
+        order.setStatus("PENDING"); // 預設狀態：待處理
 
         // 把每個商品明細加入訂單
         req.getItems().forEach(itemDto -> {
@@ -50,7 +51,6 @@ public class OrderService {
             order.getItems().add(item);
         });
 
-        // cascade = ALL 會自動把 order_items 也一起存入
         return orderRepository.save(order);
     }
 
@@ -61,5 +61,24 @@ public class OrderService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalStateException("找不到使用者"));
         return orderRepository.findByUserIdOrderByCreatedAtDesc(user.getId());
+    }
+
+    /**
+     * 取得所有訂單（管理員用）
+     */
+    public List<Order> getAllOrders() {
+        return orderRepository.findAllByOrderByCreatedAtDesc();
+    }
+
+    /**
+     * 更新訂單配送狀態（管理員用）
+     * status 可為：PENDING / CONFIRMED / SHIPPING / DELIVERED
+     */
+    @Transactional
+    public Order updateStatus(Long orderId, String status) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalStateException("找不到訂單 id=" + orderId));
+        order.setStatus(status);
+        return orderRepository.save(order);
     }
 }

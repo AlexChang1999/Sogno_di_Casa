@@ -29,6 +29,30 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    /** 取得本季主打商品 */
+    public List<ProductDto> findFeatured() {
+        return productRepository.findByIsFeaturedTrue()
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
+    /** 取得設計經典商品 */
+    public List<ProductDto> findClassic() {
+        return productRepository.findByIsClassicTrue()
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
+    /** 取得首頁 Hero 大輪播商品 */
+    public List<ProductDto> findHero() {
+        return productRepository.findByIsHeroTrue()
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
     /** 取得單一商品 */
     public ProductDto findById(Long id) {
         return productRepository.findById(id)
@@ -60,14 +84,24 @@ public class ProductService {
 
     /** 把 Request 的欄位複製到 Product 實體（null 不覆蓋） */
     private void applyRequest(ProductRequest req, Product p) {
-        if (req.getName()        != null) p.setName(req.getName());
-        if (req.getBrand()       != null) p.setBrand(req.getBrand());
-        if (req.getCategory()    != null) p.setCategory(req.getCategory());
-        if (req.getPrice()       != null) p.setPrice(req.getPrice());
-        if (req.getDescription() != null) p.setDescription(req.getDescription());
-        if (req.getMainImage()   != null) p.setMainImage(req.getMainImage());
-        if (req.getGalleryJson() != null) p.setGalleryJson(req.getGalleryJson());
-        if (req.getInStock()     != null) p.setInStock(req.getInStock());
+        if (req.getName()           != null) p.setName(req.getName());
+        if (req.getBrand()          != null) p.setBrand(req.getBrand());
+        if (req.getCategory()       != null) p.setCategory(req.getCategory());
+        if (req.getPrice()          != null) p.setPrice(req.getPrice());
+        if (req.getDescription()    != null) p.setDescription(req.getDescription());
+        if (req.getMainImage()      != null) p.setMainImage(req.getMainImage());
+        if (req.getGalleryJson()    != null) p.setGalleryJson(req.getGalleryJson());
+        if (req.getColorsJson()     != null) p.setColorsJson(req.getColorsJson());
+        if (req.getSpecsJson()       != null) p.setSpecsJson(req.getSpecsJson());
+        if (req.getBrandStory()      != null) p.setBrandStory(req.getBrandStory());
+        if (req.getWoodOptionsJson()!= null) p.setWoodOptionsJson(req.getWoodOptionsJson());
+        if (req.getWidthCm()        != null) p.setWidthCm(req.getWidthCm());
+        if (req.getDepthCm()        != null) p.setDepthCm(req.getDepthCm());
+        if (req.getHeightCm()       != null) p.setHeightCm(req.getHeightCm());
+        if (req.getIsFeatured()     != null) p.setIsFeatured(req.getIsFeatured());
+        if (req.getIsClassic()      != null) p.setIsClassic(req.getIsClassic());
+        if (req.getIsHero()         != null) p.setIsHero(req.getIsHero());
+        if (req.getInStock()        != null) p.setInStock(req.getInStock());
     }
 
     /** Product 實體 → ProductDto */
@@ -81,6 +115,16 @@ public class ProductService {
         dto.setDescription(p.getDescription());
         dto.setMainImage(p.getMainImage());
         dto.setGalleryJson(p.getGalleryJson());
+        dto.setColorsJson(p.getColorsJson());
+        dto.setSpecsJson(p.getSpecsJson());
+        dto.setBrandStory(p.getBrandStory());
+        dto.setWoodOptionsJson(p.getWoodOptionsJson());
+        dto.setWidthCm(p.getWidthCm());
+        dto.setDepthCm(p.getDepthCm());
+        dto.setHeightCm(p.getHeightCm());
+        dto.setIsFeatured(p.getIsFeatured());
+        dto.setIsClassic(p.getIsClassic());
+        dto.setIsHero(p.getIsHero());
         dto.setInStock(p.getInStock());
         dto.setCreatedAt(p.getCreatedAt());
         return dto;

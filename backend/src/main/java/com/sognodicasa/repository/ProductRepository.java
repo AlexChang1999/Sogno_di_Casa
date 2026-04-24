@@ -14,4 +14,13 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     // 依建立時間倒序排列（最新的排最前）
     List<Product> findAllByOrderByCreatedAtDesc();
+
+    // 查詢本季主打商品
+    List<Product> findByIsFeaturedTrue();
+
+    // 查詢設計經典商品
+    List<Product> findByIsClassicTrue();
+
+    // 查詢 Hero 大輪播商品
+    List<Product> findByIsHeroTrue();
 }

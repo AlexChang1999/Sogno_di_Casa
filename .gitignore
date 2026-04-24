@@ -1,1 +1,7 @@
-.claude/
+node_modules/
+target/
+*.class
+.env
+.idea/
+.vscode/
+pgAdmin*/

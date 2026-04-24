@@ -22,15 +22,33 @@ public class Order {
     private Long id;
 
     // 多筆訂單屬於同一個會員（多對一關聯）
-    // @JoinColumn 指定外鍵欄位名稱
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     // 訂單總金額（含稅含運費）
-    // BigDecimal 適合存金額，精度不會有浮點數誤差
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal total;
+
+    // 配送狀態：PENDING / CONFIRMED / SHIPPING / DELIVERED
+    @Column(length = 20)
+    private String status = "PENDING";
+
+    // 收件人姓名
+    @Column(name = "recipient_name", length = 100)
+    private String recipientName;
+
+    // 收件人電話
+    @Column(name = "recipient_phone", length = 20)
+    private String recipientPhone;
+
+    // 收件地址
+    @Column(name = "recipient_address", length = 300)
+    private String recipientAddress;
+
+    // 備註
+    @Column(name = "note", columnDefinition = "TEXT")
+    private String note;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();

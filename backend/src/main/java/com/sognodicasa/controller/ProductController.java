@@ -24,6 +24,7 @@ import java.util.UUID;
  * 商品 API
  *
  * 公開端點（不需登入）：GET /api/products、GET /api/products/{id}
+ *                        GET /api/products/featured、GET /api/products/classic
  * 管理員端點（需 ADMIN 角色）：POST、PUT、DELETE、upload-image
  */
 @RestController
@@ -33,7 +34,6 @@ public class ProductController {
 
     private final ProductService productService;
 
-    // 從 application.properties 讀取圖片上傳目錄
     @Value("${app.upload-dir:./uploads}")
     private String uploadDir;
 
@@ -42,19 +42,37 @@ public class ProductController {
 
     // ── 公開 API ──
 
-    /** GET /api/products — 取得所有商品（公開） */
+    /** GET /api/products — 取得所有商品 */
     @GetMapping
     public ResponseEntity<List<ProductDto>> getAll() {
         return ResponseEntity.ok(productService.findAll());
     }
 
-    /** GET /api/products/{id} — 取得單一商品（公開） */
+    /** GET /api/products/featured — 取得本季主打商品（首頁用） */
+    @GetMapping("/featured")
+    public ResponseEntity<List<ProductDto>> getFeatured() {
+        return ResponseEntity.ok(productService.findFeatured());
+    }
+
+    /** GET /api/products/classic — 取得設計經典商品（首頁用） */
+    @GetMapping("/classic")
+    public ResponseEntity<List<ProductDto>> getClassic() {
+        return ResponseEntity.ok(productService.findClassic());
+    }
+
+    /** GET /api/products/hero — 取得首頁 Hero 大輪播商品 */
+    @GetMapping("/hero")
+    public ResponseEntity<List<ProductDto>> getHero() {
+        return ResponseEntity.ok(productService.findHero());
+    }
+
+    /** GET /api/products/{id} — 取得單一商品 */
     @GetMapping("/{id}")
     public ResponseEntity<ProductDto> getById(@PathVariable Long id) {
         return ResponseEntity.ok(productService.findById(id));
     }
 
-    // ── 管理員 API（需要 ADMIN 角色，由 @PreAuthorize 控制）──
+    // ── 管理員 API ──
 
     /** POST /api/products — 新增商品 */
     @PostMapping
@@ -78,30 +96,23 @@ public class ProductController {
         return ResponseEntity.ok(Map.of("message", "商品已刪除"));
     }
 
-    /**
-     * POST /api/products/upload-image — 上傳圖片（multipart/form-data）
-     * 圖片儲存到 ./uploads/ 資料夾，回傳可存取的 URL
-     */
+    /** POST /api/products/upload-image — 上傳圖片 */
     @PostMapping("/upload-image")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file) throws IOException {
-        // 建立 uploads 資料夾（若不存在）
         Path dir = Paths.get(uploadDir);
         Files.createDirectories(dir);
 
-        // 產生唯一檔名，避免覆蓋
         String ext = StringUtils.getFilenameExtension(file.getOriginalFilename());
         if (ext == null || ext.isEmpty()) ext = "jpg";
         String filename = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8) + "." + ext;
         Path dest = dir.resolve(filename);
         Files.copy(file.getInputStream(), dest);
 
-        // 回傳可公開存取的 URL
         String url = "http://localhost:" + serverPort + "/uploads/" + filename;
         return ResponseEntity.ok(Map.of("url", url));
     }
 
-    // 全域例外處理
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<Map<String, String>> handleNotFound(NoSuchElementException e) {
         return ResponseEntity.status(404).body(Map.of("message", e.getMessage()));
