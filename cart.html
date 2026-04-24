@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>購物車 — FORMA</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
   <!-- NAVBAR -->
@@ -122,12 +126,17 @@
             </div>
 
             <!-- 運費政策說明 -->
-            <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--color-border);font-size:.78rem;color:var(--color-muted);line-height:1.8;">
-              <p style="font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--color-dark);margin-bottom:.6rem;">運費說明</p>
+            <div
+              style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--color-border);font-size:.78rem;color:var(--color-muted);line-height:1.8;">
+              <p
+                style="font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--color-dark);margin-bottom:.6rem;">
+                運費說明</p>
               <p>・訂單滿 NT$50,000 享全台灣本島<strong>免運費</strong>到府安裝</p>
               <p>・未達門檻：台灣本島 NT$3,000；離島（澎湖、金門、馬祖）NT$5,000</p>
               <p>・預計 7–14 個工作天送達，含專業安裝服務</p>
-              <p style="margin-top:.8rem;">本公司提供 <strong>30 天滿意保證</strong>，超出《消費者保護法》第19條法定7天猶豫期。收到商品起30天內如不滿意，可申請退貨並全額退款。家具類商品因體積龐大，退貨運費由消費者負擔（往返合計約 NT$3,000–5,000）。商品須保持全新未使用狀態方可辦理退貨。</p>
+              <p style="margin-top:.8rem;">本公司提供 <strong>30
+                  天滿意保證</strong>，超出《消費者保護法》第19條法定7天猶豫期。收到商品起30天內如不滿意，可申請退貨並全額退款。家具類商品因體積龐大，退貨運費由消費者負擔（往返合計約
+                NT$3,000–5,000）。商品須保持全新未使用狀態方可辦理退貨。</p>
               <p>如需協助請聯繫：<strong>service@forma.com.tw</strong>｜04-2234-5678（週一至週五 10:00–18:00，公司地址：台中市西區精誠路 1 號）</p>
             </div>
           </div>
@@ -146,23 +155,40 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
-          <div style="background:var(--color-bg);padding:1rem;margin-bottom:1rem;font-size:.85rem;">
-            <div style="display:flex;justify-content:space-between;margin-bottom:.3rem;">
-              <span style="color:var(--color-muted);">會員姓名</span>
-              <strong id="modalUserName">—</strong>
-            </div>
-            <div style="display:flex;justify-content:space-between;">
-              <span style="color:var(--color-muted);">電子郵件</span>
-              <span id="modalUserEmail" style="color:var(--color-dark);">—</span>
-            </div>
+          <div style="background:var(--color-bg);padding:1rem;margin-bottom:1rem;font-size:.85rem;border-radius:4px;">
+            <p style="margin-bottom:0.5rem;font-size:.9rem;">共 <strong id="modalItemCount">0</strong> 件商品，合計 <strong
+                id="modalTotal">NT$ 0</strong>。</p>
           </div>
-          <p style="font-size:.9rem;">共 <strong id="modalItemCount">0</strong> 件商品，合計 <strong id="modalTotal">NT$ 0</strong>（含稅及運費）。</p>
-          <p class="text-muted small">訂單確認後將以電子郵件通知配送細節。此為展示頁面，實際結帳需串接金流服務。</p>
+
+          <form id="checkoutForm">
+            <div class="mb-3">
+              <label class="form-label text-muted small">收件人姓名 <span class="text-danger">*</span></label>
+              <input type="text" id="checkoutName" class="form-control form-control-sm" placeholder="請輸入收件人姓名" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label text-muted small">聯絡電話 <span class="text-danger">*</span></label>
+              <input type="tel" id="checkoutPhone" class="form-control form-control-sm" placeholder="例如：0912345678"
+                required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label text-muted small">收件地址 <span class="text-danger">*</span></label>
+              <input type="text" id="checkoutAddress" class="form-control form-control-sm" placeholder="請輸入完整配送地址"
+                required>
+            </div>
+            <div class="mb-2">
+              <label class="form-label text-muted small">訂單備註 (選填)</label>
+              <textarea id="checkoutNote" class="form-control form-control-sm" rows="2"
+                placeholder="大樓管理員代收、特殊配送時間等要求"></textarea>
+            </div>
+          </form>
+
+          <div id="checkoutErrorMsg" class="alert alert-danger d-none py-2 mt-2 mb-0" style="font-size:0.85rem;"></div>
         </div>
         <div class="modal-footer border-0">
           <button type="button" class="btn-forma-outline-sm" data-bs-dismiss="modal">取消</button>
           <button type="button" class="btn-forma-sm-dark" onclick="confirmOrder()">確認訂單</button>
         </div>
+
       </div>
     </div>
   </div>
@@ -181,4 +207,5 @@
   <script src="auth.js"></script>
   <script src="cart-page.js"></script>
 </body>
+
 </html>

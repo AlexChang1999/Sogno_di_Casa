@@ -54,13 +54,30 @@ async function login(email, password) {
   }
 }
 
-// ── 註冊 ──
-async function register(name, email, password) {
+// ── 步驟一：發送驗證碼 ──
+async function sendCode(name, email, password) {
+  try {
+    const res = await fetch(`${API_BASE}/api/auth/send-code`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password })
+    });
+    const data = await res.json();
+    if (!res.ok) return { ok: false, msg: data.message || '發送驗證碼失敗' };
+    return { ok: true, msg: data.message };
+  } catch (e) {
+    return { ok: false, msg: '無法連線到伺服器，請確認後端已啟動' };
+  }
+}
+
+// ── 步驟二：正式註冊 ──
+// 修改：參數改為 email 與 code
+async function register(email, code) {
   try {
     const res = await fetch(`${API_BASE}/api/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password })
+      body: JSON.stringify({ email, code })
     });
     const data = await res.json();
     if (!res.ok) return { ok: false, msg: data.message || '註冊失敗' };

@@ -1,5 +1,8 @@
+
 package com.sognodicasa.service;
 
+import com.sognodicasa.model.OrderHistory;
+import com.sognodicasa.repository.OrderHistoryRepository;
 import com.sognodicasa.dto.OrderRequest;
 import com.sognodicasa.model.Order;
 import com.sognodicasa.model.OrderItem;
@@ -18,6 +21,7 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
+    private final OrderHistoryRepository orderHistoryRepository;
 
     /**
      * 建立新訂單（含收件資訊）
@@ -35,7 +39,14 @@ public class OrderService {
         order.setRecipientPhone(req.getRecipientPhone());
         order.setRecipientAddress(req.getRecipientAddress());
         order.setNote(req.getNote());
-        order.setStatus("PENDING"); // 預設狀態：待處理
+        order.setStatus("待處理"); // 預設狀態：待處理
+
+        // 自動判斷是否為測試訂單
+        if (req.getNote() != null && req.getNote().contains("測試")) {
+            order.setIsTest(true);
+        } else {
+            order.setIsTest(false);
+        }
 
         // 把每個商品明細加入訂單
         req.getItems().forEach(itemDto -> {
@@ -71,6 +82,22 @@ public class OrderService {
     }
 
     /**
+     * 透過 ID 尋找單一訂單
+     */
+    public Order findById(Long orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalStateException("找不到訂單 id=" + orderId));
+    }
+
+    /**
+     * 儲存或更新訂單
+     */
+    @Transactional
+    public Order save(Order order) {
+        return orderRepository.save(order);
+    }
+
+    /**
      * 更新訂單配送狀態（管理員用）
      * status 可為：PENDING / CONFIRMED / SHIPPING / DELIVERED
      */
@@ -81,4 +108,33 @@ public class OrderService {
         order.setStatus(status);
         return orderRepository.save(order);
     }
-}
+
+    /**
+     * 新增一筆歷史紀錄
+     */
+    @Transactional
+    public void addHistory(Order order, String operator, String action) {
+        orderHistoryRepository.save(new OrderHistory(order, operator, action));
+    }
+
+    /**
+     * 取得某訂單的歷史紀錄
+     */
+    public List<OrderHistory> getOrderHistory(Long orderId) {
+        return orderHistoryRepository.findByOrderIdOrderByCreatedAtDesc(orderId);
+    }
+
+    /**
+     * 刪除訂單（包含其關聯的歷史紀錄與明細）
+     */
+    @Transactional
+    public void deleteOrder(Long orderId) {
+        // 先刪除該訂單的所有歷史紀錄
+        List<OrderHistory> history = orderHistoryRepository.findByOrderIdOrderByCreatedAtDesc(orderId);
+        orderHistoryRepository.deleteAll(history);
+
+        // 執行刪除訂單（JPA 會根據 CascadeType 自動處理 OrderItem）
+        orderRepository.deleteById(orderId);
+    }
+
+} // <--- 注意看這裡！整個 OrderService 類別的「最後一個大括號」必須包在最外面！

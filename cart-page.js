@@ -145,14 +145,34 @@ function checkout() {
 
   document.getElementById('modalItemCount').textContent = cart.reduce((s, i) => s + i.qty, 0);
   document.getElementById('modalTotal').textContent     = `NT$ ${total.toLocaleString()}`;
-  document.getElementById('modalUserName').textContent  = user.name;
-  document.getElementById('modalUserEmail').textContent = user.email;
 
   const modal = new bootstrap.Modal(document.getElementById('checkoutModal'));
+  // 預填資料並清空舊錯誤
+  document.getElementById('checkoutName').value = user.name || '';
+  document.getElementById('checkoutPhone').value = '';
+  document.getElementById('checkoutAddress').value = '';
+  document.getElementById('checkoutNote').value = '';
+  document.getElementById('checkoutErrorMsg').classList.add('d-none');
   modal.show();
 }
 
 async function confirmOrder() {
+  // 1. 取得使用者輸入的收件資料
+  const name    = document.getElementById('checkoutName').value.trim();
+  const phone   = document.getElementById('checkoutPhone').value.trim();
+  const address = document.getElementById('checkoutAddress').value.trim();
+  const note    = document.getElementById('checkoutNote').value.trim();
+  const errorMsg = document.getElementById('checkoutErrorMsg');
+
+  // 2. 基礎前端驗證
+  if (!name || !phone || !address) {
+    errorMsg.textContent = '請填寫完整的收件資訊（姓名、電話、地址）';
+    errorMsg.classList.remove('d-none');
+    return;
+  }
+  errorMsg.classList.add('d-none');
+
+  // 3. 計算總金額
   const cart     = getCart();
   const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
   const discount = Math.round(subtotal * activeDiscount / 100);
@@ -161,24 +181,74 @@ async function confirmOrder() {
   const tax      = Math.round(discounted * 0.05);
   const total    = discounted + shipping + tax;
 
-  // 呼叫後端 API 儲存訂單到 PostgreSQL
-  await saveOrderToUser(cart, total);
-  saveCart([]);
-  bootstrap.Modal.getInstance(document.getElementById('checkoutModal'))?.hide();
+  // 4. 組裝符合 Spring Boot OrderRequest 的資料格式
+  const payload = {
+    items: cart.map(item => ({
+      productId: item.id || item._key,
+      productName: item.name,
+      brand: item.brand,
+      price: item.price,
+      qty: item.qty,
+      color: item.variant ? item.variant.color : null,
+      wood: item.variant ? item.variant.wood : null
+    })),
+    total: total,
+    recipientName: name,
+    recipientPhone: phone,
+    recipientAddress: address,
+    note: note
+  };
 
-  const user = getCurrentUser();
-  // 顯示成功訊息
-  document.querySelector('.container').innerHTML = `
-    <div class="text-center py-5" style="animation: fadeInUp .5s ease both;">
-      <i class="bi bi-check-circle" style="font-size:4rem;color:var(--color-accent);display:block;margin-bottom:1.5rem;"></i>
-      <h2 style="font-family:var(--font-display);font-weight:300;font-size:2.2rem;margin-bottom:1rem;">訂單已確認</h2>
-      <p style="color:var(--color-muted);margin-bottom:.5rem;">感謝您的訂購，<strong>${user?.name || ''}</strong>！</p>
-      <p style="color:var(--color-muted);margin-bottom:2rem;">我們將於 1-2 個工作天內以 ${user?.email || ''} 與您確認配送細節。</p>
-      <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
-        <a href="account.html" class="btn-forma">查看我的訂單</a>
-        <a href="products.html" class="btn-forma-outline">繼續選購</a>
-      </div>
-    </div>`;
+  // 更改按鈕狀態防止重複點擊
+  const btn = document.querySelector('#checkoutModal .btn-forma-sm-dark');
+  const originText = btn.textContent;
+  btn.textContent = '處理中...';
+  btn.disabled = true;
+
+  try {
+    const token = localStorage.getItem('forma_token');
+    const API_BASE = 'http://localhost:8080'; // 確保網址與後端一致
+    
+    const res = await fetch(`${API_BASE}/api/orders`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.message || '訂單建立失敗，請確認後端連線');
+    }
+
+    // 5. 成功建立訂單：清空購物車、關閉 Modal 並顯示成功畫面
+    saveCart([]);
+    bootstrap.Modal.getInstance(document.getElementById('checkoutModal'))?.hide();
+
+    const user = getCurrentUser();
+    document.querySelector('.container').innerHTML = `
+      <div class="text-center py-5" style="animation: fadeInUp .5s ease both;">
+        <i class="bi bi-check-circle" style="font-size:4rem;color:var(--color-accent);display:block;margin-bottom:1.5rem;"></i>
+        <h2 style="font-family:var(--font-display);font-weight:300;font-size:2.2rem;margin-bottom:1rem;">訂單已確認</h2>
+        <p style="color:var(--color-muted);margin-bottom:.5rem;">感謝您的訂購，<strong>${user?.name || ''}</strong>！</p>
+        <p style="color:var(--color-muted);margin-bottom:2rem;">我們將於 1-2 個工作天內與您確認 <strong>${address}</strong> 的配送細節。</p>
+        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+          <a href="account.html" class="btn-forma">查看我的訂單</a>
+          <a href="products.html" class="btn-forma-outline">繼續選購</a>
+        </div>
+      </div>`;
+      
+  } catch (error) {
+    // 顯示錯誤訊息
+    errorMsg.textContent = error.message;
+    errorMsg.classList.remove('d-none');
+  } finally {
+    // 恢復按鈕狀態
+    btn.textContent = originText;
+    btn.disabled = false;
+  }
 }
 
 // Init

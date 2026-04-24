@@ -1,36 +1,50 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FORMA | 商家管理後台</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Jost:wght@300;400;500&display=swap"
+    rel="stylesheet">
   <style>
     :root {
       --bg: #141414;
       --sidebar: #171717;
       --card: #1f1f1f;
       --card-hover: #262626;
-      --border: #333333;           /* 原 #2a2a2a 太暗，調亮以增加卡片邊界感 */
+      --border: #333333;
+      /* 原 #2a2a2a 太暗，調亮以增加卡片邊界感 */
       --border-strong: #444444;
-      --text: #f0ead9;              /* 原 #e8e0d4 微調更亮 */
-      --text-soft: #c8c1b3;         /* 新增：次要文字層級，比 muted 亮 */
-      --muted: #a59d8f;             /* 原 #7a7269 對比 3.5:1 → 新值對比 ~6:1 通過 WCAG AA */
-      --accent: #d4c39e;             /* 金色系強調色，用於 label、連結、active 狀態 */
+      --text: #f0ead9;
+      /* 原 #e8e0d4 微調更亮 */
+      --text-soft: #c8c1b3;
+      /* 新增：次要文字層級，比 muted 亮 */
+      --muted: #a59d8f;
+      /* 原 #7a7269 對比 3.5:1 → 新值對比 ~6:1 通過 WCAG AA */
+      --accent: #d4c39e;
+      /* 金色系強調色，用於 label、連結、active 狀態 */
       --accent-soft: rgba(212, 195, 158, 0.14);
       --accent-strong: #e8d4a8;
       --ok: #7cc389;
       --danger: #e07676;
     }
-    * { box-sizing: border-box; }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       background: var(--bg);
       color: var(--text);
       font-family: 'Jost', sans-serif;
-      font-weight: 400;                /* 原 300 太細 → 400 更清楚 */
-      font-size: 15px;                 /* 提高基礎字級（原 Bootstrap 預設 16px，Jost 偏小，補償一下） */
+      font-weight: 400;
+      /* 原 300 太細 → 400 更清楚 */
+      font-size: 15px;
+      /* 提高基礎字級（原 Bootstrap 預設 16px，Jost 偏小，補償一下） */
       line-height: 1.55;
       margin: 0;
       -webkit-font-smoothing: antialiased;
@@ -39,7 +53,8 @@
     /* ── 側邊欄 ── */
     .sidebar {
       position: fixed;
-      top: 0; left: 0;
+      top: 0;
+      left: 0;
       width: 230px;
       height: 100vh;
       background: var(--sidebar);
@@ -48,16 +63,19 @@
       flex-direction: column;
       z-index: 100;
     }
+
     .sidebar-logo {
       padding: 28px 24px 20px;
       border-bottom: 1px solid var(--border);
     }
+
     .sidebar-logo .brand {
       font-family: 'Cormorant Garamond', serif;
       font-size: 1.6rem;
       letter-spacing: .2em;
       color: var(--text);
     }
+
     .sidebar-logo .sub {
       font-size: .72rem;
       letter-spacing: .25em;
@@ -66,10 +84,12 @@
       text-transform: uppercase;
       font-weight: 500;
     }
+
     .sidebar-nav {
       padding: 16px 12px;
       flex: 1;
     }
+
     .nav-item {
       display: flex;
       align-items: center;
@@ -90,19 +110,29 @@
       text-align: left;
       font-weight: 400;
     }
-    .nav-item:hover { color: var(--text); background: rgba(255,255,255,.05); }
+
+    .nav-item:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, .05);
+    }
+
     .nav-item.active {
       color: var(--accent);
       background: var(--accent-soft);
       border-left: 2px solid var(--accent);
       padding-left: 14px;
     }
-    .nav-item i { font-size: 1.05rem; }
+
+    .nav-item i {
+      font-size: 1.05rem;
+    }
+
     .sidebar-footer {
       padding: 18px;
       border-top: 1px solid var(--border);
       font-size: .82rem;
     }
+
     .sidebar-footer .admin-email {
       color: var(--text-soft);
       margin-bottom: 10px;
@@ -117,12 +147,14 @@
       padding: 32px 36px;
       min-height: 100vh;
     }
+
     .page-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 28px;
     }
+
     .page-header h2 {
       font-family: 'Cormorant Garamond', serif;
       font-size: 2rem;
@@ -131,6 +163,7 @@
       margin: 0;
       font-weight: 600;
     }
+
     .count-badge {
       background: var(--accent-soft);
       color: var(--accent);
@@ -157,7 +190,12 @@
       transition: all .2s;
       font-weight: 500;
     }
-    .btn-primary-admin:hover { background: var(--accent-strong); transform: translateY(-1px); }
+
+    .btn-primary-admin:hover {
+      background: var(--accent-strong);
+      transform: translateY(-1px);
+    }
+
     .btn-outline-admin {
       background: transparent;
       color: var(--text);
@@ -172,7 +210,12 @@
       transition: all .2s;
       font-weight: 400;
     }
-    .btn-outline-admin:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+
+    .btn-outline-admin:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-soft);
+    }
 
     /* ── 商品表格 ── */
     .product-table {
@@ -180,6 +223,7 @@
       border-collapse: collapse;
       font-size: .95rem;
     }
+
     .product-table th {
       text-transform: uppercase;
       letter-spacing: .1em;
@@ -191,19 +235,30 @@
       text-align: left;
       background: var(--accent-soft);
     }
+
     .product-table td {
       padding: 16px 16px;
       border-bottom: 1px solid var(--border);
       vertical-align: middle;
     }
-    .product-table tr:hover td { background: rgba(255,255,255,.03); }
-    .product-table .product-name { font-weight: 500; color: var(--text); font-size: 1rem; }
+
+    .product-table tr:hover td {
+      background: rgba(255, 255, 255, .03);
+    }
+
+    .product-table .product-name {
+      font-weight: 500;
+      color: var(--text);
+      font-size: 1rem;
+    }
+
     .product-table .product-desc {
       font-size: .85rem;
       color: var(--text-soft);
       margin-top: 4px;
       line-height: 1.5;
     }
+
     .product-thumb {
       width: 60px;
       height: 60px;
@@ -212,6 +267,7 @@
       background: var(--border);
       border: 1px solid var(--border);
     }
+
     .cat-badge {
       display: inline-block;
       padding: 4px 12px;
@@ -223,13 +279,21 @@
       color: var(--text-soft);
       font-weight: 400;
     }
+
     .stock-badge {
       font-size: .82rem;
       letter-spacing: .05em;
       font-weight: 500;
     }
-    .stock-yes { color: var(--ok); }
-    .stock-no  { color: var(--danger); }
+
+    .stock-yes {
+      color: var(--ok);
+    }
+
+    .stock-no {
+      color: var(--danger);
+    }
+
     .action-btn {
       border: 1px solid var(--border-strong);
       background: transparent;
@@ -242,8 +306,19 @@
       margin-right: 4px;
       font-weight: 400;
     }
-    .action-btn:hover { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
-    .action-btn.del:hover { color: var(--danger); border-color: var(--danger); background: rgba(224, 118, 118, 0.08); }
+
+    .action-btn:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .action-btn.del:hover {
+      color: var(--danger);
+      border-color: var(--danger);
+      background: rgba(224, 118, 118, 0.08);
+    }
+
     .empty-row td {
       text-align: center;
       color: var(--muted);
@@ -258,9 +333,12 @@
       border: 1px solid var(--border);
       border-radius: 8px;
     }
-    .modal-header, .modal-footer {
+
+    .modal-header,
+    .modal-footer {
       border-color: var(--border) !important;
     }
+
     .modal-title {
       font-family: 'Cormorant Garamond', serif;
       font-size: 1.5rem;
@@ -268,6 +346,7 @@
       font-weight: 600;
       color: var(--text);
     }
+
     .form-label {
       font-size: .82rem;
       letter-spacing: .1em;
@@ -276,7 +355,9 @@
       margin-bottom: 8px;
       font-weight: 500;
     }
-    .form-control, .form-select {
+
+    .form-control,
+    .form-select {
       background: #0e0e0e !important;
       color: var(--text) !important;
       border-color: var(--border-strong) !important;
@@ -284,17 +365,33 @@
       font-size: .95rem;
       padding: 9px 12px;
     }
-    .form-control-sm, .form-select-sm {
+
+    .form-control-sm,
+    .form-select-sm {
       font-size: .88rem !important;
       padding: 6px 10px !important;
     }
-    .form-control:focus, .form-select:focus {
-      box-shadow: 0 0 0 2px rgba(212,195,158,.3);
+
+    .form-control:focus,
+    .form-select:focus {
+      box-shadow: 0 0 0 2px rgba(212, 195, 158, .3);
       border-color: var(--accent) !important;
     }
-    .form-control::placeholder { color: var(--muted) !important; opacity: .9; }
-    .form-check-label { color: var(--text); font-size: .95rem; }
-    .form-check-input:checked { background-color: var(--accent); border-color: var(--accent); }
+
+    .form-control::placeholder {
+      color: var(--muted) !important;
+      opacity: .9;
+    }
+
+    .form-check-label {
+      color: var(--text);
+      font-size: .95rem;
+    }
+
+    .form-check-input:checked {
+      background-color: var(--accent);
+      border-color: var(--accent);
+    }
 
     /* 圖片上傳區 */
     .upload-zone {
@@ -307,12 +404,20 @@
       color: var(--text-soft);
       font-size: .92rem;
     }
-    .upload-zone:hover { border-color: var(--accent); background: rgba(200,184,154,.04); color: var(--text); }
-    .upload-zone input[type="file"] { display: none; }
+
+    .upload-zone:hover {
+      border-color: var(--accent);
+      background: rgba(200, 184, 154, .04);
+      color: var(--text);
+    }
+
+    .upload-zone input[type="file"] {
+      display: none;
+    }
 
     /* 顏色款式列 */
     .variant-row {
-      background: rgba(255,255,255,.04);
+      background: rgba(255, 255, 255, .04);
       border: 1px solid var(--border-strong);
       border-radius: 8px;
       padding: 12px 14px;
@@ -321,6 +426,7 @@
       gap: 10px;
       align-items: center;
     }
+
     .variant-preview {
       width: 48px;
       height: 48px;
@@ -329,6 +435,7 @@
       background: var(--border-strong);
       flex-shrink: 0;
     }
+
     .variant-upload-btn {
       white-space: nowrap;
       border: 1px solid var(--border-strong);
@@ -342,7 +449,12 @@
       transition: all .15s;
       flex-shrink: 0;
     }
-    .variant-upload-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+    .variant-upload-btn:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
     .variant-del-btn {
       border: none;
       background: transparent;
@@ -353,7 +465,10 @@
       transition: color .15s;
       flex-shrink: 0;
     }
-    .variant-del-btn:hover { color: #e06c6c; }
+
+    .variant-del-btn:hover {
+      color: #e06c6c;
+    }
 
     /* 設定頁 */
     .setting-card {
@@ -363,8 +478,9 @@
       padding: 32px;
       max-width: 520px;
       margin-bottom: 24px;
-      box-shadow: 0 2px 8px rgba(0,0,0,.2);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .2);
     }
+
     .setting-card h5 {
       font-family: 'Cormorant Garamond', serif;
       font-size: 1.4rem;
@@ -372,6 +488,7 @@
       color: var(--accent);
       margin-bottom: 8px;
     }
+
     .setting-card p {
       font-size: .92rem;
       color: var(--text-soft);
@@ -380,7 +497,13 @@
     }
 
     /* 通知 Toast */
-    .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+    }
+
     .admin-toast {
       background: var(--card);
       border: 1px solid var(--border-strong);
@@ -389,13 +512,30 @@
       border-radius: 8px;
       font-size: .95rem;
       font-weight: 500;
-      box-shadow: 0 4px 24px rgba(0,0,0,.6);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, .6);
       animation: slideIn .2s ease;
       margin-bottom: 8px;
     }
-    .admin-toast.success { border-left: 4px solid #6dbf87; }
-    .admin-toast.error   { border-left: 4px solid #e06c6c; }
-    @keyframes slideIn { from { opacity:0; transform: translateX(20px); } to { opacity:1; transform: translateX(0); } }
+
+    .admin-toast.success {
+      border-left: 4px solid #6dbf87;
+    }
+
+    .admin-toast.error {
+      border-left: 4px solid #e06c6c;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
 
     /* 載入中 */
     .loading-row td {
@@ -406,470 +546,518 @@
     }
   </style>
 </head>
+
 <body>
 
-<!-- ─── 通知 Toast ─── -->
-<div class="toast-container" id="toastContainer"></div>
+  <!-- ─── 通知 Toast ─── -->
+  <div class="toast-container" id="toastContainer"></div>
 
-<!-- ─── 側邊欄 ─── -->
-<aside class="sidebar">
-  <div class="sidebar-logo">
-    <div class="brand">FORMA</div>
-    <div class="sub">Admin Panel</div>
-  </div>
-  <nav class="sidebar-nav">
-    <button class="nav-item active" onclick="showSection('products', this)">
-      <i class="bi bi-grid-3x3-gap"></i> 商品管理
-    </button>
-    <button class="nav-item" onclick="showSection('orders', this)">
-      <i class="bi bi-receipt"></i> 訂單查覽
-    </button>
-    <button class="nav-item" onclick="showSection('brands', this)">
-      <i class="bi bi-building"></i> 品牌管理
-    </button>
-    <button class="nav-item" onclick="showSection('designers', this)">
-      <i class="bi bi-person-badge"></i> 設計師管理
-    </button>
-    <button class="nav-item" onclick="showSection('settings', this)">
-      <i class="bi bi-gear"></i> 設定
-    </button>
-  </nav>
-  <div class="sidebar-footer">
-    <div class="admin-email" id="adminEmail">載入中...</div>
-    <a href="index.html" class="btn-outline-admin d-block text-center text-decoration-none">
-      ← 返回網站
-    </a>
-  </div>
-</aside>
-
-<!-- ─── 主內容區 ─── -->
-<main class="main">
-
-  <!-- 商品管理 -->
-  <section id="section-products">
-    <div class="page-header">
-      <h2>商品管理 <span class="count-badge" id="productCount">0</span></h2>
-      <button class="btn-primary-admin" onclick="openAddModal()">
-        <i class="bi bi-plus-lg me-1"></i> 新增商品
+  <!-- ─── 側邊欄 ─── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="brand">FORMA</div>
+      <div class="sub">Admin Panel</div>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" onclick="showSection('products', this)">
+        <i class="bi bi-grid-3x3-gap"></i> 商品管理
       </button>
-    </div>
-
-    <div style="overflow-x:auto;">
-      <table class="product-table">
-        <thead>
-          <tr>
-            <th style="width:70px;">圖片</th>
-            <th>商品資訊</th>
-            <th>品牌</th>
-            <th>類別</th>
-            <th>售價</th>
-            <th>庫存</th>
-            <th style="width:130px;">操作</th>
-          </tr>
-        </thead>
-        <tbody id="productTableBody">
-          <tr class="loading-row"><td colspan="7"><i class="bi bi-arrow-repeat me-2"></i>載入中...</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- 訂單查覽 -->
-  <section id="section-orders" style="display:none;">
-    <div class="page-header">
-      <h2>訂單查覽</h2>
-    </div>
-    <div id="orderContent">
-      <div style="color:var(--muted); font-size:.9rem; padding:40px 0;">載入中…</div>
-    </div>
-  </section>
-
-  <!-- 設定 -->
-  <section id="section-settings" style="display:none;">
-    <div class="page-header">
-      <h2>設定</h2>
-    </div>
-
-    <div class="setting-card">
-      <h5><i class="bi bi-shield-lock me-2"></i>升級管理員帳號</h5>
-      <p>輸入要升級的帳號 Email 與管理員設定密碼（在 application.properties 的 <code>app.admin-setup-secret</code>）</p>
-      <div class="mb-3">
-        <label class="form-label">帳號 Email</label>
-        <input type="email" class="form-control" id="setupEmail" placeholder="admin@forma.com">
-      </div>
-      <div class="mb-3">
-        <label class="form-label">管理員設定密碼</label>
-        <input type="password" class="form-control" id="setupSecret" placeholder="FORMA_ADMIN_2025">
-      </div>
-      <button class="btn-primary-admin" onclick="setupAdmin()">升級為管理員</button>
-    </div>
-
-    <div class="setting-card">
-      <h5><i class="bi bi-door-open me-2"></i>登出</h5>
-      <p>登出後台，返回一般會員狀態。</p>
-      <button class="btn-outline-admin" onclick="doLogout()">登出後台</button>
-    </div>
-  </section>
-
-  <!-- 品牌管理 -->
-  <section id="section-brands" style="display:none;">
-    <div class="page-header">
-      <h2>品牌管理 <span class="count-badge" id="brandCount">0</span></h2>
-      <button class="btn-primary-admin" onclick="openAddBrandModal()">
-        <i class="bi bi-plus-lg me-1"></i> 新增品牌
+      <button class="nav-item" onclick="showSection('orders', this)">
+        <i class="bi bi-receipt"></i> 訂單查覽
       </button>
-    </div>
-    <div style="overflow-x:auto;">
-      <table class="product-table">
-        <thead>
-          <tr>
-            <th>品牌名稱</th>
-            <th>國家</th>
-            <th>創立年份</th>
-            <th>Tagline</th>
-            <th style="width:130px;">操作</th>
-          </tr>
-        </thead>
-        <tbody id="brandTableBody">
-          <tr class="loading-row"><td colspan="5"><i class="bi bi-arrow-repeat me-2"></i>載入中...</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- 設計師管理 -->
-  <section id="section-designers" style="display:none;">
-    <div class="page-header">
-      <h2>設計師管理 <span class="count-badge" id="designerCount">0</span></h2>
-      <button class="btn-primary-admin" onclick="openAddDesignerModal()">
-        <i class="bi bi-plus-lg me-1"></i> 新增設計師
+      <button class="nav-item" onclick="showSection('brands', this)">
+        <i class="bi bi-building"></i> 品牌管理
       </button>
+      <button class="nav-item" onclick="showSection('designers', this)">
+        <i class="bi bi-person-badge"></i> 設計師管理
+      </button>
+      <button class="nav-item" onclick="showSection('settings', this)">
+        <i class="bi bi-gear"></i> 設定
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="admin-email" id="adminEmail">載入中...</div>
+      <a href="index.html" class="btn-outline-admin d-block text-center text-decoration-none">
+        ← 返回網站
+      </a>
     </div>
-    <div style="overflow-x:auto;">
-      <table class="product-table">
-        <thead>
-          <tr>
-            <th>姓名</th>
-            <th>國籍</th>
-            <th>生卒年</th>
-            <th>合作品牌</th>
-            <th style="width:130px;">操作</th>
-          </tr>
-        </thead>
-        <tbody id="designerTableBody">
-          <tr class="loading-row"><td colspan="5"><i class="bi bi-arrow-repeat me-2"></i>載入中...</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
+  </aside>
 
-</main>
+  <!-- ─── 主內容區 ─── -->
+  <main class="main">
 
-<!-- ─── 新增 / 編輯商品 Modal ─── -->
-<div class="modal fade" id="productModal" tabindex="-1">
-  <div class="modal-dialog modal-lg modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalTitle">新增商品</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body p-4">
-        <form id="productForm" onsubmit="return false;">
-
-          <!-- 基本資料 -->
-          <div class="row g-3 mb-4">
-            <div class="col-md-8">
-              <label class="form-label">商品名稱 *</label>
-              <input type="text" class="form-control" id="f_name" placeholder="例：Eames Lounge Chair" required>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">品牌</label>
-              <input type="text" class="form-control" id="f_brand" placeholder="例：Herman Miller">
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">類別</label>
-              <select class="form-select" id="f_category">
-                <option value="">未分類</option>
-                <option value="chair">椅子</option>
-                <option value="sofa">沙發</option>
-                <option value="table">桌子</option>
-                <option value="storage">收納</option>
-              </select>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">售價 (NT$) *</label>
-              <input type="number" class="form-control" id="f_price" min="0" placeholder="128000" required>
-            </div>
-            <div class="col-md-4 d-flex align-items-end">
-              <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" id="f_inStock" checked>
-                <label class="form-check-label" for="f_inStock" style="font-size:.82rem;">有現貨</label>
-              </div>
-            </div>
-
-            <!-- 首頁展示設定（3 個獨立 checkbox） -->
-            <div class="col-12">
-              <label class="form-label mb-2" style="font-size:.82rem;">首頁展示（可多選）</label>
-              <div class="d-flex gap-4 flex-wrap" style="font-size:.82rem;">
-                <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" id="f_isFeatured">
-                  <label class="form-check-label" for="f_isFeatured">本季主打</label>
-                </div>
-                <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" id="f_isClassic">
-                  <label class="form-check-label" for="f_isClassic">設計經典</label>
-                </div>
-                <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" id="f_isHero">
-                  <label class="form-check-label" for="f_isHero">Hero 大輪播</label>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-12">
-              <label class="form-label">商品說明</label>
-              <textarea class="form-control" id="f_description" rows="3"
-                placeholder="描述材質、尺寸、設計故事..."></textarea>
-            </div>
-          </div>
-
-          <!-- 主圖 -->
-          <div class="mb-4">
-            <label class="form-label">主圖（顯示於列表頁）</label>
-            <div class="d-flex gap-3 align-items-start">
-              <div class="flex-grow-1">
-                <input type="text" class="form-control mb-2" id="f_mainImage"
-                  placeholder="貼上圖片 URL，或點右側「上傳」"
-                  oninput="updateMainPreview(this.value)">
-                <label class="upload-zone" style="padding:12px; text-align:left;">
-                  <i class="bi bi-cloud-upload me-2"></i>
-                  <span style="font-size:.8rem; color:var(--muted);">點擊選擇圖片上傳（JPG / PNG）</span>
-                  <input type="file" accept="image/*" onchange="uploadMainImage(this)">
-                </label>
-              </div>
-              <div style="flex-shrink:0;">
-                <img id="mainImagePreview" src=""
-                  style="width:110px; height:110px; object-fit:cover; border-radius:6px; background:var(--border); display:none;">
-                <div id="mainImagePlaceholder"
-                  style="width:110px; height:110px; background:var(--border); border-radius:6px; display:flex; align-items:center; justify-content:center;">
-                  <i class="bi bi-image" style="font-size:2rem; color:var(--muted);"></i>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 商品輪播圖 -->
-          <div class="mb-2">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <div>
-                <label class="form-label mb-0">商品輪播圖</label>
-                <div style="font-size:.73rem; color:var(--muted); margin-top:2px;">
-                  額外的產品照片（不同角度），會顯示在詳情頁主圖下方的縮圖列。少於 2 張時不顯示縮圖列。
-                </div>
-              </div>
-              <button type="button" class="btn-outline-admin" onclick="addGalleryRow()">
-                <i class="bi bi-plus"></i> 新增圖片
-              </button>
-            </div>
-            <div id="galleryRows"></div>
-            <div id="galleryEmpty" style="font-size:.8rem; color:var(--muted); padding:16px; text-align:center; border:1px dashed var(--border); border-radius:6px;">
-              尚未新增輪播圖 — 僅會顯示主圖
-            </div>
-          </div>
-
-          <!-- 顏色款式 -->
-          <div class="mb-2 mt-4">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <div>
-                <label class="form-label mb-0">顏色款式</label>
-                <div style="font-size:.73rem; color:var(--muted); margin-top:2px;">
-                  每種顏色需填名稱+色碼（hex），可選擇上傳對應圖片（點擊顏色時切換主圖）
-                </div>
-              </div>
-              <button type="button" class="btn-outline-admin" onclick="addVariantRow()">
-                <i class="bi bi-plus"></i> 新增顏色
-              </button>
-            </div>
-            <div id="variantRows"></div>
-            <div id="variantEmpty" style="font-size:.8rem; color:var(--muted); padding:16px; text-align:center; border:1px dashed var(--border); border-radius:6px;">
-              尚未新增顏色款式 — 點「新增顏色」開始設定
-            </div>
-          </div>
-
-          <!-- 木材款式 -->
-          <div class="mb-2 mt-4">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <div>
-                <label class="form-label mb-0">木材款式</label>
-                <div style="font-size:.73rem; color:var(--muted); margin-top:2px;">
-                  商品頁會顯示可選的木材名稱（例如：黑胡桃木、白梣木）
-                </div>
-              </div>
-              <button type="button" class="btn-outline-admin" onclick="addWoodRow()">
-                <i class="bi bi-plus"></i> 新增木材
-              </button>
-            </div>
-            <div id="woodRows"></div>
-            <div id="woodEmpty" style="font-size:.8rem; color:var(--muted); padding:16px; text-align:center; border:1px dashed var(--border); border-radius:6px;">
-              尚未新增木材款式 — 點「新增木材」開始設定
-            </div>
-          </div>
-
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn-outline-admin" data-bs-dismiss="modal">取消</button>
-        <button type="button" class="btn-primary-admin" id="saveBtn" onclick="saveProduct()">
-          <i class="bi bi-check-lg me-1"></i> 儲存商品
+    <!-- 商品管理 -->
+    <section id="section-products">
+      <div class="page-header">
+        <h2>商品管理 <span class="count-badge" id="productCount">0</span></h2>
+        <button class="btn-primary-admin" onclick="openAddModal()">
+          <i class="bi bi-plus-lg me-1"></i> 新增商品
         </button>
       </div>
-    </div>
-  </div>
-</div>
 
-<!-- ─── 刪除確認 Modal ─── -->
-<div class="modal fade" id="deleteModal" tabindex="-1">
-  <div class="modal-dialog modal-sm modal-dialog-centered">
-    <div class="modal-content text-center">
-      <div class="modal-body py-4 px-4">
-        <i class="bi bi-exclamation-triangle" style="font-size:2.5rem; color:#c0392b; display:block; margin-bottom:16px;"></i>
-        <p style="font-size:.95rem; margin-bottom:4px;">確定要刪除這項商品？</p>
-        <p style="font-size:.78rem; color:var(--muted);">此操作無法復原</p>
+      <div style="overflow-x:auto;">
+        <table class="product-table">
+          <thead>
+            <tr>
+              <th style="width:70px;">圖片</th>
+              <th>商品資訊</th>
+              <th>品牌</th>
+              <th>類別</th>
+              <th>售價</th>
+              <th>庫存</th>
+              <th style="width:130px;">操作</th>
+            </tr>
+          </thead>
+          <tbody id="productTableBody">
+            <tr class="loading-row">
+              <td colspan="7"><i class="bi bi-arrow-repeat me-2"></i>載入中...</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <div class="modal-footer justify-content-center border-0 pb-4">
-        <button class="btn-outline-admin" data-bs-dismiss="modal">取消</button>
-        <button class="btn-primary-admin" id="confirmDeleteBtn"
-          style="background:#c0392b; margin-left:8px;">刪除</button>
-      </div>
-    </div>
-  </div>
-</div>
+    </section>
 
-<!-- ─── 新增 / 編輯品牌 Modal ─── -->
-<div class="modal fade" id="brandModal" tabindex="-1">
-  <div class="modal-dialog modal-lg modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="brandModalTitle">新增品牌</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+    <!-- 訂單查覽 -->
+    <section id="section-orders" style="display:none;">
+      <div class="page-header" style="margin-bottom: 16px;">
+        <h2>訂單查覽</h2>
       </div>
-      <div class="modal-body p-4">
-        <form id="brandForm" onsubmit="return false;">
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label">品牌名稱 *</label>
-              <input type="text" class="form-control" id="bf_name" placeholder="例：Fritz Hansen" required>
-            </div>
-            <div class="col-md-3">
-              <label class="form-label">國家</label>
-              <input type="text" class="form-control" id="bf_country" placeholder="例：丹麥">
-            </div>
-            <div class="col-md-3">
-              <label class="form-label">創立年份</label>
-              <input type="number" class="form-control" id="bf_foundedYear" placeholder="例：1872">
-            </div>
-            <div class="col-12">
-              <label class="form-label">Tagline（品牌一句話）</label>
-              <input type="text" class="form-control" id="bf_tagline" placeholder="例：北歐現代設計的百年傳承">
-            </div>
-            <div class="col-12">
-              <label class="form-label">品牌描述</label>
-              <textarea class="form-control" id="bf_description" rows="4" placeholder="品牌故事、歷史、代表作..."></textarea>
-            </div>
-            <div class="col-12">
-              <label class="form-label">官網 URL</label>
-              <input type="url" class="form-control" id="bf_websiteUrl" placeholder="https://www.example.com">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Logo URL</label>
-              <input type="text" class="form-control" id="bf_logoUrl" placeholder="圖片網址">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">封面圖 URL</label>
-              <input type="text" class="form-control" id="bf_coverImageUrl" placeholder="圖片網址">
-            </div>
-            <div class="col-md-3">
-              <label class="form-label">排序</label>
-              <input type="number" class="form-control" id="bf_sortOrder" value="99" min="1">
-            </div>
-          </div>
-        </form>
+
+      <div class="mb-4 d-flex gap-2 flex-wrap" id="orderFilterTabs">
+        <button class="btn-primary-admin" onclick="filterOrders('全部', this)">全部</button>
+        <button class="btn-outline-admin" onclick="filterOrders('待處理', this)">待處理</button>
+        <button class="btn-outline-admin" onclick="filterOrders('確認配送方式', this)">確認配送</button>
+        <button class="btn-outline-admin" onclick="filterOrders('配送中', this)">配送中</button>
+        <button class="btn-outline-admin" onclick="filterOrders('已送達', this)">已送達</button>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn-outline-admin" data-bs-dismiss="modal">取消</button>
-        <button type="button" class="btn-primary-admin" onclick="saveBrand()">
-          <i class="bi bi-check-lg me-1"></i> 儲存品牌
+
+      <div id="orderContent">
+        <div style="color:var(--muted); font-size:.9rem; padding:40px 0;">載入中…</div>
+      </div>
+    </section>
+
+    <!-- 設定 -->
+    <section id="section-settings" style="display:none;">
+      <div class="page-header">
+        <h2>設定</h2>
+      </div>
+
+      <div class="setting-card">
+        <h5><i class="bi bi-shield-lock me-2"></i>升級管理員帳號</h5>
+        <p>輸入要升級的帳號 Email 與管理員設定密碼（在 application.properties 的 <code>app.admin-setup-secret</code>）</p>
+        <div class="mb-3">
+          <label class="form-label">帳號 Email</label>
+          <input type="email" class="form-control" id="setupEmail" placeholder="admin@forma.com">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">管理員設定密碼</label>
+          <input type="password" class="form-control" id="setupSecret" placeholder="FORMA_ADMIN_2025">
+        </div>
+        <button class="btn-primary-admin" onclick="setupAdmin()">升級為管理員</button>
+      </div>
+
+      <div class="setting-card">
+        <h5><i class="bi bi-door-open me-2"></i>登出</h5>
+        <p>登出後台，返回一般會員狀態。</p>
+        <button class="btn-outline-admin" onclick="doLogout()">登出後台</button>
+      </div>
+    </section>
+
+    <!-- 品牌管理 -->
+    <section id="section-brands" style="display:none;">
+      <div class="page-header">
+        <h2>品牌管理 <span class="count-badge" id="brandCount">0</span></h2>
+        <button class="btn-primary-admin" onclick="openAddBrandModal()">
+          <i class="bi bi-plus-lg me-1"></i> 新增品牌
         </button>
       </div>
-    </div>
-  </div>
-</div>
+      <div style="overflow-x:auto;">
+        <table class="product-table">
+          <thead>
+            <tr>
+              <th>品牌名稱</th>
+              <th>國家</th>
+              <th>創立年份</th>
+              <th>Tagline</th>
+              <th style="width:130px;">操作</th>
+            </tr>
+          </thead>
+          <tbody id="brandTableBody">
+            <tr class="loading-row">
+              <td colspan="5"><i class="bi bi-arrow-repeat me-2"></i>載入中...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
 
-<!-- ─── 新增 / 編輯設計師 Modal ─── -->
-<div class="modal fade" id="designerModal" tabindex="-1">
-  <div class="modal-dialog modal-lg modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="designerModalTitle">新增設計師</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body p-4">
-        <form id="designerForm" onsubmit="return false;">
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label">姓名 *</label>
-              <input type="text" class="form-control" id="df_name" placeholder="例：Hans J. Wegner" required>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">國籍</label>
-              <input type="text" class="form-control" id="df_nationality" placeholder="例：丹麥">
-            </div>
-            <div class="col-md-3">
-              <label class="form-label">出生年</label>
-              <input type="number" class="form-control" id="df_birthYear" placeholder="例：1914">
-            </div>
-            <div class="col-md-3">
-              <label class="form-label">逝世年（在世留空）</label>
-              <input type="number" class="form-control" id="df_deathYear" placeholder="例：2007">
-            </div>
-            <div class="col-12">
-              <label class="form-label">Tagline</label>
-              <input type="text" class="form-control" id="df_tagline" placeholder="例：椅子的詩人">
-            </div>
-            <div class="col-12">
-              <label class="form-label">傳記</label>
-              <textarea class="form-control" id="df_biography" rows="4" placeholder="設計師生平、影響、成就..."></textarea>
-            </div>
-            <div class="col-12">
-              <label class="form-label">合作品牌（逗號分隔）</label>
-              <input type="text" class="form-control" id="df_associatedBrands" placeholder="例：Carl Hansen & Søn, PP Møbler">
-            </div>
-            <div class="col-12">
-              <label class="form-label">代表作（逗號分隔）</label>
-              <input type="text" class="form-control" id="df_famousWorks" placeholder="例：CH24 Wishbone Chair, PP19 Papa Bear Chair">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">肖像圖 URL</label>
-              <input type="text" class="form-control" id="df_portraitUrl" placeholder="圖片網址">
-            </div>
-            <div class="col-md-3">
-              <label class="form-label">排序</label>
-              <input type="number" class="form-control" id="df_sortOrder" value="99" min="1">
-            </div>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn-outline-admin" data-bs-dismiss="modal">取消</button>
-        <button type="button" class="btn-primary-admin" onclick="saveDesigner()">
-          <i class="bi bi-check-lg me-1"></i> 儲存設計師
+    <!-- 設計師管理 -->
+    <section id="section-designers" style="display:none;">
+      <div class="page-header">
+        <h2>設計師管理 <span class="count-badge" id="designerCount">0</span></h2>
+        <button class="btn-primary-admin" onclick="openAddDesignerModal()">
+          <i class="bi bi-plus-lg me-1"></i> 新增設計師
         </button>
       </div>
+      <div style="overflow-x:auto;">
+        <table class="product-table">
+          <thead>
+            <tr>
+              <th>姓名</th>
+              <th>國籍</th>
+              <th>生卒年</th>
+              <th>合作品牌</th>
+              <th style="width:130px;">操作</th>
+            </tr>
+          </thead>
+          <tbody id="designerTableBody">
+            <tr class="loading-row">
+              <td colspan="5"><i class="bi bi-arrow-repeat me-2"></i>載入中...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ─── 新增 / 編輯商品 Modal ─── -->
+  <div class="modal fade" id="productModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalTitle">新增商品</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4">
+          <form id="productForm" onsubmit="return false;">
+
+            <!-- 基本資料 -->
+            <div class="row g-3 mb-4">
+              <div class="col-md-8">
+                <label class="form-label">商品名稱 *</label>
+                <input type="text" class="form-control" id="f_name" placeholder="例：Eames Lounge Chair" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">品牌</label>
+                <input type="text" class="form-control" id="f_brand" placeholder="例：Herman Miller">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">類別</label>
+                <select class="form-select" id="f_category">
+                  <option value="">未分類</option>
+                  <option value="chair">椅子</option>
+                  <option value="sofa">沙發</option>
+                  <option value="table">桌子</option>
+                  <option value="storage">收納</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">售價 (NT$) *</label>
+                <input type="number" class="form-control" id="f_price" min="0" placeholder="128000" required>
+              </div>
+              <div class="col-md-4 d-flex align-items-end">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="f_inStock" checked>
+                  <label class="form-check-label" for="f_inStock" style="font-size:.82rem;">有現貨</label>
+                </div>
+              </div>
+
+              <!-- 首頁展示設定（3 個獨立 checkbox） -->
+              <div class="col-12">
+                <label class="form-label mb-2" style="font-size:.82rem;">首頁展示（可多選）</label>
+                <div class="d-flex gap-4 flex-wrap" style="font-size:.82rem;">
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="f_isFeatured">
+                    <label class="form-check-label" for="f_isFeatured">本季主打</label>
+                  </div>
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="f_isClassic">
+                    <label class="form-check-label" for="f_isClassic">設計經典</label>
+                  </div>
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="f_isHero">
+                    <label class="form-check-label" for="f_isHero">Hero 大輪播</label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label">商品說明</label>
+                <textarea class="form-control" id="f_description" rows="3" placeholder="描述材質、尺寸、設計故事..."></textarea>
+              </div>
+            </div>
+
+            <!-- 主圖 -->
+            <div class="mb-4">
+              <label class="form-label">主圖（顯示於列表頁）</label>
+              <div class="d-flex gap-3 align-items-start">
+                <div class="flex-grow-1">
+                  <input type="text" class="form-control mb-2" id="f_mainImage" placeholder="貼上圖片 URL，或點右側「上傳」"
+                    oninput="updateMainPreview(this.value)">
+                  <label class="upload-zone" style="padding:12px; text-align:left;">
+                    <i class="bi bi-cloud-upload me-2"></i>
+                    <span style="font-size:.8rem; color:var(--muted);">點擊選擇圖片上傳（JPG / PNG）</span>
+                    <input type="file" accept="image/*" onchange="uploadMainImage(this)">
+                  </label>
+                </div>
+                <div style="flex-shrink:0;">
+                  <img id="mainImagePreview" src=""
+                    style="width:110px; height:110px; object-fit:cover; border-radius:6px; background:var(--border); display:none;">
+                  <div id="mainImagePlaceholder"
+                    style="width:110px; height:110px; background:var(--border); border-radius:6px; display:flex; align-items:center; justify-content:center;">
+                    <i class="bi bi-image" style="font-size:2rem; color:var(--muted);"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 商品輪播圖 -->
+            <div class="mb-2">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                  <label class="form-label mb-0">商品輪播圖</label>
+                  <div style="font-size:.73rem; color:var(--muted); margin-top:2px;">
+                    額外的產品照片（不同角度），會顯示在詳情頁主圖下方的縮圖列。少於 2 張時不顯示縮圖列。
+                  </div>
+                </div>
+                <button type="button" class="btn-outline-admin" onclick="addGalleryRow()">
+                  <i class="bi bi-plus"></i> 新增圖片
+                </button>
+              </div>
+              <div id="galleryRows"></div>
+              <div id="galleryEmpty"
+                style="font-size:.8rem; color:var(--muted); padding:16px; text-align:center; border:1px dashed var(--border); border-radius:6px;">
+                尚未新增輪播圖 — 僅會顯示主圖
+              </div>
+            </div>
+
+            <!-- 顏色款式 -->
+            <div class="mb-2 mt-4">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                  <label class="form-label mb-0">顏色款式</label>
+                  <div style="font-size:.73rem; color:var(--muted); margin-top:2px;">
+                    每種顏色需填名稱+色碼（hex），可選擇上傳對應圖片（點擊顏色時切換主圖）
+                  </div>
+                </div>
+                <button type="button" class="btn-outline-admin" onclick="addVariantRow()">
+                  <i class="bi bi-plus"></i> 新增顏色
+                </button>
+              </div>
+              <div id="variantRows"></div>
+              <div id="variantEmpty"
+                style="font-size:.8rem; color:var(--muted); padding:16px; text-align:center; border:1px dashed var(--border); border-radius:6px;">
+                尚未新增顏色款式 — 點「新增顏色」開始設定
+              </div>
+            </div>
+
+            <!-- 木材款式 -->
+            <div class="mb-2 mt-4">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                  <label class="form-label mb-0">木材款式</label>
+                  <div style="font-size:.73rem; color:var(--muted); margin-top:2px;">
+                    商品頁會顯示可選的木材名稱（例如：黑胡桃木、白梣木）
+                  </div>
+                </div>
+                <button type="button" class="btn-outline-admin" onclick="addWoodRow()">
+                  <i class="bi bi-plus"></i> 新增木材
+                </button>
+              </div>
+              <div id="woodRows"></div>
+              <div id="woodEmpty"
+                style="font-size:.8rem; color:var(--muted); padding:16px; text-align:center; border:1px dashed var(--border); border-radius:6px;">
+                尚未新增木材款式 — 點「新增木材」開始設定
+              </div>
+            </div>
+
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-outline-admin" data-bs-dismiss="modal">取消</button>
+          <button type="button" class="btn-primary-admin" id="saveBtn" onclick="saveProduct()">
+            <i class="bi bi-check-lg me-1"></i> 儲存商品
+          </button>
+        </div>
+      </div>
     </div>
   </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="admin.js"></script>
+  <!-- ─── 刪除確認 Modal ─── -->
+  <div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+      <div class="modal-content text-center">
+        <div class="modal-body py-4 px-4">
+          <i class="bi bi-exclamation-triangle"
+            style="font-size:2.5rem; color:#c0392b; display:block; margin-bottom:16px;"></i>
+          <p style="font-size:.95rem; margin-bottom:4px;">確定要刪除這項商品？</p>
+          <p style="font-size:.78rem; color:var(--muted);">此操作無法復原</p>
+        </div>
+        <div class="modal-footer justify-content-center border-0 pb-4">
+          <button class="btn-outline-admin" data-bs-dismiss="modal">取消</button>
+          <button class="btn-primary-admin" id="confirmDeleteBtn"
+            style="background:#c0392b; margin-left:8px;">刪除</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── 新增 / 編輯品牌 Modal ─── -->
+  <div class="modal fade" id="brandModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="brandModalTitle">新增品牌</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4">
+          <form id="brandForm" onsubmit="return false;">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">品牌名稱 *</label>
+                <input type="text" class="form-control" id="bf_name" placeholder="例：Fritz Hansen" required>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">國家</label>
+                <input type="text" class="form-control" id="bf_country" placeholder="例：丹麥">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">創立年份</label>
+                <input type="number" class="form-control" id="bf_foundedYear" placeholder="例：1872">
+              </div>
+              <div class="col-12">
+                <label class="form-label">Tagline（品牌一句話）</label>
+                <input type="text" class="form-control" id="bf_tagline" placeholder="例：北歐現代設計的百年傳承">
+              </div>
+              <div class="col-12">
+                <label class="form-label">品牌描述</label>
+                <textarea class="form-control" id="bf_description" rows="4" placeholder="品牌故事、歷史、代表作..."></textarea>
+              </div>
+              <div class="col-12">
+                <label class="form-label">官網 URL</label>
+                <input type="url" class="form-control" id="bf_websiteUrl" placeholder="https://www.example.com">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Logo URL</label>
+                <input type="text" class="form-control" id="bf_logoUrl" placeholder="圖片網址">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">封面圖 URL</label>
+                <input type="text" class="form-control" id="bf_coverImageUrl" placeholder="圖片網址">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">排序</label>
+                <input type="number" class="form-control" id="bf_sortOrder" value="99" min="1">
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-outline-admin" data-bs-dismiss="modal">取消</button>
+          <button type="button" class="btn-primary-admin" onclick="saveBrand()">
+            <i class="bi bi-check-lg me-1"></i> 儲存品牌
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── 新增 / 編輯設計師 Modal ─── -->
+  <div class="modal fade" id="designerModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="designerModalTitle">新增設計師</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4">
+          <form id="designerForm" onsubmit="return false;">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">姓名 *</label>
+                <input type="text" class="form-control" id="df_name" placeholder="例：Hans J. Wegner" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">國籍</label>
+                <input type="text" class="form-control" id="df_nationality" placeholder="例：丹麥">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">出生年</label>
+                <input type="number" class="form-control" id="df_birthYear" placeholder="例：1914">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">逝世年（在世留空）</label>
+                <input type="number" class="form-control" id="df_deathYear" placeholder="例：2007">
+              </div>
+              <div class="col-12">
+                <label class="form-label">Tagline</label>
+                <input type="text" class="form-control" id="df_tagline" placeholder="例：椅子的詩人">
+              </div>
+              <div class="col-12">
+                <label class="form-label">傳記</label>
+                <textarea class="form-control" id="df_biography" rows="4" placeholder="設計師生平、影響、成就..."></textarea>
+              </div>
+              <div class="col-12">
+                <label class="form-label">合作品牌（逗號分隔）</label>
+                <input type="text" class="form-control" id="df_associatedBrands"
+                  placeholder="例：Carl Hansen & Søn, PP Møbler">
+              </div>
+              <div class="col-12">
+                <label class="form-label">代表作（逗號分隔）</label>
+                <input type="text" class="form-control" id="df_famousWorks"
+                  placeholder="例：CH24 Wishbone Chair, PP19 Papa Bear Chair">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">肖像圖 URL</label>
+                <input type="text" class="form-control" id="df_portraitUrl" placeholder="圖片網址">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">排序</label>
+                <input type="number" class="form-control" id="df_sortOrder" value="99" min="1">
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-outline-admin" data-bs-dismiss="modal">取消</button>
+          <button type="button" class="btn-primary-admin" onclick="saveDesigner()">
+            <i class="bi bi-check-lg me-1"></i> 儲存設計師
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="historyModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <h5 class="modal-title" style="color:var(--accent);">訂單歷史紀錄</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4" id="historyModalBody" style="color:var(--text);">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="admin.js"></script>
+
+  <div id="historyModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content forma-modal" style="background:var(--card); border:1px solid var(--border);">
+        <div class="modal-header border-0">
+          <h5 class="modal-title" style="color:var(--accent);">訂單歷史紀錄</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="historyModalBody" style="color:var(--text);">
+        </div>
+      </div>
+    </div>
+  </div>
+
 </body>
+
 </html>

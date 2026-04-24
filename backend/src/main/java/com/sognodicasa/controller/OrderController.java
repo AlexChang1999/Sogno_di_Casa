@@ -4,8 +4,10 @@ import com.sognodicasa.dto.OrderRequest;
 import com.sognodicasa.model.Order;
 import com.sognodicasa.model.OrderItem;
 import com.sognodicasa.service.OrderService;
+import com.sognodicasa.model.OrderHistory;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import java.time.LocalDateTime;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -33,9 +35,8 @@ public class OrderController {
             @Valid @RequestBody OrderRequest req) {
         Order order = orderService.createOrder(userDetails.getUsername(), req);
         return ResponseEntity.ok(Map.of(
-            "orderId", order.getId(),
-            "message", "訂單建立成功"
-        ));
+                "orderId", order.getId(),
+                "message", "訂單建立成功"));
     }
 
     /** GET /api/orders — 取得目前登入會員的訂單 */
@@ -54,50 +55,100 @@ public class OrderController {
         return ResponseEntity.ok(toResponseList(orders));
     }
 
-    /** PATCH /api/orders/{id}/status — 更新訂單配送狀態（管理員用） */
+    /** DELETE /api/orders/{id} — 刪除訂單（管理員用） */
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> deleteOrder(@PathVariable Long id) {
+        orderService.deleteOrder(id);
+        return ResponseEntity.ok(Map.of("message", "訂單已成功移除"));
+    }
+
+    /** PATCH /api/orders/{id}/status — 更新訂單狀態與配送時間，並紀錄歷史 */
     @PatchMapping("/{id}/status")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateStatus(
             @PathVariable Long id,
-            @RequestBody Map<String, String> body) {
-        String status = body.get("status");
-        if (status == null || !List.of("PENDING","CONFIRMED","SHIPPING","DELIVERED").contains(status)) {
-            return ResponseEntity.badRequest().body(Map.of("message", "無效的狀態值"));
+            @RequestBody Map<String, String> body,
+            @AuthenticationPrincipal UserDetails userDetails) { // 注入當前登入者
+
+        Order order = orderService.findById(id);
+        String oldStatus = order.getStatus();
+        StringBuilder actionLog = new StringBuilder();
+
+        // 1. 處理狀態更新
+        if (body.containsKey("status")) {
+            String newStatus = body.get("status");
+            if (!newStatus.equals(oldStatus)) {
+                order.setStatus(newStatus);
+                actionLog.append("狀態更新為「").append(newStatus).append("」 ");
+            }
         }
-        Order updated = orderService.updateStatus(id, status);
-        return ResponseEntity.ok(Map.of(
-            "orderId", updated.getId(),
-            "status", updated.getStatus(),
-            "message", "訂單狀態已更新"
-        ));
+
+        // 2. 處理配送時間更新
+        if (body.containsKey("deliveryTime")) {
+            String dt = body.get("deliveryTime");
+            if (dt != null && !dt.isEmpty()) {
+                order.setDeliveryTime(LocalDateTime.parse(dt));
+                actionLog.append("配送排程：").append(dt.replace("T", " "));
+            } else {
+                order.setDeliveryTime(null);
+                actionLog.append("清空配送時間");
+            }
+        }
+
+        orderService.save(order);
+
+        // 3. 如果有任何變動，就寫入 OrderHistory
+        if (actionLog.length() > 0) {
+            orderService.addHistory(order, userDetails.getUsername(), actionLog.toString().trim());
+        }
+
+        return ResponseEntity.ok(Map.of("message", "訂單已更新"));
+    }
+
+    /** GET /api/orders/{id}/history — 取得訂單編輯紀錄 */
+    @GetMapping("/{id}/history")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<Map<String, Object>>> getOrderHistory(@PathVariable Long id) {
+        List<OrderHistory> historyList = orderService.getOrderHistory(id);
+
+        // 轉為前端方便渲染的 JSON 格式
+        List<Map<String, Object>> result = historyList.stream().map(h -> Map.<String, Object>of(
+                "operator", h.getOperator(),
+                "action", h.getAction(),
+                "time", h.getCreatedAt().toString())).collect(Collectors.toList());
+
+        return ResponseEntity.ok(result);
     }
 
     /** 把 Order 實體轉成前端需要的格式 */
     private List<Map<String, Object>> toResponseList(List<Order> orders) {
         return orders.stream().map(o -> {
-            List<Map<String, Object>> items = o.getItems().stream().map(item ->
-                Map.<String, Object>of(
+            // 1. 處理商品明細 (這裡不要放 deliveryTime)
+            List<Map<String, Object>> items = o.getItems().stream().map(item -> Map.<String, Object>of(
                     "productName", item.getProductName(),
-                    "brand",       item.getBrand() != null ? item.getBrand() : "",
-                    "price",       item.getPrice(),
-                    "qty",         item.getQty(),
-                    "color",       item.getColor() != null ? item.getColor() : "",
-                    "wood",        item.getWood()  != null ? item.getWood()  : ""
-                )
-            ).collect(Collectors.toList());
+                    "brand", item.getBrand() != null ? item.getBrand() : "",
+                    "price", item.getPrice(),
+                    "qty", item.getQty(),
+                    "color", item.getColor() != null ? item.getColor() : "",
+                    "wood", item.getWood() != null ? item.getWood() : "")).collect(Collectors.toList());
 
-            return Map.<String, Object>of(
-                "id",               "ORD-" + o.getId(),
-                "rawId",            o.getId(),
-                "date",             o.getCreatedAt().toLocalDate().toString(),
-                "total",            o.getTotal(),
-                "status",           o.getStatus() != null ? o.getStatus() : "PENDING",
-                "recipientName",    o.getRecipientName() != null ? o.getRecipientName() : "",
-                "recipientPhone",   o.getRecipientPhone() != null ? o.getRecipientPhone() : "",
-                "recipientAddress", o.getRecipientAddress() != null ? o.getRecipientAddress() : "",
-                "note",             o.getNote() != null ? o.getNote() : "",
-                "items",            items
-            );
+            // 2. 處理訂單主體 (改用 HashMap，突破 Map.of 只能放 10 組的限制)
+            Map<String, Object> orderMap = new java.util.HashMap<>();
+            orderMap.put("id", "ORD-" + o.getId());
+            orderMap.put("rawId", o.getId());
+            orderMap.put("date", o.getCreatedAt().toLocalDate().toString());
+            orderMap.put("total", o.getTotal());
+            orderMap.put("status", o.getStatus() != null ? o.getStatus() : "待處理");
+            orderMap.put("recipientName", o.getRecipientName() != null ? o.getRecipientName() : "");
+            orderMap.put("recipientPhone", o.getRecipientPhone() != null ? o.getRecipientPhone() : "");
+            orderMap.put("recipientAddress", o.getRecipientAddress() != null ? o.getRecipientAddress() : "");
+            orderMap.put("note", o.getNote() != null ? o.getNote() : "");
+            orderMap.put("isTest", o.getIsTest() != null ? o.getIsTest() : false);
+            orderMap.put("deliveryTime", o.getDeliveryTime() != null ? o.getDeliveryTime().toString() : "");
+            orderMap.put("items", items);
+
+            return orderMap;
         }).collect(Collectors.toList());
     }
 }

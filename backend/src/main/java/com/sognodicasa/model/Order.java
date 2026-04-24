@@ -21,6 +21,10 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // 新增：是否為測試範例訂單
+    @Column(name = "is_test")
+    private Boolean isTest = false;
+    
     // 多筆訂單屬於同一個會員（多對一關聯）
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -31,8 +35,12 @@ public class Order {
     private BigDecimal total;
 
     // 配送狀態：PENDING / CONFIRMED / SHIPPING / DELIVERED
-    @Column(length = 20)
-    private String status = "PENDING";
+    @Column(length = 50)
+    private String status = "待處理"; // 預設改為中文，擴大長度
+
+    // 新增：配送時間
+    @Column(name = "delivery_time")
+    private LocalDateTime deliveryTime;
 
     // 收件人姓名
     @Column(name = "recipient_name", length = 100)
