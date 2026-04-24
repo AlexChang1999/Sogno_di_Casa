@@ -24,8 +24,8 @@
         <ul class="navbar-nav mx-auto gap-4">
           <li class="nav-item"><a class="nav-link active" href="index.html">首頁</a></li>
           <li class="nav-item"><a class="nav-link" href="products.html">商品</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">關於品牌</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">設計師</a></li>
+          <li class="nav-item"><a class="nav-link" href="brands.html">關於品牌</a></li>
+          <li class="nav-item"><a class="nav-link" href="designers.html">設計師</a></li>
         </ul>
         <div class="d-flex align-items-center gap-3">
           <a href="#" class="nav-icon"><i class="bi bi-search"></i></a>
@@ -45,7 +45,7 @@
       <div class="carousel-inner">
 
         <div class="carousel-item active">
-          <div class="hero-slide hero-slide-1">
+          <div class="hero-slide hero-slide-1" id="heroSlide1">
             <div class="hero-content">
               <p class="hero-label">New Collection 2025</p>
               <h1 class="hero-title">靜謐的<br><em>生活美學</em></h1>
@@ -56,7 +56,7 @@
         </div>
 
         <div class="carousel-item">
-          <div class="hero-slide hero-slide-2">
+          <div class="hero-slide hero-slide-2" id="heroSlide2">
             <div class="hero-content hero-content-right">
               <p class="hero-label">Herman Miller — Signature</p>
               <h1 class="hero-title">人體工學<br><em>的藝術</em></h1>
@@ -67,7 +67,7 @@
         </div>
 
         <div class="carousel-item">
-          <div class="hero-slide hero-slide-3">
+          <div class="hero-slide hero-slide-3" id="heroSlide3">
             <div class="hero-content">
               <p class="hero-label">Cassina — Iconic Series</p>
               <h1 class="hero-title">義大利<br><em>工藝傳承</em></h1>
@@ -122,83 +122,10 @@
         <a href="products.html" class="section-link">全部商品 <i class="bi bi-arrow-right"></i></a>
       </div>
 
-      <div class="row g-4">
-        <!-- Product Card 1 -->
-        <div class="col-12 col-md-6 col-lg-3">
-          <div class="product-card" onclick="window.location='product-detail.html?id=1'">
-            <div class="product-img-wrap">
-              <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80" class="product-img" alt="Eames Lounge Chair">
-              <div class="product-overlay">
-                <button class="btn-overlay" onclick="event.stopPropagation(); addToCart(1, 'Eames Lounge Chair', 128000)">
-                  <i class="bi bi-bag-plus me-1"></i> 加入購物車
-                </button>
-              </div>
-              <span class="product-badge">新品</span>
-            </div>
-            <div class="product-info">
-              <p class="product-brand">Herman Miller</p>
-              <h3 class="product-name">Eames Lounge Chair</h3>
-              <p class="product-price">NT$ 128,000</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Product Card 2 -->
-        <div class="col-12 col-md-6 col-lg-3">
-          <div class="product-card" onclick="window.location='product-detail.html?id=2'">
-            <div class="product-img-wrap">
-              <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&q=80" class="product-img" alt="LC2 Sofa">
-              <div class="product-overlay">
-                <button class="btn-overlay" onclick="event.stopPropagation(); addToCart(2, 'LC2 Grand Confort', 245000)">
-                  <i class="bi bi-bag-plus me-1"></i> 加入購物車
-                </button>
-              </div>
-            </div>
-            <div class="product-info">
-              <p class="product-brand">Cassina</p>
-              <h3 class="product-name">LC2 Grand Confort</h3>
-              <p class="product-price">NT$ 245,000</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Product Card 3 -->
-        <div class="col-12 col-md-6 col-lg-3">
-          <div class="product-card" onclick="window.location='product-detail.html?id=3'">
-            <div class="product-img-wrap">
-              <img src="https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=600&q=80" class="product-img" alt="Series 7 Chair">
-              <div class="product-overlay">
-                <button class="btn-overlay" onclick="event.stopPropagation(); addToCart(3, 'Series 7 Chair', 38000)">
-                  <i class="bi bi-bag-plus me-1"></i> 加入購物車
-                </button>
-              </div>
-              <span class="product-badge badge-sale">熱銷</span>
-            </div>
-            <div class="product-info">
-              <p class="product-brand">Fritz Hansen</p>
-              <h3 class="product-name">Series 7 Chair</h3>
-              <p class="product-price">NT$ 38,000</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Product Card 4 -->
-        <div class="col-12 col-md-6 col-lg-3">
-          <div class="product-card" onclick="window.location='product-detail.html?id=4'">
-            <div class="product-img-wrap">
-              <img src="https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=600&q=80" class="product-img" alt="Noguchi Table">
-              <div class="product-overlay">
-                <button class="btn-overlay" onclick="event.stopPropagation(); addToCart(4, 'Noguchi Coffee Table', 96000)">
-                  <i class="bi bi-bag-plus me-1"></i> 加入購物車
-                </button>
-              </div>
-            </div>
-            <div class="product-info">
-              <p class="product-brand">Vitra</p>
-              <h3 class="product-name">Noguchi Coffee Table</h3>
-              <p class="product-price">NT$ 96,000</p>
-            </div>
-          </div>
+      <!-- 本季主打：由 home.js 依後端 /api/products/featured 動態填入（最多 4 個） -->
+      <div class="row g-4" id="featuredGrid">
+        <div class="col-12 text-center py-4 text-muted" style="font-size:.85rem;">
+          載入中…
         </div>
       </div>
     </div>
@@ -231,60 +158,10 @@
         <a href="products.html" class="section-link">查看全部 <i class="bi bi-arrow-right"></i></a>
       </div>
 
-      <div class="row g-4">
-        <div class="col-12 col-md-4 col-lg-4">
-          <div class="product-card product-card-wide" onclick="window.location='product-detail.html?id=5'">
-            <div class="product-img-wrap">
-              <img src="https://images.unsplash.com/photo-1592078615290-033ee584e267?w=800&q=80" class="product-img" alt="Aeron Chair">
-              <div class="product-overlay">
-                <button class="btn-overlay" onclick="event.stopPropagation(); addToCart(5, 'Aeron Chair', 158000)">
-                  <i class="bi bi-bag-plus me-1"></i> 加入購物車
-                </button>
-              </div>
-            </div>
-            <div class="product-info">
-              <p class="product-brand">Herman Miller</p>
-              <h3 class="product-name">Aeron Chair</h3>
-              <p class="product-price">NT$ 158,000</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12 col-md-4 col-lg-4">
-          <div class="product-card product-card-wide" onclick="window.location='product-detail.html?id=6'">
-            <div class="product-img-wrap">
-              <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&q=80" class="product-img" alt="Tulip Table">
-              <div class="product-overlay">
-                <button class="btn-overlay" onclick="event.stopPropagation(); addToCart(6, 'Tulip Dining Table', 182000)">
-                  <i class="bi bi-bag-plus me-1"></i> 加入購物車
-                </button>
-              </div>
-              <span class="product-badge">限量</span>
-            </div>
-            <div class="product-info">
-              <p class="product-brand">Knoll</p>
-              <h3 class="product-name">Tulip Dining Table</h3>
-              <p class="product-price">NT$ 182,000</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12 col-md-4 col-lg-4">
-          <div class="product-card product-card-wide" onclick="window.location='product-detail.html?id=7'">
-            <div class="product-img-wrap">
-              <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&q=80" class="product-img" alt="Shell Chair">
-              <div class="product-overlay">
-                <button class="btn-overlay" onclick="event.stopPropagation(); addToCart(7, 'Shell Chair', 62000)">
-                  <i class="bi bi-bag-plus me-1"></i> 加入購物車
-                </button>
-              </div>
-            </div>
-            <div class="product-info">
-              <p class="product-brand">Fritz Hansen</p>
-              <h3 class="product-name">Shell Chair</h3>
-              <p class="product-price">NT$ 62,000</p>
-            </div>
-          </div>
+      <!-- 設計經典：由 home.js 依後端 /api/products/classic 動態填入（最多 3 個） -->
+      <div class="row g-4" id="classicGrid">
+        <div class="col-12 text-center py-4 text-muted" style="font-size:.85rem;">
+          載入中…
         </div>
       </div>
     </div>
@@ -398,5 +275,6 @@
   <script src="cart.js"></script>
   <script src="auth.js"></script>
   <script src="product-images.js"></script>
+  <script src="home.js"></script>
 </body>
 </html>

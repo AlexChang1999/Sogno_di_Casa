@@ -23,8 +23,8 @@
         <ul class="navbar-nav mx-auto gap-4">
           <li class="nav-item"><a class="nav-link" href="index.html">首頁</a></li>
           <li class="nav-item"><a class="nav-link active" href="products.html">商品</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">關於品牌</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">設計師</a></li>
+          <li class="nav-item"><a class="nav-link" href="brands.html">關於品牌</a></li>
+          <li class="nav-item"><a class="nav-link" href="designers.html">設計師</a></li>
         </ul>
         <div class="d-flex align-items-center gap-3">
           <a href="#" class="nav-icon"><i class="bi bi-search"></i></a>
@@ -85,28 +85,11 @@
             </div>
           </div>
 
-          <!-- Brand -->
+          <!-- Brand（由 JS 依後端商品資料動態產生，最多 8 個，A→Z 排序）-->
           <div class="filter-group">
             <h6 class="filter-sub">品牌</h6>
-            <div class="form-check filter-check">
-              <input class="form-check-input" type="checkbox" id="brand-hm" onchange="filterProducts()">
-              <label class="form-check-label" for="brand-hm">Herman Miller</label>
-            </div>
-            <div class="form-check filter-check">
-              <input class="form-check-input" type="checkbox" id="brand-cassina" onchange="filterProducts()">
-              <label class="form-check-label" for="brand-cassina">Cassina</label>
-            </div>
-            <div class="form-check filter-check">
-              <input class="form-check-input" type="checkbox" id="brand-vitra" onchange="filterProducts()">
-              <label class="form-check-label" for="brand-vitra">Vitra</label>
-            </div>
-            <div class="form-check filter-check">
-              <input class="form-check-input" type="checkbox" id="brand-fritz" onchange="filterProducts()">
-              <label class="form-check-label" for="brand-fritz">Fritz Hansen</label>
-            </div>
-            <div class="form-check filter-check">
-              <input class="form-check-input" type="checkbox" id="brand-knoll" onchange="filterProducts()">
-              <label class="form-check-label" for="brand-knoll">Knoll</label>
+            <div id="brandFilters">
+              <div style="font-size:.8rem; color:#999;">載入中…</div>
             </div>
           </div>
 

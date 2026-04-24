@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>設計師詳情 — FORMA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .designer-portrait {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #f0ece6;
+    }
+    .designer-portrait-placeholder {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f0ece6 0%, #e0d8cc 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .designer-portrait-placeholder .designer-initial {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 4rem;
+      font-weight: 300;
+      color: #c9a84c;
+    }
+    .designer-meta-row {
+      display: flex;
+      gap: 2.5rem;
+      flex-wrap: wrap;
+      margin-top: 1.2rem;
+    }
+    .designer-meta-item { font-size: .85rem; }
+    .designer-meta-label { color: #999; text-transform: uppercase; letter-spacing: .1em; font-size: .72rem; }
+    .designer-meta-value { font-weight: 500; margin-top: 2px; }
+    .designer-biography { font-size: 1rem; line-height: 1.85; color: #444; margin-top: 1.5rem; }
+    .works-chip {
+      display: inline-block;
+      border: 1px solid #c9a84c;
+      color: #c9a84c;
+      padding: .2rem .75rem;
+      font-size: .78rem;
+      margin: .2rem .2rem 0 0;
+      letter-spacing: .04em;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg sticky-top forma-nav">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand forma-logo" href="index.html">FORMA</a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+        <i class="bi bi-list fs-4"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav mx-auto gap-4">
+          <li class="nav-item"><a class="nav-link" href="index.html">首頁</a></li>
+          <li class="nav-item"><a class="nav-link" href="products.html">商品</a></li>
+          <li class="nav-item"><a class="nav-link" href="brands.html">關於品牌</a></li>
+          <li class="nav-item"><a class="nav-link active" href="designers.html">設計師</a></li>
+        </ul>
+        <div class="d-flex align-items-center gap-3">
+          <a href="#" class="nav-icon"><i class="bi bi-search"></i></a>
+          <a href="#" class="nav-icon"><i class="bi bi-person"></i></a>
+          <a href="cart.html" class="nav-icon cart-icon">
+            <i class="bi bi-bag"></i>
+            <span class="cart-badge" id="cartCount">0</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="container">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb forma-breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">首頁</a></li>
+          <li class="breadcrumb-item"><a href="designers.html">設計師</a></li>
+          <li class="breadcrumb-item active" id="breadcrumbName">載入中…</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="container py-5">
+    <div class="row g-5 align-items-start">
+      <!-- 肖像 -->
+      <div class="col-12 col-md-3 text-center text-md-start">
+        <div id="designerPortraitWrap">
+          <div class="designer-portrait-placeholder mx-auto mx-md-0">
+            <span class="designer-initial" id="designerInitial">?</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 設計師資訊 -->
+      <div class="col-12 col-md-9">
+        <h1 class="page-title mb-1" id="designerName">—</h1>
+        <p class="text-muted fst-italic" id="designerTagline"></p>
+
+        <div class="designer-meta-row">
+          <div class="designer-meta-item">
+            <div class="designer-meta-label">國籍</div>
+            <div class="designer-meta-value" id="designerNationality">—</div>
+          </div>
+          <div class="designer-meta-item">
+            <div class="designer-meta-label">生卒年</div>
+            <div class="designer-meta-value" id="designerYears">—</div>
+          </div>
+          <div class="designer-meta-item">
+            <div class="designer-meta-label">合作品牌</div>
+            <div class="designer-meta-value" id="designerBrands">—</div>
+          </div>
+        </div>
+
+        <p class="designer-biography" id="designerBiography"></p>
+
+        <div id="designerWorksWrap" style="display:none;">
+          <p class="brand-meta-label mb-2">代表作</p>
+          <div id="designerWorks"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="forma-footer">
+    <div class="container">
+      <div class="footer-bottom py-4">
+        <p>© 2025 FORMA. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="cart.js"></script>
+  <script src="auth.js"></script>
+  <script src="designers.js"></script>
+</body>
+</html>

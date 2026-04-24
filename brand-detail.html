@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>品牌詳情 — FORMA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .brand-cover {
+      width: 100%;
+      height: 340px;
+      object-fit: cover;
+      background: #f0ece6;
+      display: block;
+    }
+    .brand-cover-placeholder {
+      width: 100%;
+      height: 340px;
+      background: linear-gradient(135deg, #f0ece6 0%, #e0d8cc 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .brand-cover-placeholder .brand-initial {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 6rem;
+      font-weight: 300;
+      color: #c9a84c;
+      opacity: .6;
+    }
+    .brand-meta-row {
+      display: flex;
+      gap: 2.5rem;
+      flex-wrap: wrap;
+      margin-top: 1.2rem;
+    }
+    .brand-meta-item { font-size: .85rem; }
+    .brand-meta-label { color: #999; text-transform: uppercase; letter-spacing: .1em; font-size: .72rem; }
+    .brand-meta-value { font-weight: 500; margin-top: 2px; }
+    .brand-description { font-size: 1rem; line-height: 1.85; color: #444; margin-top: 1.5rem; }
+    .brand-website-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      border: 1px solid #333;
+      padding: .5rem 1.2rem;
+      font-size: .82rem;
+      letter-spacing: .06em;
+      text-decoration: none;
+      color: #333;
+      margin-top: 1.5rem;
+      transition: background .2s, color .2s;
+    }
+    .brand-website-btn:hover { background: #333; color: #fff; }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg sticky-top forma-nav">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand forma-logo" href="index.html">FORMA</a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+        <i class="bi bi-list fs-4"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav mx-auto gap-4">
+          <li class="nav-item"><a class="nav-link" href="index.html">首頁</a></li>
+          <li class="nav-item"><a class="nav-link" href="products.html">商品</a></li>
+          <li class="nav-item"><a class="nav-link active" href="brands.html">關於品牌</a></li>
+          <li class="nav-item"><a class="nav-link" href="designers.html">設計師</a></li>
+        </ul>
+        <div class="d-flex align-items-center gap-3">
+          <a href="#" class="nav-icon"><i class="bi bi-search"></i></a>
+          <a href="#" class="nav-icon"><i class="bi bi-person"></i></a>
+          <a href="cart.html" class="nav-icon cart-icon">
+            <i class="bi bi-bag"></i>
+            <span class="cart-badge" id="cartCount">0</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- PAGE HEADER (breadcrumb) -->
+  <div class="page-header">
+    <div class="container">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb forma-breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">首頁</a></li>
+          <li class="breadcrumb-item"><a href="brands.html">品牌故事</a></li>
+          <li class="breadcrumb-item active" id="breadcrumbName">載入中…</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="container py-5">
+    <div class="row g-5">
+      <!-- 封面圖 -->
+      <div class="col-12">
+        <div id="brandCoverWrap">
+          <div class="brand-cover-placeholder">
+            <span class="brand-initial" id="brandInitial">?</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 品牌資訊 -->
+      <div class="col-12 col-lg-8">
+        <h1 class="page-title mb-1" id="brandName">—</h1>
+        <p class="text-muted fst-italic" id="brandTagline"></p>
+
+        <div class="brand-meta-row">
+          <div class="brand-meta-item">
+            <div class="brand-meta-label">國家</div>
+            <div class="brand-meta-value" id="brandCountry">—</div>
+          </div>
+          <div class="brand-meta-item">
+            <div class="brand-meta-label">創立年份</div>
+            <div class="brand-meta-value" id="brandFounded">—</div>
+          </div>
+        </div>
+
+        <p class="brand-description" id="brandDescription"></p>
+
+        <a id="brandWebsite" href="#" target="_blank" rel="noopener" class="brand-website-btn" style="display:none;">
+          <i class="bi bi-box-arrow-up-right"></i> 前往官網
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="forma-footer">
+    <div class="container">
+      <div class="footer-bottom py-4">
+        <p>© 2025 FORMA. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="cart.js"></script>
+  <script src="auth.js"></script>
+  <script src="brands.js"></script>
+</body>
+</html>

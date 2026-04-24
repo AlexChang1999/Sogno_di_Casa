@@ -9,22 +9,31 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0f0f0f;
-      --sidebar: #161616;
-      --card: #1e1e1e;
-      --border: #2a2a2a;
-      --text: #e8e0d4;
-      --muted: #7a7269;
-      --accent: #c8b89a;
-      --danger: #c0392b;
+      --bg: #141414;
+      --sidebar: #171717;
+      --card: #1f1f1f;
+      --card-hover: #262626;
+      --border: #333333;           /* 原 #2a2a2a 太暗，調亮以增加卡片邊界感 */
+      --border-strong: #444444;
+      --text: #f0ead9;              /* 原 #e8e0d4 微調更亮 */
+      --text-soft: #c8c1b3;         /* 新增：次要文字層級，比 muted 亮 */
+      --muted: #a59d8f;             /* 原 #7a7269 對比 3.5:1 → 新值對比 ~6:1 通過 WCAG AA */
+      --accent: #d4c39e;             /* 金色系強調色，用於 label、連結、active 狀態 */
+      --accent-soft: rgba(212, 195, 158, 0.14);
+      --accent-strong: #e8d4a8;
+      --ok: #7cc389;
+      --danger: #e07676;
     }
     * { box-sizing: border-box; }
     body {
       background: var(--bg);
       color: var(--text);
       font-family: 'Jost', sans-serif;
-      font-weight: 300;
+      font-weight: 400;                /* 原 300 太細 → 400 更清楚 */
+      font-size: 15px;                 /* 提高基礎字級（原 Bootstrap 預設 16px，Jost 偏小，補償一下） */
+      line-height: 1.55;
       margin: 0;
+      -webkit-font-smoothing: antialiased;
     }
 
     /* ── 側邊欄 ── */
@@ -50,11 +59,12 @@
       color: var(--text);
     }
     .sidebar-logo .sub {
-      font-size: .6rem;
+      font-size: .72rem;
       letter-spacing: .25em;
-      color: var(--muted);
-      margin-top: 2px;
+      color: var(--accent);
+      margin-top: 4px;
       text-transform: uppercase;
+      font-weight: 500;
     }
     .sidebar-nav {
       padding: 16px 12px;
@@ -63,12 +73,12 @@
     .nav-item {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 10px 14px;
+      gap: 12px;
+      padding: 11px 16px;
       border-radius: 6px;
-      color: var(--muted);
+      color: var(--text-soft);
       text-decoration: none;
-      font-size: .82rem;
+      font-size: .88rem;
       letter-spacing: .08em;
       text-transform: uppercase;
       transition: all .2s;
@@ -78,17 +88,23 @@
       background: none;
       width: 100%;
       text-align: left;
+      font-weight: 400;
     }
-    .nav-item:hover { color: var(--text); background: rgba(255,255,255,.04); }
-    .nav-item.active { color: var(--text); background: rgba(200,184,154,.12); }
-    .nav-item i { font-size: 1rem; }
+    .nav-item:hover { color: var(--text); background: rgba(255,255,255,.05); }
+    .nav-item.active {
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-left: 2px solid var(--accent);
+      padding-left: 14px;
+    }
+    .nav-item i { font-size: 1.05rem; }
     .sidebar-footer {
-      padding: 16px;
+      padding: 18px;
       border-top: 1px solid var(--border);
-      font-size: .75rem;
+      font-size: .82rem;
     }
     .sidebar-footer .admin-email {
-      color: var(--muted);
+      color: var(--text-soft);
       margin-bottom: 10px;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -109,19 +125,21 @@
     }
     .page-header h2 {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 1.8rem;
+      font-size: 2rem;
       letter-spacing: .05em;
       color: var(--text);
       margin: 0;
+      font-weight: 600;
     }
     .count-badge {
-      background: var(--border);
-      color: var(--muted);
-      font-size: .7rem;
-      padding: 3px 10px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: .82rem;
+      padding: 4px 12px;
       border-radius: 20px;
       margin-left: 10px;
       vertical-align: middle;
+      font-weight: 500;
     }
 
     /* ── 按鈕 ── */
@@ -129,100 +147,108 @@
       background: var(--accent);
       color: #111;
       border: none;
-      padding: 9px 22px;
+      padding: 10px 24px;
       font-family: 'Jost', sans-serif;
-      font-size: .78rem;
+      font-size: .88rem;
       letter-spacing: .12em;
       text-transform: uppercase;
       border-radius: 4px;
       cursor: pointer;
-      transition: opacity .2s;
+      transition: all .2s;
+      font-weight: 500;
     }
-    .btn-primary-admin:hover { opacity: .85; }
+    .btn-primary-admin:hover { background: var(--accent-strong); transform: translateY(-1px); }
     .btn-outline-admin {
       background: transparent;
       color: var(--text);
-      border: 1px solid var(--border);
-      padding: 7px 18px;
+      border: 1px solid var(--border-strong);
+      padding: 8px 20px;
       font-family: 'Jost', sans-serif;
-      font-size: .75rem;
+      font-size: .85rem;
       letter-spacing: .1em;
       text-transform: uppercase;
       border-radius: 4px;
       cursor: pointer;
       transition: all .2s;
+      font-weight: 400;
     }
-    .btn-outline-admin:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-outline-admin:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
 
     /* ── 商品表格 ── */
     .product-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: .84rem;
+      font-size: .95rem;
     }
     .product-table th {
       text-transform: uppercase;
       letter-spacing: .1em;
-      font-size: .65rem;
-      color: var(--muted);
-      font-weight: 400;
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--border);
+      font-size: .78rem;
+      color: var(--accent);
+      font-weight: 500;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-strong);
       text-align: left;
+      background: var(--accent-soft);
     }
     .product-table td {
-      padding: 14px 16px;
+      padding: 16px 16px;
       border-bottom: 1px solid var(--border);
       vertical-align: middle;
     }
-    .product-table tr:hover td { background: rgba(255,255,255,.02); }
-    .product-table .product-name { font-weight: 400; color: var(--text); }
+    .product-table tr:hover td { background: rgba(255,255,255,.03); }
+    .product-table .product-name { font-weight: 500; color: var(--text); font-size: 1rem; }
     .product-table .product-desc {
-      font-size: .72rem;
-      color: var(--muted);
-      margin-top: 2px;
+      font-size: .85rem;
+      color: var(--text-soft);
+      margin-top: 4px;
+      line-height: 1.5;
     }
     .product-thumb {
-      width: 56px;
-      height: 56px;
+      width: 60px;
+      height: 60px;
       object-fit: cover;
-      border-radius: 4px;
+      border-radius: 5px;
       background: var(--border);
+      border: 1px solid var(--border);
     }
     .cat-badge {
       display: inline-block;
-      padding: 2px 10px;
+      padding: 4px 12px;
       border-radius: 3px;
-      font-size: .67rem;
+      font-size: .78rem;
       letter-spacing: .08em;
       text-transform: uppercase;
-      border: 1px solid var(--border);
-      color: var(--muted);
+      border: 1px solid var(--border-strong);
+      color: var(--text-soft);
+      font-weight: 400;
     }
     .stock-badge {
-      font-size: .7rem;
+      font-size: .82rem;
       letter-spacing: .05em;
+      font-weight: 500;
     }
-    .stock-yes { color: #6dbf87; }
-    .stock-no  { color: #d9534f; }
+    .stock-yes { color: var(--ok); }
+    .stock-no  { color: var(--danger); }
     .action-btn {
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-strong);
       background: transparent;
-      color: var(--muted);
-      padding: 5px 12px;
-      border-radius: 3px;
-      font-size: .72rem;
+      color: var(--text-soft);
+      padding: 6px 14px;
+      border-radius: 4px;
+      font-size: .82rem;
       cursor: pointer;
       transition: all .15s;
       margin-right: 4px;
+      font-weight: 400;
     }
-    .action-btn:hover { color: var(--text); border-color: #444; }
-    .action-btn.del:hover { color: #d9534f; border-color: #d9534f; }
+    .action-btn:hover { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+    .action-btn.del:hover { color: var(--danger); border-color: var(--danger); background: rgba(224, 118, 118, 0.08); }
     .empty-row td {
       text-align: center;
       color: var(--muted);
       padding: 60px;
-      font-size: .85rem;
+      font-size: .95rem;
     }
 
     /* ── Modal ── */
@@ -237,127 +263,146 @@
     }
     .modal-title {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 1.3rem;
+      font-size: 1.5rem;
       letter-spacing: .05em;
+      font-weight: 600;
+      color: var(--text);
     }
     .form-label {
-      font-size: .72rem;
+      font-size: .82rem;
       letter-spacing: .1em;
       text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 6px;
+      color: var(--accent);
+      margin-bottom: 8px;
+      font-weight: 500;
     }
     .form-control, .form-select {
-      background: #111 !important;
+      background: #0e0e0e !important;
       color: var(--text) !important;
-      border-color: var(--border) !important;
+      border-color: var(--border-strong) !important;
       font-family: 'Jost', sans-serif;
-      font-size: .85rem;
+      font-size: .95rem;
+      padding: 9px 12px;
+    }
+    .form-control-sm, .form-select-sm {
+      font-size: .88rem !important;
+      padding: 6px 10px !important;
     }
     .form-control:focus, .form-select:focus {
-      box-shadow: 0 0 0 2px rgba(200,184,154,.25);
+      box-shadow: 0 0 0 2px rgba(212,195,158,.3);
       border-color: var(--accent) !important;
     }
-    .form-control::placeholder { color: var(--muted) !important; }
+    .form-control::placeholder { color: var(--muted) !important; opacity: .9; }
+    .form-check-label { color: var(--text); font-size: .95rem; }
+    .form-check-input:checked { background-color: var(--accent); border-color: var(--accent); }
 
     /* 圖片上傳區 */
     .upload-zone {
-      border: 1px dashed var(--border);
-      border-radius: 6px;
-      padding: 20px;
+      border: 1.5px dashed var(--border-strong);
+      border-radius: 8px;
+      padding: 28px 20px;
       text-align: center;
       cursor: pointer;
-      transition: border-color .2s;
+      transition: border-color .2s, background .2s;
+      color: var(--text-soft);
+      font-size: .92rem;
     }
-    .upload-zone:hover { border-color: var(--accent); }
+    .upload-zone:hover { border-color: var(--accent); background: rgba(200,184,154,.04); color: var(--text); }
     .upload-zone input[type="file"] { display: none; }
 
     /* 顏色款式列 */
     .variant-row {
-      background: rgba(255,255,255,.025);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 10px 12px;
-      margin-bottom: 8px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
       display: flex;
-      gap: 8px;
+      gap: 10px;
       align-items: center;
     }
     .variant-preview {
-      width: 44px;
-      height: 44px;
+      width: 48px;
+      height: 48px;
       object-fit: cover;
-      border-radius: 4px;
-      background: var(--border);
+      border-radius: 6px;
+      background: var(--border-strong);
       flex-shrink: 0;
     }
     .variant-upload-btn {
       white-space: nowrap;
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-strong);
       background: transparent;
-      color: var(--muted);
-      padding: 6px 12px;
-      border-radius: 4px;
-      font-size: .72rem;
+      color: var(--text-soft);
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-size: .85rem;
+      font-weight: 500;
       cursor: pointer;
       transition: all .15s;
       flex-shrink: 0;
     }
-    .variant-upload-btn:hover { color: var(--text); border-color: #444; }
+    .variant-upload-btn:hover { color: var(--accent); border-color: var(--accent); }
     .variant-del-btn {
       border: none;
       background: transparent;
-      color: var(--muted);
-      padding: 6px 8px;
+      color: var(--text-soft);
+      padding: 6px 10px;
+      font-size: 1rem;
       cursor: pointer;
       transition: color .15s;
       flex-shrink: 0;
     }
-    .variant-del-btn:hover { color: #d9534f; }
+    .variant-del-btn:hover { color: #e06c6c; }
 
     /* 設定頁 */
     .setting-card {
       background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 28px;
-      max-width: 480px;
-      margin-bottom: 20px;
+      border: 1px solid var(--border-strong);
+      border-radius: 10px;
+      padding: 32px;
+      max-width: 520px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.2);
     }
     .setting-card h5 {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 1.2rem;
+      font-size: 1.4rem;
       letter-spacing: .05em;
-      margin-bottom: 6px;
+      color: var(--accent);
+      margin-bottom: 8px;
     }
     .setting-card p {
-      font-size: .82rem;
-      color: var(--muted);
-      margin-bottom: 20px;
+      font-size: .92rem;
+      color: var(--text-soft);
+      margin-bottom: 22px;
+      line-height: 1.6;
     }
 
     /* 通知 Toast */
     .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
     .admin-toast {
       background: var(--card);
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-strong);
       color: var(--text);
-      padding: 12px 20px;
-      border-radius: 6px;
-      font-size: .82rem;
-      box-shadow: 0 4px 20px rgba(0,0,0,.5);
+      padding: 14px 22px;
+      border-radius: 8px;
+      font-size: .95rem;
+      font-weight: 500;
+      box-shadow: 0 4px 24px rgba(0,0,0,.6);
       animation: slideIn .2s ease;
       margin-bottom: 8px;
     }
-    .admin-toast.success { border-left: 3px solid #6dbf87; }
-    .admin-toast.error   { border-left: 3px solid #d9534f; }
+    .admin-toast.success { border-left: 4px solid #6dbf87; }
+    .admin-toast.error   { border-left: 4px solid #e06c6c; }
     @keyframes slideIn { from { opacity:0; transform: translateX(20px); } to { opacity:1; transform: translateX(0); } }
 
     /* 載入中 */
     .loading-row td {
       text-align: center;
       padding: 60px;
-      color: var(--muted);
+      color: var(--text-soft);
+      font-size: .95rem;
     }
   </style>
 </head>
@@ -378,6 +423,12 @@
     </button>
     <button class="nav-item" onclick="showSection('orders', this)">
       <i class="bi bi-receipt"></i> 訂單查覽
+    </button>
+    <button class="nav-item" onclick="showSection('brands', this)">
+      <i class="bi bi-building"></i> 品牌管理
+    </button>
+    <button class="nav-item" onclick="showSection('designers', this)">
+      <i class="bi bi-person-badge"></i> 設計師管理
     </button>
     <button class="nav-item" onclick="showSection('settings', this)">
       <i class="bi bi-gear"></i> 設定
@@ -429,10 +480,7 @@
       <h2>訂單查覽</h2>
     </div>
     <div id="orderContent">
-      <div style="color:var(--muted); font-size:.9rem; padding:40px 0;">
-        <i class="bi bi-info-circle me-2"></i>目前每位會員可在「我的訂單」頁查看自己的訂單。<br>
-        如需查看所有訂單，可直接查詢 PostgreSQL 資料庫的 <code>orders</code> 資料表。
-      </div>
+      <div style="color:var(--muted); font-size:.9rem; padding:40px 0;">載入中…</div>
     </div>
   </section>
 
@@ -460,6 +508,58 @@
       <h5><i class="bi bi-door-open me-2"></i>登出</h5>
       <p>登出後台，返回一般會員狀態。</p>
       <button class="btn-outline-admin" onclick="doLogout()">登出後台</button>
+    </div>
+  </section>
+
+  <!-- 品牌管理 -->
+  <section id="section-brands" style="display:none;">
+    <div class="page-header">
+      <h2>品牌管理 <span class="count-badge" id="brandCount">0</span></h2>
+      <button class="btn-primary-admin" onclick="openAddBrandModal()">
+        <i class="bi bi-plus-lg me-1"></i> 新增品牌
+      </button>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="product-table">
+        <thead>
+          <tr>
+            <th>品牌名稱</th>
+            <th>國家</th>
+            <th>創立年份</th>
+            <th>Tagline</th>
+            <th style="width:130px;">操作</th>
+          </tr>
+        </thead>
+        <tbody id="brandTableBody">
+          <tr class="loading-row"><td colspan="5"><i class="bi bi-arrow-repeat me-2"></i>載入中...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 設計師管理 -->
+  <section id="section-designers" style="display:none;">
+    <div class="page-header">
+      <h2>設計師管理 <span class="count-badge" id="designerCount">0</span></h2>
+      <button class="btn-primary-admin" onclick="openAddDesignerModal()">
+        <i class="bi bi-plus-lg me-1"></i> 新增設計師
+      </button>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="product-table">
+        <thead>
+          <tr>
+            <th>姓名</th>
+            <th>國籍</th>
+            <th>生卒年</th>
+            <th>合作品牌</th>
+            <th style="width:130px;">操作</th>
+          </tr>
+        </thead>
+        <tbody id="designerTableBody">
+          <tr class="loading-row"><td colspan="5"><i class="bi bi-arrow-repeat me-2"></i>載入中...</td></tr>
+        </tbody>
+      </table>
     </div>
   </section>
 
@@ -506,6 +606,26 @@
                 <label class="form-check-label" for="f_inStock" style="font-size:.82rem;">有現貨</label>
               </div>
             </div>
+
+            <!-- 首頁展示設定（3 個獨立 checkbox） -->
+            <div class="col-12">
+              <label class="form-label mb-2" style="font-size:.82rem;">首頁展示（可多選）</label>
+              <div class="d-flex gap-4 flex-wrap" style="font-size:.82rem;">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="f_isFeatured">
+                  <label class="form-check-label" for="f_isFeatured">本季主打</label>
+                </div>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="f_isClassic">
+                  <label class="form-check-label" for="f_isClassic">設計經典</label>
+                </div>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="f_isHero">
+                  <label class="form-check-label" for="f_isHero">Hero 大輪播</label>
+                </div>
+              </div>
+            </div>
+
             <div class="col-12">
               <label class="form-label">商品說明</label>
               <textarea class="form-control" id="f_description" rows="3"
@@ -538,13 +658,32 @@
             </div>
           </div>
 
-          <!-- 顏色款式 -->
+          <!-- 商品輪播圖 -->
           <div class="mb-2">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <label class="form-label mb-0">商品輪播圖</label>
+                <div style="font-size:.73rem; color:var(--muted); margin-top:2px;">
+                  額外的產品照片（不同角度），會顯示在詳情頁主圖下方的縮圖列。少於 2 張時不顯示縮圖列。
+                </div>
+              </div>
+              <button type="button" class="btn-outline-admin" onclick="addGalleryRow()">
+                <i class="bi bi-plus"></i> 新增圖片
+              </button>
+            </div>
+            <div id="galleryRows"></div>
+            <div id="galleryEmpty" style="font-size:.8rem; color:var(--muted); padding:16px; text-align:center; border:1px dashed var(--border); border-radius:6px;">
+              尚未新增輪播圖 — 僅會顯示主圖
+            </div>
+          </div>
+
+          <!-- 顏色款式 -->
+          <div class="mb-2 mt-4">
             <div class="d-flex justify-content-between align-items-center mb-3">
               <div>
                 <label class="form-label mb-0">顏色款式</label>
                 <div style="font-size:.73rem; color:var(--muted); margin-top:2px;">
-                  每種顏色有獨立圖片，顧客可在商品頁切換
+                  每種顏色需填名稱+色碼（hex），可選擇上傳對應圖片（點擊顏色時切換主圖）
                 </div>
               </div>
               <button type="button" class="btn-outline-admin" onclick="addVariantRow()">
@@ -554,6 +693,25 @@
             <div id="variantRows"></div>
             <div id="variantEmpty" style="font-size:.8rem; color:var(--muted); padding:16px; text-align:center; border:1px dashed var(--border); border-radius:6px;">
               尚未新增顏色款式 — 點「新增顏色」開始設定
+            </div>
+          </div>
+
+          <!-- 木材款式 -->
+          <div class="mb-2 mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <label class="form-label mb-0">木材款式</label>
+                <div style="font-size:.73rem; color:var(--muted); margin-top:2px;">
+                  商品頁會顯示可選的木材名稱（例如：黑胡桃木、白梣木）
+                </div>
+              </div>
+              <button type="button" class="btn-outline-admin" onclick="addWoodRow()">
+                <i class="bi bi-plus"></i> 新增木材
+              </button>
+            </div>
+            <div id="woodRows"></div>
+            <div id="woodEmpty" style="font-size:.8rem; color:var(--muted); padding:16px; text-align:center; border:1px dashed var(--border); border-radius:6px;">
+              尚未新增木材款式 — 點「新增木材」開始設定
             </div>
           </div>
 
@@ -582,6 +740,130 @@
         <button class="btn-outline-admin" data-bs-dismiss="modal">取消</button>
         <button class="btn-primary-admin" id="confirmDeleteBtn"
           style="background:#c0392b; margin-left:8px;">刪除</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── 新增 / 編輯品牌 Modal ─── -->
+<div class="modal fade" id="brandModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="brandModalTitle">新增品牌</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <form id="brandForm" onsubmit="return false;">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">品牌名稱 *</label>
+              <input type="text" class="form-control" id="bf_name" placeholder="例：Fritz Hansen" required>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">國家</label>
+              <input type="text" class="form-control" id="bf_country" placeholder="例：丹麥">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">創立年份</label>
+              <input type="number" class="form-control" id="bf_foundedYear" placeholder="例：1872">
+            </div>
+            <div class="col-12">
+              <label class="form-label">Tagline（品牌一句話）</label>
+              <input type="text" class="form-control" id="bf_tagline" placeholder="例：北歐現代設計的百年傳承">
+            </div>
+            <div class="col-12">
+              <label class="form-label">品牌描述</label>
+              <textarea class="form-control" id="bf_description" rows="4" placeholder="品牌故事、歷史、代表作..."></textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label">官網 URL</label>
+              <input type="url" class="form-control" id="bf_websiteUrl" placeholder="https://www.example.com">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Logo URL</label>
+              <input type="text" class="form-control" id="bf_logoUrl" placeholder="圖片網址">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">封面圖 URL</label>
+              <input type="text" class="form-control" id="bf_coverImageUrl" placeholder="圖片網址">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">排序</label>
+              <input type="number" class="form-control" id="bf_sortOrder" value="99" min="1">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-outline-admin" data-bs-dismiss="modal">取消</button>
+        <button type="button" class="btn-primary-admin" onclick="saveBrand()">
+          <i class="bi bi-check-lg me-1"></i> 儲存品牌
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── 新增 / 編輯設計師 Modal ─── -->
+<div class="modal fade" id="designerModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="designerModalTitle">新增設計師</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <form id="designerForm" onsubmit="return false;">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">姓名 *</label>
+              <input type="text" class="form-control" id="df_name" placeholder="例：Hans J. Wegner" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">國籍</label>
+              <input type="text" class="form-control" id="df_nationality" placeholder="例：丹麥">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">出生年</label>
+              <input type="number" class="form-control" id="df_birthYear" placeholder="例：1914">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">逝世年（在世留空）</label>
+              <input type="number" class="form-control" id="df_deathYear" placeholder="例：2007">
+            </div>
+            <div class="col-12">
+              <label class="form-label">Tagline</label>
+              <input type="text" class="form-control" id="df_tagline" placeholder="例：椅子的詩人">
+            </div>
+            <div class="col-12">
+              <label class="form-label">傳記</label>
+              <textarea class="form-control" id="df_biography" rows="4" placeholder="設計師生平、影響、成就..."></textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label">合作品牌（逗號分隔）</label>
+              <input type="text" class="form-control" id="df_associatedBrands" placeholder="例：Carl Hansen & Søn, PP Møbler">
+            </div>
+            <div class="col-12">
+              <label class="form-label">代表作（逗號分隔）</label>
+              <input type="text" class="form-control" id="df_famousWorks" placeholder="例：CH24 Wishbone Chair, PP19 Papa Bear Chair">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">肖像圖 URL</label>
+              <input type="text" class="form-control" id="df_portraitUrl" placeholder="圖片網址">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">排序</label>
+              <input type="number" class="form-control" id="df_sortOrder" value="99" min="1">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-outline-admin" data-bs-dismiss="modal">取消</button>
+        <button type="button" class="btn-primary-admin" onclick="saveDesigner()">
+          <i class="bi bi-check-lg me-1"></i> 儲存設計師
+        </button>
       </div>
     </div>
   </div>
