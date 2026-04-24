@@ -11,6 +11,7 @@ import lombok.Setter;
 public class ProductRequest {
     private String name;
     private String brand;
+    private String designer;
     private String category;        // chair / sofa / table / storage
     private Integer price;
     private String description;

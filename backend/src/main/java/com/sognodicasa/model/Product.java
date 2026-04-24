@@ -27,6 +27,10 @@ public class Product {
     @Column(length = 100)
     private String brand;
 
+    // 設計師
+    @Column(length = 100)
+    private String designer;
+
     // 商品類別：chair / sofa / table / storage
     @Column(length = 50)
     private String category;

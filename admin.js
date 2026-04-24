@@ -335,6 +335,7 @@ async function openEditModal(id) {
 
     document.getElementById('f_name').value = p.name || '';
     document.getElementById('f_brand').value = p.brand || '';
+    document.getElementById('f_designer').value = p.designer || '';
     document.getElementById('f_category').value = p.category || '';
     document.getElementById('f_price').value = p.price || '';
     document.getElementById('f_description').value = p.description || '';
@@ -429,6 +430,7 @@ async function saveProduct() {
   const payload = {
     name,
     brand: document.getElementById('f_brand').value.trim(),
+    designer: document.getElementById('f_designer').value.trim(),
     category: document.getElementById('f_category').value,
     price: parseInt(price),
     description: document.getElementById('f_description').value.trim(),

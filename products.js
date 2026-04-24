@@ -83,6 +83,12 @@ function filterProducts() {
   ).map(cb => cb.dataset.brand);
   const anyBrandChecked = checkedBrands.length > 0;
 
+  // ── 設計師篩選（動態從 #designerFilters 抓勾選的設計師名）──
+  const checkedDesigners = Array.from(
+    document.querySelectorAll('#designerFilters input[type="checkbox"]:checked')
+  ).map(cb => cb.dataset.designer);
+  const anyDesignerChecked = checkedDesigners.length > 0;
+
   // ── 價格上限 ──
   const maxPrice = parseInt(document.getElementById('priceRange')?.value || '10000000', 10);
 
@@ -95,9 +101,11 @@ function filterProducts() {
 
     const passBrand = !anyBrandChecked || checkedBrands.includes(p.brand);
 
+    const passDesigner = !anyDesignerChecked || checkedDesigners.includes(p.designer);
+
     const passPrice = p.price <= maxPrice;
 
-    return passCategory && passBrand && passPrice;
+    return passCategory && passBrand && passDesigner && passPrice;
   });
 
   renderProducts(sortList(filtered, sortVal));
@@ -179,6 +187,55 @@ function renderBrandFilters(products) {
 }
 
 // ── 從後端 API 載入商品 ──
+// ── 設計師篩選 checkbox（從商品資料抽取，最多 10 個，可捲動）──
+function renderDesignerFilters(products) {
+  const container = document.getElementById('designerFilters');
+  if (!container) return;
+
+  const designerSet = new Set();
+  products.forEach(p => {
+    if (p.designer && p.designer.trim()) designerSet.add(p.designer.trim());
+  });
+
+  const designers = Array.from(designerSet).sort((a, b) => a.localeCompare(b)).slice(0, 10);
+
+  if (designers.length === 0) {
+    container.innerHTML = `<div style="font-size:.8rem; color:#999;">尚無設計師資料</div>`;
+    return;
+  }
+
+  container.innerHTML = designers.map((d, i) => {
+    const safeId = `designer-${i}`;
+    return `
+      <div class="form-check filter-check">
+        <input class="form-check-input" type="checkbox" id="${safeId}"
+               data-designer="${d.replace(/"/g, '&quot;')}"
+               onchange="filterProducts()">
+        <label class="form-check-label" for="${safeId}">${d}</label>
+      </div>`;
+  }).join('');
+
+  initDragScroll(container);
+}
+
+// ── 拖曳捲動（滑鼠按住拖動）──
+function initDragScroll(el) {
+  let isDown = false, startY, scrollTop;
+  el.addEventListener('mousedown', e => {
+    isDown = true;
+    startY = e.pageY - el.offsetTop;
+    scrollTop = el.scrollTop;
+    el.style.cursor = 'grabbing';
+  });
+  el.addEventListener('mouseleave', () => { isDown = false; el.style.cursor = 'grab'; });
+  el.addEventListener('mouseup',    () => { isDown = false; el.style.cursor = 'grab'; });
+  el.addEventListener('mousemove',  e => {
+    if (!isDown) return;
+    e.preventDefault();
+    el.scrollTop = scrollTop - (e.pageY - el.offsetTop - startY);
+  });
+}
+
 async function loadProductsFromAPI() {
   const grid = document.getElementById('productGrid');
   if (grid) {
@@ -195,13 +252,14 @@ async function loadProductsFromAPI() {
 
     // 把後端欄位（category / mainImage）對應到前端用的（cat / img）
     allProducts = data.map(p => ({
-      id:    p.id,
-      name:  p.name  || '',
-      brand: p.brand || '',
-      price: p.price || 0,
-      cat:   p.category || '',     // API 叫 category，前端 filter 用 cat
-      img:   p.mainImage || '',    // API 叫 mainImage，前端顯示用 img
-      badge: '',                   // 目前不從 API 取，可之後擴充
+      id:       p.id,
+      name:     p.name  || '',
+      brand:    p.brand || '',
+      designer: p.designer || '',
+      price:    p.price || 0,
+      cat:      p.category || '',   // API 叫 category，前端 filter 用 cat
+      img:      p.mainImage || '',  // API 叫 mainImage，前端顯示用 img
+      badge:    '',                 // 目前不從 API 取，可之後擴充
       inStock: p.inStock !== false
     }));
 
@@ -217,6 +275,7 @@ async function loadProductsFromAPI() {
     }
 
     renderBrandFilters(allProducts);
+    renderDesignerFilters(allProducts);
     filterProducts(); // 套用目前的篩選與排序後渲染
   } catch (e) {
     // 後端連不到時，顯示友善錯誤提示

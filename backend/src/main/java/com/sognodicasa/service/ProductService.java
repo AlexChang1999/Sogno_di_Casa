@@ -86,6 +86,7 @@ public class ProductService {
     private void applyRequest(ProductRequest req, Product p) {
         if (req.getName()           != null) p.setName(req.getName());
         if (req.getBrand()          != null) p.setBrand(req.getBrand());
+        if (req.getDesigner()       != null) p.setDesigner(req.getDesigner());
         if (req.getCategory()       != null) p.setCategory(req.getCategory());
         if (req.getPrice()          != null) p.setPrice(req.getPrice());
         if (req.getDescription()    != null) p.setDescription(req.getDescription());
@@ -110,6 +111,7 @@ public class ProductService {
         dto.setId(p.getId());
         dto.setName(p.getName());
         dto.setBrand(p.getBrand());
+        dto.setDesigner(p.getDesigner());
         dto.setCategory(p.getCategory());
         dto.setPrice(p.getPrice());
         dto.setDescription(p.getDescription());
