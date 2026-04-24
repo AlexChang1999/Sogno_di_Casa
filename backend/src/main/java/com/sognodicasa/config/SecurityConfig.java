@@ -1,6 +1,7 @@
 package com.sognodicasa.config;
 
 import com.sognodicasa.security.JwtFilter;
+import jakarta.servlet.http.HttpServletResponse; // 🌟 新增這行 import
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -46,6 +47,13 @@ public class SecurityConfig {
             // 套用 CORS 設定（允許前端跨域呼叫）
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
+            // 🌟 新增這段：處理未授權(無 Token 或 Token 無效)時，回傳 401 而非預設的 403
+            .exceptionHandling(exceptions -> exceptions
+                .authenticationEntryPoint((request, response, authException) -> {
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error: Unauthorized");
+                })
+            )
+
             // 使用 Stateless Session（每次請求都靠 JWT 驗證，不存 Session）
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -54,7 +62,15 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()                          // 登入/註冊不需要 token
                 .requestMatchers(HttpMethod.GET, "/api/products", "/api/products/**").permitAll() // 瀏覽商品不需要登入
+                .requestMatchers(HttpMethod.GET, "/api/brands", "/api/brands/**").permitAll()     // 瀏覽品牌不需要登入
+                .requestMatchers(HttpMethod.GET, "/api/designers", "/api/designers/**").permitAll() // 瀏覽設計師不需要登入
+                .requestMatchers(HttpMethod.GET, "/api/reviews").permitAll()                          // 瀏覽評價不需要登入
+                .requestMatchers(HttpMethod.POST, "/api/products/**").authenticated() // 上傳圖片需要登入，角色檢查由 @PreAuthorize 處理
                 .requestMatchers("/uploads/**").permitAll()                           // 上傳的圖片可公開存取
+                
+                // 🌟 新增這段：保護 Admin 的所有訂單 API，只有 ADMIN 角色可以存取
+                .requestMatchers("/api/orders/admin/**").hasRole("ADMIN")
+                
                 .anyRequest().authenticated()                                         // 其他都需要 token
             )
 
@@ -76,7 +92,7 @@ public class SecurityConfig {
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource(); 
         source.registerCorsConfiguration("/**", config);
         return source;
     }

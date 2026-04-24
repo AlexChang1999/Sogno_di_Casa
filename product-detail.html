@@ -72,25 +72,8 @@
               <div class="magnifier-result" id="magnifierResult"></div>
             </div>
 
-            <!-- Thumbnail Strip -->
-            <div class="thumb-strip" id="thumbStrip">
-              <img class="thumb active"
-                   src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=200&q=70"
-                   data-full="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=900&q=90"
-                   onclick="switchImage(this)" alt="view 1">
-              <img class="thumb"
-                   src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=200&q=70"
-                   data-full="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=900&q=90"
-                   onclick="switchImage(this)" alt="view 2">
-              <img class="thumb"
-                   src="https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=200&q=70"
-                   data-full="https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=900&q=90"
-                   onclick="switchImage(this)" alt="view 3">
-              <img class="thumb"
-                   src="https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=200&q=70"
-                   data-full="https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=900&q=90"
-                   onclick="switchImage(this)" alt="view 4">
-            </div>
+            <!-- Thumbnail Strip（由後台 galleryJson 動態產生；只有 1 張圖時整個隱藏） -->
+            <div class="thumb-strip" id="thumbStrip" style="display:none;"></div>
 
             <p class="magnifier-hint"><i class="bi bi-zoom-in me-1"></i> 滑鼠移至圖片可放大查看細節</p>
           </div>
@@ -119,25 +102,16 @@
               提供五年品質保固。
             </p>
 
-            <!-- Color Options -->
-            <div class="option-group">
-              <h6 class="option-label">顏色 <span class="option-selected" id="colorSelected">黑色皮革</span></h6>
-              <div class="color-swatches">
-                <button class="swatch active" style="background:#1a1a1a;" onclick="selectColor(this,'黑色皮革')" title="黑色皮革"></button>
-                <button class="swatch" style="background:#8B6355;" onclick="selectColor(this,'棕色皮革')" title="棕色皮革"></button>
-                <button class="swatch" style="background:#C4A882;" onclick="selectColor(this,'駝色皮革')" title="駝色皮革"></button>
-                <button class="swatch" style="background:#2C3E50;" onclick="selectColor(this,'深藍皮革')" title="深藍皮革"></button>
-              </div>
+            <!-- Color Options（由後台 colorsJson 動態產生，預設隱藏） -->
+            <div class="option-group" id="colorGroup" style="display:none;">
+              <h6 class="option-label">顏色 <span class="option-selected" id="colorSelected"></span></h6>
+              <div class="color-swatches" id="colorSwatches"></div>
             </div>
 
-            <!-- Material -->
-            <div class="option-group">
-              <h6 class="option-label">木材 <span class="option-selected" id="woodSelected">黑胡桃木</span></h6>
-              <div class="d-flex gap-2 flex-wrap">
-                <button class="opt-btn active" onclick="selectOption(this, 'woodSelected', '黑胡桃木')">黑胡桃木</button>
-                <button class="opt-btn" onclick="selectOption(this, 'woodSelected', '白梣木')">白梣木</button>
-                <button class="opt-btn" onclick="selectOption(this, 'woodSelected', '淺胡桃木')">淺胡桃木</button>
-              </div>
+            <!-- Material（由後台 woodOptionsJson 動態產生，預設隱藏） -->
+            <div class="option-group" id="woodGroup" style="display:none;">
+              <h6 class="option-label">木材 <span class="option-selected" id="woodSelected"></span></h6>
+              <div class="d-flex gap-2 flex-wrap" id="woodOptions"></div>
             </div>
 
             <!-- Quantity -->
@@ -189,7 +163,7 @@
             <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabStory">品牌故事</button>
           </li>
           <li class="nav-item">
-            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabReview">評價 (128)</button>
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabReview">評價 (<span id="reviewCount">…</span>)</button>
           </li>
         </ul>
         <div class="tab-content forma-tab-content">
@@ -212,23 +186,40 @@
             </div>
           </div>
           <div class="tab-pane fade" id="tabReview">
-            <div class="review-list">
-              <div class="review-item">
-                <div class="d-flex justify-content-between">
-                  <strong>陳 O 宇</strong>
-                  <span class="review-stars">★★★★★</span>
-                </div>
-                <p class="review-date">2025 年 3 月</p>
-                <p class="review-text">品質超乎預期，坐起來非常舒適，是我買過最值得的家具投資。</p>
+            <!-- 評價列表（由 JS 動態填入） -->
+            <div id="reviewList" class="review-list mb-4">
+              <p class="text-muted">載入評價中…</p>
+            </div>
+
+            <!-- 新增評價表單 -->
+            <div class="review-form-wrap border-top pt-4">
+              <h6 class="mb-3">撰寫評價</h6>
+              <div id="reviewLoginHint" class="text-muted small mb-3" style="display:none;">
+                請先 <a href="login.html">登入</a> 再留下評價。
               </div>
-              <div class="review-item">
-                <div class="d-flex justify-content-between">
-                  <strong>林 O 如</strong>
-                  <span class="review-stars">★★★★☆</span>
+              <form id="reviewForm">
+                <div class="mb-3">
+                  <label class="form-label">您的名稱</label>
+                  <input type="text" id="reviewAuthor" class="form-control" placeholder="顯示名稱（可匿名）">
                 </div>
-                <p class="review-date">2025 年 2 月</p>
-                <p class="review-text">外觀非常漂亮，安裝服務也很專業，客廳質感提升了很多。</p>
-              </div>
+                <div class="mb-3">
+                  <label class="form-label">評分</label>
+                  <div id="starPicker" class="star-picker">
+                    <span class="star-opt" data-val="1">★</span>
+                    <span class="star-opt" data-val="2">★</span>
+                    <span class="star-opt" data-val="3">★</span>
+                    <span class="star-opt" data-val="4">★</span>
+                    <span class="star-opt" data-val="5">★</span>
+                  </div>
+                  <input type="hidden" id="reviewRating" value="0">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">評語</label>
+                  <textarea id="reviewComment" class="form-control" rows="3" placeholder="分享您的使用心得…"></textarea>
+                </div>
+                <button type="submit" class="btn btn-dark px-4">送出評價</button>
+                <span id="reviewMsg" class="ms-3 small"></span>
+              </form>
             </div>
           </div>
         </div>
@@ -242,7 +233,7 @@
         </div>
         <div class="row g-4">
           <div class="col-12 col-md-6 col-lg-3">
-            <div class="product-card" onclick="window.location='product-detail.html?id=2'">
+            <div class="product-card" onclick="window.location='product-detail.html#id=2'">
               <div class="product-img-wrap">
                 <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&q=80" class="product-img" alt="LC2 Sofa">
                 <div class="product-overlay">
@@ -257,7 +248,7 @@
             </div>
           </div>
           <div class="col-12 col-md-6 col-lg-3">
-            <div class="product-card" onclick="window.location='product-detail.html?id=3'">
+            <div class="product-card" onclick="window.location='product-detail.html#id=3'">
               <div class="product-img-wrap">
                 <img src="https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=600&q=80" class="product-img" alt="Series 7">
                 <div class="product-overlay">
@@ -272,7 +263,7 @@
             </div>
           </div>
           <div class="col-12 col-md-6 col-lg-3">
-            <div class="product-card" onclick="window.location='product-detail.html?id=4'">
+            <div class="product-card" onclick="window.location='product-detail.html#id=4'">
               <div class="product-img-wrap">
                 <img src="https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=600&q=80" class="product-img" alt="Noguchi">
                 <div class="product-overlay">
@@ -287,7 +278,7 @@
             </div>
           </div>
           <div class="col-12 col-md-6 col-lg-3">
-            <div class="product-card" onclick="window.location='product-detail.html?id=5'">
+            <div class="product-card" onclick="window.location='product-detail.html#id=5'">
               <div class="product-img-wrap">
                 <img src="https://images.unsplash.com/photo-1592078615290-033ee584e267?w=600&q=80" class="product-img" alt="Aeron">
                 <div class="product-overlay">
@@ -328,7 +319,6 @@
   <script src="product-images.js"></script>
   <script src="cart.js"></script>
   <script src="auth.js"></script>
-  <script src="product-images.js"></script>
   <script src="detail.js"></script>
 </body>
 </html>

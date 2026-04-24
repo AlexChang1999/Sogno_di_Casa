@@ -208,22 +208,45 @@ function addToCartDetail() {
   );
 }
 
-// ── 同步縮圖列（與主圖同一組相對路徑，避免主圖已換但縮圖仍指向舊網址） ──
+// ── 同步縮圖列 ──
+// 來源：主圖 + galleryJson 裡的圖片（去重）
+// 規則：只有 1 張圖時整個縮圖列隱藏；2 張以上才動態產生 <img>
+// galleryJson 新格式：["url1", "url2", ...]（純字串陣列）
 function syncThumbStrip(product) {
   const strip = document.getElementById('thumbStrip');
-  if (!strip || !product.img) return;
+  if (!strip) return;
 
-  const thumbs = strip.querySelectorAll('.thumb');
-  const slides = product.gallery && product.gallery.length
-    ? product.gallery
-    : [{ thumb: product.img, full: product.img }];
+  // 收集所有候選圖片 URL
+  const urls = [];
+  if (product.img) urls.push(product.img);
 
-  thumbs.forEach((el, i) => {
-    const g = slides[i] || slides[0];
-    el.src = g.thumb;
-    el.dataset.full = g.full;
-    el.classList.toggle('active', i === 0);
-  });
+  if (Array.isArray(product.gallery)) {
+    product.gallery.forEach(item => {
+      // 支援兩種格式：純字串 或 舊的 {full, thumb} 物件
+      if (typeof item === 'string' && item.trim()) urls.push(item.trim());
+      else if (item && typeof item === 'object' && item.full) urls.push(item.full);
+    });
+  }
+
+  // 去重
+  const unique = Array.from(new Set(urls));
+
+  // 只有 1 張（或 0 張）→ 不顯示縮圖列
+  if (unique.length <= 1) {
+    strip.style.display = 'none';
+    strip.innerHTML = '';
+    return;
+  }
+
+  // 動態產生縮圖
+  strip.style.display = '';
+  strip.innerHTML = unique.map((url, i) => `
+    <img class="thumb ${i === 0 ? 'active' : ''}"
+         src="${url}"
+         data-full="${url}"
+         onclick="switchImage(this)"
+         alt="view ${i + 1}">
+  `).join('');
 }
 
 function syncRelatedProducts() {
@@ -289,15 +312,30 @@ async function loadProductData(id) {
 
   let product = null;
 
-  // 步驟 1：嘗試從後端 API 取得
+  // 步驟 1：從後端 API 取得商品資料（全部依賴後台，不再使用硬編碼）
   try {
     const res = await fetch(`${API_BASE}/api/products/${numId}`);
     if (res.ok) {
       const data = await res.json();
+
+      // 解析 galleryJson（圖片縮圖列，可選）
       let gallery = [];
       if (data.galleryJson) {
         try { gallery = JSON.parse(data.galleryJson); } catch (e) {}
       }
+
+      // 解析 colorsJson（顏色選項，格式：[{name, hex, image?}]）
+      let colors = [];
+      if (data.colorsJson) {
+        try { colors = JSON.parse(data.colorsJson); } catch (e) {}
+      }
+
+      // 解析 woodOptionsJson（木材選項，格式：[{wood:"黑胡桃木"}, ...]）
+      let woods = [];
+      if (data.woodOptionsJson) {
+        try { woods = JSON.parse(data.woodOptionsJson); } catch (e) {}
+      }
+
       product = {
         id:          data.id,
         name:        data.name  || '',
@@ -305,28 +343,57 @@ async function loadProductData(id) {
         price:       data.price || 0,
         img:         data.mainImage || '',
         gallery:     gallery,
+        colors:      colors,
+        woods:       woods,
         description: data.description || ''
       };
     }
   } catch (e) {
-    // 後端連不到，繼續用本機資料
+    console.error('[detail] 無法從後端取得商品資料：', e);
   }
 
-  // 步驟 2：API 失敗時，fallback 到硬編碼的 PRODUCTS_DATA
+  // 步驟 2：找不到商品時顯示提示（不再 fallback 到硬編碼）
   if (!product) {
-    product = PRODUCTS_DATA.find(p => p.id === numId);
-    if (!product) return;
+    const nameEl = document.getElementById('detailName');
+    if (nameEl) nameEl.textContent = '找不到此商品';
+    return;
   }
 
-  // 步驟 3：從 gallery 建立顏色→圖片對照表（給 selectColor() 使用）
+  // 步驟 3：處理顏色選項（有資料才顯示整個顏色區塊）
   dynamicColorImages = {};
-  if (product.gallery && product.gallery.length > 0) {
-    product.gallery.forEach(item => {
-      if (item.color) {
-        dynamicColorImages[item.color] = { main: item.full, thumb: item.thumb };
+  const colorGroup = document.getElementById('colorGroup');
+  if (Array.isArray(product.colors) && product.colors.length > 0) {
+    product.colors.forEach(c => {
+      if (c && c.name) {
+        // 如果後台有設定顏色對應圖片，點擊顏色時切換主圖；否則維持原主圖
+        dynamicColorImages[c.name] = {
+          main:  c.image || product.img,
+          thumb: c.image || product.img,
+        };
       }
     });
-    generateColorButtons(product.gallery);
+    generateColorButtons(product.colors);
+    if (colorGroup) colorGroup.style.display = '';
+  } else {
+    // 沒有顏色資料 → 整個顏色區塊隱藏
+    if (colorGroup) colorGroup.style.display = 'none';
+    const colorSwatches = document.getElementById('colorSwatches');
+    if (colorSwatches) colorSwatches.innerHTML = '';
+    const colorLabel = document.getElementById('colorSelected');
+    if (colorLabel) colorLabel.textContent = '';
+  }
+
+  // 步驟 3.5：處理木材選項（有資料才顯示整個木材區塊）
+  const woodGroup = document.getElementById('woodGroup');
+  if (Array.isArray(product.woods) && product.woods.length > 0) {
+    generateWoodButtons(product.woods);
+    if (woodGroup) woodGroup.style.display = '';
+  } else {
+    if (woodGroup) woodGroup.style.display = 'none';
+    const woodOptions = document.getElementById('woodOptions');
+    if (woodOptions) woodOptions.innerHTML = '';
+    const woodLabel = document.getElementById('woodSelected');
+    if (woodLabel) woodLabel.textContent = '';
   }
 
   // 步驟 4：更新 DOM
@@ -341,7 +408,14 @@ async function loadProductData(id) {
   if (nameEl)     nameEl.textContent  = product.name;
   if (priceEl)    priceEl.textContent = `NT$ ${product.price.toLocaleString()}`;
   if (breadcrumb) breadcrumb.textContent = product.name;
-  if (mainImg && product.img) mainImg.src = product.img;
+  if (mainImg && product.img) {
+    mainImg.src = product.img;
+    mainImg.onerror = () => {
+      const fallback = (PRODUCT_IMAGE_MAP[numId] || {}).img;
+      if (fallback) mainImg.src = fallback;
+      mainImg.onerror = null; // 防止無限觸發
+    };
+  }
   if (descEl && product.description) descEl.textContent = product.description;
 
   document.title      = `${product.name} — FORMA`;
@@ -350,35 +424,241 @@ async function loadProductData(id) {
   syncThumbStrip(product);
 }
 
-// ── 根據 gallery 動態產生顏色按鈕（若已有顏色資訊）──
-function generateColorButtons(gallery) {
-  const colorItems = gallery.filter(item => item.color);
-  if (colorItems.length === 0) return;
-
-  const swatchGroup = document.querySelector('.swatch-group');
+// ── 根據 colorsJson 動態產生顏色按鈕 ──
+// colors 格式：[{ name: '黑色皮革', hex: '#1a1a1a', image?: 'http://...' }]
+function generateColorButtons(colors) {
+  const colorItems = (colors || []).filter(c => c && c.name);
+  // 注意：HTML 容器的 class 是 .color-swatches，id 是 colorSwatches
+  const swatchGroup = document.getElementById('colorSwatches');
   if (!swatchGroup) return;
 
-  swatchGroup.innerHTML = colorItems.map((item, i) => `
-    <button class="swatch ${i === 0 ? 'active' : ''}"
-            onclick="selectColor(this, '${item.color}')"
-            title="${item.color}"
-            style="background-image:url('${item.thumb || item.full}'); background-size:cover; background-position:center;">
-    </button>
-  `).join('');
+  if (colorItems.length === 0) {
+    swatchGroup.innerHTML = '';
+    return;
+  }
+
+  swatchGroup.innerHTML = colorItems.map((c, i) => {
+    // 有圖片就用圖片當背景；否則用 hex 色塊
+    const bgStyle = c.image
+      ? `background-image:url('${c.image}'); background-size:cover; background-position:center;`
+      : `background-color:${c.hex || '#ccc'};`;
+    const safeName = String(c.name).replace(/'/g, "\\'");
+    return `
+      <button class="swatch ${i === 0 ? 'active' : ''}"
+              onclick="selectColor(this, '${safeName}')"
+              title="${c.name}"
+              style="${bgStyle}">
+      </button>
+    `;
+  }).join('');
 
   const colorLabel = document.getElementById('colorSelected');
-  if (colorLabel) colorLabel.textContent = colorItems[0].color;
+  if (colorLabel) colorLabel.textContent = colorItems[0].name;
+}
+
+// ── 根據 woodOptionsJson 動態產生木材按鈕 ──
+// woods 格式：[{ wood: '黑胡桃木' }, { wood: '白梣木' }, ...]
+function generateWoodButtons(woods) {
+  const items = (woods || []).filter(w => w && w.wood);
+  const container = document.getElementById('woodOptions');
+  if (!container) return;
+
+  if (items.length === 0) {
+    container.innerHTML = '';
+    return;
+  }
+
+  container.innerHTML = items.map((w, i) => {
+    const safeName = String(w.wood).replace(/'/g, "\\'");
+    return `
+      <button class="opt-btn ${i === 0 ? 'active' : ''}"
+              onclick="selectOption(this, 'woodSelected', '${safeName}')">
+        ${w.wood}
+      </button>
+    `;
+  }).join('');
+
+  const woodLabel = document.getElementById('woodSelected');
+  if (woodLabel) woodLabel.textContent = items[0].wood;
+}
+
+// ── 從 URL 讀取商品 id ──
+// 優先讀 hash（#id=X），因為 npx serve 會把 query string 吃掉
+// 若 hash 沒有才讀 query（?id=X）作為 fallback
+function getProductIdFromUrl() {
+  // hash 格式可能是 "#id=8" 或 "#/id=8"
+  const hash = window.location.hash.replace(/^#\/?/, ''); // 去掉開頭 # 或 #/
+  const hashParams = new URLSearchParams(hash);
+  const hashId = parseInt(hashParams.get('id'), 10);
+  if (Number.isFinite(hashId) && hashId > 0) return hashId;
+
+  const queryParams = new URLSearchParams(window.location.search);
+  const queryId = parseInt(queryParams.get('id'), 10);
+  if (Number.isFinite(queryId) && queryId > 0) return queryId;
+
+  return null;
 }
 
 // ── Init ──
 document.addEventListener('DOMContentLoaded', async () => {
-  const params = new URLSearchParams(window.location.search);
-  const parsed = parseInt(params.get('id'), 10);
-  currentProductId = Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
+  const id = getProductIdFromUrl();
+
+  if (!id) {
+    const nameEl = document.getElementById('detailName');
+    if (nameEl) nameEl.textContent = '請從商品列表選擇商品';
+    console.warn('[detail] 缺少 URL 參數 ?id= 或 #id=，請從商品列表進入此頁');
+    return;
+  }
+
+  currentProductId = id;
 
   // loadProductData 是 async，await 確保圖片設定完後再跑放大鏡
   await loadProductData(currentProductId);
   syncRelatedProducts();
-  verifyColorImageMapping();
   initMagnifier();
+  loadReviews(currentProductId);
+  initStarPicker();
+  initReviewForm();
 });
+
+// ── 當 hash 改變時（例如從相關商品點擊）重新載入資料 ──
+window.addEventListener('hashchange', async () => {
+  const id = getProductIdFromUrl();
+  if (!id) return;
+  currentProductId = id;
+  await loadProductData(currentProductId);
+  syncRelatedProducts();
+  loadReviews(currentProductId);
+  // 讓頁面捲回最上方，感覺像換頁
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// ── 評價功能 ──
+
+/** 將 rating 數字轉成星號字串，例如 4 → "★★★★☆" */
+function starsHtml(rating) {
+  return '★'.repeat(rating) + '☆'.repeat(5 - rating);
+}
+
+/** 防止 XSS：將特殊字元轉義 */
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/** 從 API 載入該商品評價並渲染 */
+async function loadReviews(productId) {
+  const listEl  = document.getElementById('reviewList');
+  const countEl = document.getElementById('reviewCount');
+  if (!listEl) return;
+
+  try {
+    const res  = await fetch(`${API_BASE}/api/reviews?productId=${productId}`);
+    const data = await res.json();
+
+    if (countEl) countEl.textContent = data.length;
+
+    if (data.length === 0) {
+      listEl.innerHTML = '<p class="text-muted">此商品目前尚無評價，成為第一個留評的人吧！</p>';
+      return;
+    }
+
+    listEl.innerHTML = data.map(r => {
+      const date = new Date(r.createdAt).toLocaleDateString('zh-TW', { year: 'numeric', month: 'long' });
+      return `
+        <div class="review-item">
+          <div class="d-flex justify-content-between">
+            <strong>${escapeHtml(r.authorName)}</strong>
+            <span class="review-stars">${starsHtml(r.rating)}</span>
+          </div>
+          <p class="review-date">${date}</p>
+          <p class="review-text">${escapeHtml(r.comment || '')}</p>
+        </div>
+      `;
+    }).join('');
+  } catch (err) {
+    listEl.innerHTML = '<p class="text-danger">評價載入失敗，請稍後再試。</p>';
+  }
+}
+
+/** 初始化星星評分選擇器 */
+function initStarPicker() {
+  const stars       = document.querySelectorAll('.star-opt');
+  const ratingInput = document.getElementById('reviewRating');
+  if (!stars.length || !ratingInput) return;
+
+  stars.forEach(star => {
+    star.addEventListener('mouseover', () => {
+      const val = +star.dataset.val;
+      stars.forEach(s => s.classList.toggle('active', +s.dataset.val <= val));
+    });
+    star.addEventListener('click', () => {
+      const val = +star.dataset.val;
+      ratingInput.value = val;
+      stars.forEach(s => s.classList.toggle('selected', +s.dataset.val <= val));
+    });
+  });
+
+  document.getElementById('starPicker')?.addEventListener('mouseleave', () => {
+    const selected = +ratingInput.value;
+    stars.forEach(s => s.classList.toggle('active', +s.dataset.val <= selected));
+  });
+}
+
+/** 初始化評價送出表單 */
+function initReviewForm() {
+  const form  = document.getElementById('reviewForm');
+  const hint  = document.getElementById('reviewLoginHint');
+  const msgEl = document.getElementById('reviewMsg');
+  if (!form) return;
+
+  const token = localStorage.getItem('forma_token');
+  if (!token) {
+    form.style.display = 'none';
+    if (hint) hint.style.display = 'block';
+    return;
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const rating = +document.getElementById('reviewRating').value;
+    if (rating < 1 || rating > 5) {
+      msgEl.textContent = '請選擇 1 到 5 顆星';
+      msgEl.style.color = 'red';
+      return;
+    }
+
+    const body = {
+      productId:  currentProductId,
+      authorName: document.getElementById('reviewAuthor').value.trim() || '匿名',
+      rating,
+      comment:    document.getElementById('reviewComment').value.trim(),
+    };
+
+    try {
+      const res = await fetch(`${API_BASE}/api/reviews`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body:    JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || '送出失敗');
+      }
+
+      msgEl.textContent = '評價已送出，感謝您的分享！';
+      msgEl.style.color = 'green';
+      form.reset();
+      document.getElementById('reviewRating').value = 0;
+      document.querySelectorAll('.star-opt').forEach(s => s.classList.remove('active', 'selected'));
+      loadReviews(currentProductId);
+    } catch (err) {
+      msgEl.textContent = err.message;
+      msgEl.style.color = 'red';
+    }
+  });
+}
