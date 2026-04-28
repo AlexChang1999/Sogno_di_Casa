@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FORMA — 數位選品平台介紹</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:   #0d0d0d;
+      --dark:    #1a1a1a;
+      --mid:     #4a4a4a;
+      --muted:   #888;
+      --border:  #e0dbd5;
+      --cream:   #f7f4f0;
+      --white:   #ffffff;
+      --gold:    #c9a96e;
+      --gold-d:  #a8834a;
+      --font-display: 'Cormorant Garamond', serif;
+      --font-body:    'Jost', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--dark);
+      background: var(--white);
+      font-weight: 300;
+      line-height: 1.8;
+      font-size: 15px;
+    }
+
+    /* ── COVER ── */
+    .cover {
+      min-height: 100vh;
+      background: var(--black);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 80px 10vw;
+      position: relative;
+      overflow: hidden;
+    }
+    .cover::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 80% 50%, rgba(201,169,110,.08) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .cover-eyebrow {
+      font-family: var(--font-body);
+      font-size: .72rem;
+      letter-spacing: .3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 28px;
+    }
+    .cover-title {
+      font-family: var(--font-display);
+      font-size: clamp(3.5rem, 8vw, 7rem);
+      font-weight: 300;
+      color: var(--white);
+      line-height: 1.05;
+      margin-bottom: 24px;
+      letter-spacing: .01em;
+    }
+    .cover-title em {
+      font-style: italic;
+      color: var(--gold);
+    }
+    .cover-sub {
+      font-size: .95rem;
+      color: rgba(255,255,255,.45);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: 60px;
+    }
+    .cover-divider {
+      width: 48px;
+      height: 1px;
+      background: var(--gold);
+      margin-bottom: 32px;
+    }
+    .cover-desc {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 300;
+      color: rgba(255,255,255,.65);
+      max-width: 560px;
+      line-height: 1.7;
+    }
+    .cover-scroll {
+      position: absolute;
+      bottom: 48px;
+      left: 10vw;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: .72rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.3);
+    }
+    .cover-scroll::before {
+      content: '';
+      display: block;
+      width: 32px;
+      height: 1px;
+      background: rgba(255,255,255,.2);
+    }
+
+    /* ── SECTION WRAPPER ── */
+    .section {
+      padding: 100px 10vw;
+    }
+    .section-cream { background: var(--cream); }
+    .section-dark  { background: var(--black); color: var(--white); }
+
+    .section-eyebrow {
+      font-size: .72rem;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 400;
+      line-height: 1.15;
+      margin-bottom: 20px;
+      letter-spacing: .01em;
+    }
+    .section-title em { font-style: italic; }
+    .section-lead {
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 560px;
+      line-height: 1.85;
+      margin-bottom: 64px;
+    }
+    .section-dark .section-lead { color: rgba(255,255,255,.4); }
+
+    /* ── TWO-COLUMN LAYOUT ── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: start;
+    }
+    @media (max-width: 860px) {
+      .two-col { grid-template-columns: 1fr; gap: 40px; }
+    }
+
+    /* ── FEATURE BLOCKS ── */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px;
+    }
+    @media (max-width: 1000px) {
+      .feature-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+      .feature-grid { grid-template-columns: 1fr; }
+    }
+
+    .feature-card {
+      border-top: 1px solid var(--border);
+      padding-top: 28px;
+    }
+    .section-dark .feature-card {
+      border-top-color: rgba(255,255,255,.1);
+    }
+    .feature-number {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      font-weight: 300;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 16px;
+      font-style: italic;
+    }
+    .feature-title {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+    .section-dark .feature-title { color: var(--white); }
+    .feature-body {
+      font-size: .88rem;
+      color: var(--muted);
+      line-height: 1.9;
+    }
+    .section-dark .feature-body { color: rgba(255,255,255,.4); }
+
+    /* ── STEP LIST ── */
+    .step-list { counter-reset: steps; }
+    .step-item {
+      display: flex;
+      gap: 28px;
+      align-items: flex-start;
+      padding: 28px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .step-item:last-child { border-bottom: none; }
+    .step-num {
+      counter-increment: steps;
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--gold);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-style: italic;
+      color: var(--gold);
+    }
+    .step-content {}
+    .step-title {
+      font-family: var(--font-body);
+      font-size: .82rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--dark);
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+    .step-desc {
+      font-size: .88rem;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    /* ── ADMIN HIGHLIGHT ── */
+    .admin-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2px;
+      background: rgba(255,255,255,.06);
+    }
+    @media (max-width: 700px) {
+      .admin-grid { grid-template-columns: 1fr; }
+    }
+    .admin-cell {
+      background: rgba(255,255,255,.03);
+      padding: 36px 32px;
+      border: 1px solid rgba(255,255,255,.06);
+      transition: background .2s;
+    }
+    .admin-cell:hover { background: rgba(201,169,110,.06); }
+    .admin-cell-icon {
+      font-size: 1.2rem;
+      margin-bottom: 14px;
+    }
+    .admin-cell-title {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: var(--white);
+      margin-bottom: 10px;
+    }
+    .admin-cell-body {
+      font-size: .85rem;
+      color: rgba(255,255,255,.38);
+      line-height: 1.85;
+    }
+    .admin-cell-tags {
+      margin-top: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .tag {
+      font-size: .7rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      border: 1px solid rgba(201,169,110,.3);
+      color: var(--gold);
+      padding: 3px 10px;
+      border-radius: 2px;
+    }
+
+    /* ── SERVICE STRIP ── */
+    .service-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      border: 1px solid var(--border);
+    }
+    @media (max-width: 860px) {
+      .service-strip { grid-template-columns: repeat(2, 1fr); }
+    }
+    .service-item {
+      padding: 40px 28px;
+      border-right: 1px solid var(--border);
+      text-align: center;
+    }
+    .service-item:last-child { border-right: none; }
+    .service-icon {
+      font-size: 1.4rem;
+      color: var(--gold);
+      margin-bottom: 14px;
+    }
+    .service-title {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+    .service-desc {
+      font-size: .78rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    /* ── QUOTE ── */
+    .quote-block {
+      text-align: center;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 80px 0;
+    }
+    .quote-mark {
+      font-family: var(--font-display);
+      font-size: 5rem;
+      line-height: .6;
+      color: var(--gold);
+      opacity: .4;
+      margin-bottom: 24px;
+    }
+    .quote-text {
+      font-family: var(--font-display);
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      font-weight: 300;
+      font-style: italic;
+      color: var(--white);
+      line-height: 1.55;
+      margin-bottom: 24px;
+    }
+    .quote-source {
+      font-size: .75rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.3);
+    }
+
+    /* ── CLOSER ── */
+    .closer {
+      background: var(--black);
+      padding: 120px 10vw;
+      text-align: center;
+    }
+    .closer-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      font-weight: 300;
+      font-style: italic;
+      color: var(--white);
+      margin-bottom: 20px;
+    }
+    .closer-sub {
+      font-size: .85rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.3);
+      margin-bottom: 48px;
+    }
+    .btn-gold {
+      display: inline-block;
+      font-size: .78rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--black);
+      background: var(--gold);
+      padding: 16px 40px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: background .2s;
+    }
+    .btn-gold:hover { background: var(--gold-d); }
+
+    /* ── DIVIDER ── */
+    .divider {
+      width: 48px;
+      height: 1px;
+      background: var(--gold);
+      margin: 32px auto;
+    }
+    .divider-left { margin-left: 0; }
+
+    /* ── INLINE HIGHLIGHT ── */
+    .highlight { color: var(--gold); }
+
+    /* ── SUBTLE FOOTER ── */
+    footer {
+      background: var(--black);
+      border-top: 1px solid rgba(255,255,255,.06);
+      padding: 32px 10vw;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .footer-logo {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      letter-spacing: .2em;
+      color: rgba(255,255,255,.3);
+    }
+    .footer-copy {
+      font-size: .72rem;
+      letter-spacing: .1em;
+      color: rgba(255,255,255,.18);
+    }
+
+    /* ── ARCHITECTURE ── */
+    .arch-outer {
+      margin-top: 56px;
+    }
+    .arch-cols {
+      display: grid;
+      grid-template-columns: 3fr 1.4fr 1.6fr;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 920px) {
+      .arch-cols { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 580px) {
+      .arch-cols { grid-template-columns: 1fr; }
+    }
+    .arch-group {
+      border: 1px solid var(--border);
+      background: var(--white);
+    }
+    .arch-group-header {
+      background: var(--cream);
+      padding: 14px 22px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .arch-group-icon {
+      font-size: 1rem;
+      color: var(--gold);
+    }
+    .arch-group-label {
+      font-size: .68rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--mid);
+      font-weight: 500;
+    }
+    .arch-pages {
+      padding: 8px 0;
+    }
+    .arch-page {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 22px;
+      border-bottom: 1px solid var(--border);
+    }
+    .arch-page:last-child { border-bottom: none; }
+    .arch-page-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--gold);
+      flex-shrink: 0;
+      opacity: .5;
+    }
+    .arch-page-name {
+      font-size: .85rem;
+      font-weight: 500;
+      color: var(--dark);
+      flex: 1;
+    }
+    .arch-page-desc {
+      font-size: .73rem;
+      color: var(--muted);
+    }
+    .arch-badge {
+      font-size: .6rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      background: var(--black);
+      color: var(--white);
+      padding: 2px 8px;
+      border-radius: 2px;
+    }
+    .arch-badge-gold {
+      background: var(--gold);
+      color: var(--black);
+    }
+    .arch-flow {
+      margin-top: 28px;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+    }
+    .arch-flow-step {
+      font-size: .72rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--mid);
+      padding: 10px 18px;
+      border: 1px solid var(--border);
+      background: var(--white);
+    }
+    .arch-flow-arrow {
+      font-size: .72rem;
+      color: var(--gold);
+      padding: 0 2px;
+    }
+
+    /* ── ADVANTAGES ── */
+    .adv-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      background: var(--border);
+      margin-top: 56px;
+    }
+    @media (max-width: 900px) {
+      .adv-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .adv-grid { grid-template-columns: 1fr; }
+    }
+    .adv-cell {
+      background: var(--white);
+      padding: 36px 32px;
+      transition: background .2s;
+    }
+    .adv-cell:hover { background: var(--cream); }
+    .adv-icon {
+      font-size: 1.3rem;
+      margin-bottom: 16px;
+      display: block;
+    }
+    .adv-title {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 500;
+      color: var(--dark);
+      margin-bottom: 10px;
+    }
+    .adv-body {
+      font-size: .84rem;
+      color: var(--muted);
+      line-height: 1.85;
+    }
+    .adv-tag {
+      display: inline-block;
+      margin-top: 14px;
+      font-size: .65rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid rgba(201,169,110,.35);
+      padding: 3px 9px;
+      border-radius: 2px;
+    }
+
+    /* ── SCREEN NAV ── */
+    .toc {
+      position: fixed;
+      right: 32px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 100;
+    }
+    @media (max-width: 1100px) { .toc { display: none; } }
+    .toc-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(201,169,110,.3);
+      cursor: pointer;
+      transition: background .2s, transform .2s;
+    }
+    .toc-dot:hover { background: var(--gold); transform: scale(1.4); }
+  </style>
+</head>
+<body>
+
+<!-- ── COVER ── -->
+<section class="cover" id="cover">
+  <p class="cover-eyebrow">Platform Overview · 2026</p>
+  <h1 class="cover-title">FORMA<br><em>數位選品平台</em></h1>
+  <p class="cover-sub">家具品牌的線上門面，從形象到成交的完整旅程</p>
+  <div class="cover-divider"></div>
+  <p class="cover-desc">
+    一個以北歐設計美學為靈魂的精品家具電商平台——<br>
+    為有品味的品牌，打造值得信賴的數位存在。
+  </p>
+  <div class="cover-scroll">Scroll to explore</div>
+</section>
+
+
+<!-- ── WHY ONLINE ── -->
+<section class="section" id="why">
+  <div class="two-col">
+    <div>
+      <p class="section-eyebrow">為什麼需要數位門面</p>
+      <h2 class="section-title">好的家具，<br><em>值得被更多人看見</em></h2>
+    </div>
+    <div>
+      <p style="color:var(--mid); line-height:1.9; font-size:.95rem;">
+        許多歷史悠久的家具品牌，靠著口碑與展間，多年來建立了穩固的客戶基礎。
+        然而時代已然轉變——消費者在走進展間之前，往往已在線上完成了九成的品牌認知與比較。
+      </p>
+      <br>
+      <p style="color:var(--mid); line-height:1.9; font-size:.95rem;">
+        一個設計得宜的線上平台，不僅是商品目錄，更是品牌故事的延伸、
+        設計師作品的舞台，以及與挑剔客戶建立信任關係的第一步。
+      </p>
+      <br>
+      <p style="color:var(--muted); line-height:1.9; font-size:.88rem;">
+        FORMA 平台的設計出發點，正是讓家具本身說話——
+        讓每一件椅子、每一張桌子，都能在螢幕上呈現出它應有的份量。
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ── SITE ARCHITECTURE ── -->
+<section class="section section-cream" id="architecture">
+  <p class="section-eyebrow">網站架構總覽</p>
+  <h2 class="section-title">11 個頁面，<br><em>構成完整的品牌旅程</em></h2>
+  <p class="section-lead">從訪客踏入首頁的第一秒，到結帳完成的最後一步，每個頁面都有明確的定位與功能。</p>
+
+  <div class="arch-outer">
+    <div class="arch-cols">
+
+      <!-- 前台頁面 -->
+      <div class="arch-group">
+        <div class="arch-group-header">
+          <span class="arch-group-icon">🖥</span>
+          <span class="arch-group-label">訪客前台 — 對外公開，任何人皆可瀏覽</span>
+        </div>
+        <div class="arch-pages">
+          <div class="arch-page">
+            <div class="arch-page-dot"></div>
+            <span class="arch-page-name">首頁</span>
+            <span class="arch-page-desc">Hero 輪播、精選商品、品牌跑馬燈</span>
+          </div>
+          <div class="arch-page">
+            <div class="arch-page-dot"></div>
+            <span class="arch-page-name">商品列表</span>
+            <span class="arch-page-desc">篩選、排序、分頁，每頁 15 件</span>
+          </div>
+          <div class="arch-page">
+            <div class="arch-page-dot"></div>
+            <span class="arch-page-name">商品詳情</span>
+            <span class="arch-page-desc">圖片輪播、顏色/木材選擇、評價</span>
+          </div>
+          <div class="arch-page">
+            <div class="arch-page-dot"></div>
+            <span class="arch-page-name">品牌列表</span>
+            <span class="arch-page-desc">全部合作品牌一覽</span>
+          </div>
+          <div class="arch-page">
+            <div class="arch-page-dot"></div>
+            <span class="arch-page-name">品牌詳情</span>
+            <span class="arch-page-desc">封面大圖、品牌故事、相關商品</span>
+          </div>
+          <div class="arch-page">
+            <div class="arch-page-dot"></div>
+            <span class="arch-page-name">設計師列表</span>
+            <span class="arch-page-desc">全部合作設計師一覽</span>
+          </div>
+          <div class="arch-page">
+            <div class="arch-page-dot"></div>
+            <span class="arch-page-name">設計師詳情</span>
+            <span class="arch-page-desc">傳記、生平、代表作品</span>
+          </div>
+          <div class="arch-page">
+            <div class="arch-page-dot"></div>
+            <span class="arch-page-name">購物車</span>
+            <span class="arch-page-desc">商品清單、運費計算、結帳流程</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 會員中心 -->
+      <div class="arch-group">
+        <div class="arch-group-header">
+          <span class="arch-group-icon">👤</span>
+          <span class="arch-group-label">會員中心</span>
+        </div>
+        <div class="arch-pages">
+          <div class="arch-page">
+            <div class="arch-page-dot"></div>
+            <div style="flex:1;">
+              <div class="arch-page-name">登入 / 註冊</div>
+              <div class="arch-page-desc">Email 驗證碼 + 密碼</div>
+            </div>
+          </div>
+          <div class="arch-page">
+            <div class="arch-page-dot"></div>
+            <div style="flex:1;">
+              <div class="arch-page-name">我的帳號</div>
+              <div class="arch-page-desc">訂單紀錄、狀態追蹤</div>
+            </div>
+            <span class="arch-badge">需登入</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 管理後台 -->
+      <div class="arch-group">
+        <div class="arch-group-header">
+          <span class="arch-group-icon">⚙️</span>
+          <span class="arch-group-label">商家後台</span>
+        </div>
+        <div class="arch-pages">
+          <div class="arch-page">
+            <div class="arch-page-dot"></div>
+            <div style="flex:1;">
+              <div class="arch-page-name">商品管理</div>
+              <div class="arch-page-desc">新增、編輯、刪除商品</div>
+            </div>
+            <span class="arch-badge arch-badge-gold">僅管理員</span>
+          </div>
+          <div class="arch-page">
+            <div class="arch-page-dot"></div>
+            <div style="flex:1;">
+              <div class="arch-page-name">訂單管理</div>
+              <div class="arch-page-desc">狀態更新、歷史紀錄</div>
+            </div>
+          </div>
+          <div class="arch-page">
+            <div class="arch-page-dot"></div>
+            <div style="flex:1;">
+              <div class="arch-page-name">品牌管理</div>
+              <div class="arch-page-desc">品牌資料、圖片上傳</div>
+            </div>
+          </div>
+          <div class="arch-page">
+            <div class="arch-page-dot"></div>
+            <div style="flex:1;">
+              <div class="arch-page-name">設計師管理</div>
+              <div class="arch-page-desc">傳記、肖像、代表作</div>
+            </div>
+          </div>
+          <div class="arch-page">
+            <div class="arch-page-dot"></div>
+            <div style="flex:1;">
+              <div class="arch-page-name">帳號設定</div>
+              <div class="arch-page-desc">管理員升級設定</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 購物流程 -->
+    <div style="margin-top: 32px;">
+      <p style="font-size:.68rem; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-bottom:14px;">典型購物路徑</p>
+      <div class="arch-flow">
+        <div class="arch-flow-step">首頁</div>
+        <div class="arch-flow-arrow">→</div>
+        <div class="arch-flow-step">商品列表</div>
+        <div class="arch-flow-arrow">→</div>
+        <div class="arch-flow-step">商品詳情</div>
+        <div class="arch-flow-arrow">→</div>
+        <div class="arch-flow-step">購物車</div>
+        <div class="arch-flow-arrow">→</div>
+        <div class="arch-flow-step">登入/結帳</div>
+        <div class="arch-flow-arrow">→</div>
+        <div class="arch-flow-step" style="background:var(--black); color:var(--white); border-color:var(--black);">訂單確認</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ── VISITOR EXPERIENCE ── -->
+<section class="section section-cream" id="experience">
+  <p class="section-eyebrow">訪客體驗</p>
+  <h2 class="section-title">從瀏覽到下單，<br><em>每個步驟都是品牌印象</em></h2>
+  <p class="section-lead">客戶造訪網站的每一秒，都在形成對品牌的判斷。FORMA 的前台以極簡美學設計，讓家具的質感不被任何多餘元素干擾。</p>
+
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-number">01</div>
+      <h3 class="feature-title">首頁氛圍</h3>
+      <p class="feature-body">
+        全幅 Hero 輪播承載品牌視覺，搭配精選商品區與品牌跑馬燈，
+        讓訪客在第一眼便感受到選品的格調與深度。
+        「本季主打」與「設計經典」可由您自由切換，無需改動任何程式碼。
+      </p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-number">02</div>
+      <h3 class="feature-title">精準的商品探索</h3>
+      <p class="feature-body">
+        訪客可依類別、品牌、設計師、價格區間同時篩選，
+        亦可在格狀或列表視圖之間切換。
+        不論客戶習慣以設計師名字或品牌尋找商品，都能輕鬆找到。
+      </p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-number">03</div>
+      <h3 class="feature-title">深度的商品詳情</h3>
+      <p class="feature-body">
+        多角度圖片輪播、材質與顏色選擇器、尺寸規格表，
+        以及品牌故事段落與客戶評價——
+        讓一件椅子的所有細節，在購買前完整呈現。
+      </p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-number">04</div>
+      <h3 class="feature-title">品牌故事專頁</h3>
+      <p class="feature-body">
+        每個合作品牌擁有獨立的介紹頁，包含封面大圖、創立年份、
+        品牌理念詳文與官網連結，讓客戶在選購的同時深化對品牌的理解。
+      </p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-number">05</div>
+      <h3 class="feature-title">設計師傳記</h3>
+      <p class="feature-body">
+        Hans J. Wegner、Arne Jacobsen……
+        每位設計師都有專屬頁面，收錄生平、代表作與合作品牌。
+        這是普通商品目錄做不到的，卻往往是高端客戶最在意的內容。
+      </p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-number">06</div>
+      <h3 class="feature-title">流暢的購物流程</h3>
+      <p class="feature-body">
+        購物車即時更新、自動計算運費與稅金，
+        結帳時填寫收件資訊後直接確認訂單。
+        整個流程不跳轉外部頁面，維持一貫的品牌視覺氛圍。
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ── SERVICE STRIP ── -->
+<section class="section" style="padding-top:0; padding-bottom:80px;">
+  <div class="service-strip">
+    <div class="service-item">
+      <div class="service-icon">🚚</div>
+      <div class="service-title">全台免費配送</div>
+      <div class="service-desc">訂單滿 NT$50,000<br>享免費到府安裝</div>
+    </div>
+    <div class="service-item">
+      <div class="service-icon">🛡</div>
+      <div class="service-title">5 年品質保固</div>
+      <div class="service-desc">原廠授權<br>全面品質保障</div>
+    </div>
+    <div class="service-item">
+      <div class="service-icon">↩</div>
+      <div class="service-title">30 天鑑賞期</div>
+      <div class="service-desc">不滿意可全額退款<br>超出法定猶豫期</div>
+    </div>
+    <div class="service-item">
+      <div class="service-icon">💬</div>
+      <div class="service-title">專屬設計顧問</div>
+      <div class="service-desc">一對一空間<br>搭配建議</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ── QUOTE ── -->
+<section class="section section-dark" style="padding: 0 10vw;">
+  <div class="quote-block">
+    <div class="quote-mark">"</div>
+    <p class="quote-text">
+      真正的精品不需要叫賣，<br>只需要一個讓它安靜展示的地方。
+    </p>
+    <p class="quote-source">FORMA — Design Philosophy</p>
+  </div>
+</section>
+
+
+<!-- ── ADVANTAGES ── -->
+<section class="section" id="advantages">
+  <p class="section-eyebrow">平台核心優勢</p>
+  <h2 class="section-title">選擇 FORMA，<br><em>不只是一個網站</em></h2>
+  <p class="section-lead">從視覺美學到後端架構，每一個設計決策都圍繞著一個目標——讓精品家具在數位世界中得到它應有的對待。</p>
+
+  <div class="adv-grid">
+    <div class="adv-cell">
+      <span class="adv-icon">🎛</span>
+      <h3 class="adv-title">完全自主管理</h3>
+      <p class="adv-body">
+        所有商品的上架、修改、下架，品牌與設計師資料的新增與更新，
+        全部在圖形化後台完成。您無需接觸任何程式碼，也無需聯絡工程師。
+      </p>
+      <span class="adv-tag">無需技術背景</span>
+    </div>
+    <div class="adv-cell">
+      <span class="adv-icon">📖</span>
+      <h3 class="adv-title">品牌文化深度</h3>
+      <p class="adv-body">
+        品牌故事專頁、設計師傳記、作品年表……
+        這些內容讓您的網站成為文化展示空間，而非單純的商品型錄，
+        是吸引高端客戶、建立品牌信任的關鍵差異。
+      </p>
+      <span class="adv-tag">品牌敘事</span>
+    </div>
+    <div class="adv-cell">
+      <span class="adv-icon">📱</span>
+      <h3 class="adv-title">全裝置完整體驗</h3>
+      <p class="adv-body">
+        響應式設計確保無論訪客使用手機、平板或桌機，
+        都能獲得同等精緻的瀏覽體驗。
+        在台灣，超過六成電商流量來自手機，這一點不容忽視。
+      </p>
+      <span class="adv-tag">行動裝置優化</span>
+    </div>
+    <div class="adv-cell">
+      <span class="adv-icon">🔒</span>
+      <h3 class="adv-title">安全的會員系統</h3>
+      <p class="adv-body">
+        採用業界標準的 Email 驗證 + JWT 加密登入機制，
+        每位會員的帳號與訂單資料皆有獨立保護。
+        角色權限分層設計，確保後台僅授權人員可進入。
+      </p>
+      <span class="adv-tag">資料安全</span>
+    </div>
+    <div class="adv-cell">
+      <span class="adv-icon">📦</span>
+      <h3 class="adv-title">完整訂單追蹤</h3>
+      <p class="adv-body">
+        從「待處理」到「已送達」，每個狀態的異動都有時間戳記並永久保存。
+        客戶在帳號頁可即時查看自己的訂單進度，大幅減少客服查詢量。
+      </p>
+      <span class="adv-tag">全程透明</span>
+    </div>
+    <div class="adv-cell">
+      <span class="adv-icon">✦</span>
+      <h3 class="adv-title">精品視覺呈現</h3>
+      <p class="adv-body">
+        北歐極簡美學、Cormorant Garamond 標題字體、暖金色系點綴——
+        這套視覺語言專為高端家具設計，讓每件商品在螢幕上展現出
+        與實體展間相同的份量與質感。
+      </p>
+      <span class="adv-tag">精品設計美學</span>
+    </div>
+  </div>
+</section>
+
+
+<!-- ── ADMIN PANEL ── -->
+<section class="section section-dark" id="admin">
+  <p class="section-eyebrow">商家後台</p>
+  <h2 class="section-title" style="color:var(--white);">您的商品，<br><em>完全在您掌握之中</em></h2>
+  <p class="section-lead">
+    無需聯絡工程師，無需修改任何程式。
+    所有商品、訂單、品牌資料的新增與異動，都在一個簡潔的後台介面中完成。
+  </p>
+
+  <div class="admin-grid">
+    <div class="admin-cell">
+      <div class="admin-cell-icon">📦</div>
+      <h3 class="admin-cell-title">商品管理</h3>
+      <p class="admin-cell-body">
+        新增商品時直接在瀏覽器中上傳圖片，填寫名稱、品牌、設計師、售價與說明文字。
+        同一商品可設定多種顏色與木材款式，顧客選購時主圖會自動連動切換。
+        額外的商品角度照片也可逐張上傳，呈現於詳情頁的縮圖列。
+      </p>
+      <div class="admin-cell-tags">
+        <span class="tag">圖片上傳</span>
+        <span class="tag">顏色變體</span>
+        <span class="tag">木材款式</span>
+        <span class="tag">首頁展示控制</span>
+      </div>
+    </div>
+    <div class="admin-cell">
+      <div class="admin-cell-icon">📋</div>
+      <h3 class="admin-cell-title">訂單查覽</h3>
+      <p class="admin-cell-body">
+        所有訂單集中呈現，可依「待處理」、「確認配送」、「配送中」、「已送達」分頁篩選。
+        每筆訂單顯示客戶姓名、地址、品項與金額，可設定預計配送時間，
+        並查閱完整的狀態異動歷史紀錄。
+      </p>
+      <div class="admin-cell-tags">
+        <span class="tag">狀態追蹤</span>
+        <span class="tag">歷史紀錄</span>
+        <span class="tag">配送時間設定</span>
+      </div>
+    </div>
+    <div class="admin-cell">
+      <div class="admin-cell-icon">🏷</div>
+      <h3 class="admin-cell-title">品牌管理</h3>
+      <p class="admin-cell-body">
+        可自由新增合作品牌，填寫創立年份、國家、品牌故事，
+        並上傳 Logo 與封面圖片。每個品牌的官方網址也可設定，
+        讓有需要的客戶直接前往了解更多。
+      </p>
+      <div class="admin-cell-tags">
+        <span class="tag">Logo 上傳</span>
+        <span class="tag">封面圖</span>
+        <span class="tag">官網連結</span>
+      </div>
+    </div>
+    <div class="admin-cell">
+      <div class="admin-cell-icon">✍</div>
+      <h3 class="admin-cell-title">設計師管理</h3>
+      <p class="admin-cell-body">
+        為每位合作設計師建立個人頁面：肖像照、生卒年、國籍、個人簡介、
+        合作品牌與代表作，一次填寫便永久保存，
+        讓網站的文化厚度遠超一般商品型錄。
+      </p>
+      <div class="admin-cell-tags">
+        <span class="tag">肖像上傳</span>
+        <span class="tag">傳記內容</span>
+        <span class="tag">代表作列表</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ── MEMBER SYSTEM ── -->
+<section class="section" id="member">
+  <p class="section-eyebrow">會員與訂單系統</p>
+  <h2 class="section-title">讓每位客戶，<br><em>都感受到被記得</em></h2>
+  <p class="section-lead">會員系統不只是登入功能，而是建立長期客戶關係的基礎。</p>
+
+  <div class="step-list">
+    <div class="step-item">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <p class="step-title">Email 驗證註冊</p>
+        <p class="step-desc">客戶以電子信箱完成身份驗證後建立帳號，確保每位會員資料的真實性，同時讓您掌握客戶聯絡名單。</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <p class="step-title">安全登入與持續保持</p>
+        <p class="step-desc">採用業界標準的 JWT 安全驗證機制，客戶登入後於合理時間內無需重複驗證，提升瀏覽體驗的流暢度。</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <p class="step-title">個人訂單中心</p>
+        <p class="step-desc">每位客戶登入後可查閱完整的購買紀錄，包含每筆訂單的品項、金額與下單日期，讓回購時的參考更加便利。</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <p class="step-title">商品評價</p>
+        <p class="step-desc">已登入的客戶可對購買過的商品留下星級評分與文字評語，真實的口碑累積，遠比任何廣告都更具說服力。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ── VISUAL LANGUAGE ── -->
+<section class="section section-cream" id="design">
+  <div class="two-col">
+    <div>
+      <p class="section-eyebrow">視覺設計語言</p>
+      <h2 class="section-title">形式本身，<br><em>即是一種態度</em></h2>
+      <div class="divider divider-left"></div>
+      <p style="color:var(--mid); line-height:1.9; font-size:.92rem; margin-bottom: 20px;">
+        FORMA 的視覺系統以北歐極簡主義為核心，拒絕任何多餘的裝飾。
+        主色調為深沉的近黑與溫暖的米白，以細膩的暖金色作為品牌的唯一點綴。
+      </p>
+      <p style="color:var(--mid); line-height:1.9; font-size:.92rem; margin-bottom: 20px;">
+        標題字體選用 Cormorant Garamond，一款帶有法式書法韻味的襯線體，
+        搭配內文使用的現代幾何無襯線體 Jost，形成典雅而不失清晰的閱讀體驗。
+      </p>
+      <p style="color:var(--muted); line-height:1.9; font-size:.88rem;">
+        這套視覺語言本身便是一種聲明——
+        造訪這個網站的人，在看到任何商品之前，已先感受到品牌的品味。
+      </p>
+    </div>
+    <div>
+      <div style="background: var(--black); padding: 48px; display: flex; flex-direction: column; gap: 24px;">
+        <div>
+          <p style="font-size:.7rem; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.25); margin-bottom:8px;">主色系</p>
+          <div style="display:flex; gap:8px;">
+            <div style="width:36px; height:36px; background:#0d0d0d; border:1px solid rgba(255,255,255,.1); border-radius:2px;"></div>
+            <div style="width:36px; height:36px; background:#1a1a1a; border:1px solid rgba(255,255,255,.1); border-radius:2px;"></div>
+            <div style="width:36px; height:36px; background:#f7f4f0; border-radius:2px;"></div>
+            <div style="width:36px; height:36px; background:#ffffff; border-radius:2px;"></div>
+            <div style="width:36px; height:36px; background:#c9a96e; border-radius:2px;"></div>
+          </div>
+        </div>
+        <div>
+          <p style="font-size:.7rem; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.25); margin-bottom:8px;">字體</p>
+          <p style="font-family:var(--font-display); font-size:1.5rem; color:rgba(255,255,255,.8); font-style:italic; font-weight:300;">Cormorant Garamond</p>
+          <p style="font-family:var(--font-body); font-size:.88rem; color:rgba(255,255,255,.4); letter-spacing:.1em; text-transform:uppercase;">JOST — Body Text</p>
+        </div>
+        <div>
+          <p style="font-size:.7rem; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.25); margin-bottom:8px;">後台介面</p>
+          <p style="font-family:var(--font-display); font-size:1.1rem; color:var(--gold); font-style:italic;">深色主題 · 暖金配色</p>
+          <p style="font-size:.78rem; color:rgba(255,255,255,.3); margin-top:4px;">與前台形成明確區隔，管理介面專業而沉穩</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ── HOW TO START ── -->
+<section class="section" id="start">
+  <p class="section-eyebrow">開始使用</p>
+  <h2 class="section-title">準備好了，<br><em>隨時可以啟動</em></h2>
+  <p class="section-lead">整套平台已建置完成，從商品上架到接受訂單，以下是您需要做的幾件事。</p>
+
+  <div class="two-col">
+    <div class="step-list">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <p class="step-title">建立您的管理員帳號</p>
+          <p class="step-desc">在設定頁輸入您的 Email 與管理員密碼，即完成帳號升級。此後所有後台功能對您全數開放。</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <p class="step-title">整理現有商品資料</p>
+          <p class="step-desc">準備商品名稱、品牌、售價、設計師姓名，以及至少一張清晰的商品圖片，便可開始新增第一件商品。</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <p class="step-title">設定品牌與設計師頁面</p>
+          <p class="step-desc">在品牌管理與設計師管理分別建立內容，建議附上品牌 Logo 與設計師肖像，讓頁面更加完整。</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <p class="step-title">設定首頁精選商品</p>
+          <p class="step-desc">在商品編輯中開啟「本季主打」、「設計經典」或「Hero 大輪播」，該商品便會出現在首頁的對應區塊。</p>
+        </div>
+      </div>
+    </div>
+    <div style="background:var(--cream); padding:48px;">
+      <p style="font-size:.7rem; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-bottom:20px;">後台入口</p>
+      <p style="font-family:var(--font-display); font-size:1.5rem; font-weight:500; margin-bottom:8px;">商家後台</p>
+      <p style="font-size:.82rem; color:var(--muted); margin-bottom:24px; line-height:1.8;">
+        點擊右上角使用者名稱，選單中即出現「商家後台」連結。
+        後台僅管理員帳號可見，一般訪客無法存取。
+      </p>
+      <div style="border-top:1px solid var(--border); padding-top:24px; margin-top:8px;">
+        <p style="font-size:.7rem; letter-spacing:.15em; text-transform:uppercase; color:var(--muted); margin-bottom:12px;">後台包含</p>
+        <ul style="list-style:none; display:flex; flex-direction:column; gap:8px;">
+          <li style="font-size:.85rem; color:var(--mid); display:flex; gap:8px; align-items:center;"><span style="color:var(--gold);">—</span> 商品管理</li>
+          <li style="font-size:.85rem; color:var(--mid); display:flex; gap:8px; align-items:center;"><span style="color:var(--gold);">—</span> 訂單查覽與狀態管理</li>
+          <li style="font-size:.85rem; color:var(--mid); display:flex; gap:8px; align-items:center;"><span style="color:var(--gold);">—</span> 品牌管理</li>
+          <li style="font-size:.85rem; color:var(--mid); display:flex; gap:8px; align-items:center;"><span style="color:var(--gold);">—</span> 設計師管理</li>
+          <li style="font-size:.85rem; color:var(--mid); display:flex; gap:8px; align-items:center;"><span style="color:var(--gold);">—</span> 帳號與設定</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ── CLOSER ── -->
+<section class="closer" id="contact">
+  <h2 class="closer-title">每一件好的家具，<br>都應有一個好的舞台。</h2>
+  <p class="closer-sub">FORMA — 精品家具數位選品平台</p>
+  <div class="divider"></div>
+  <p style="font-size:.85rem; color:rgba(255,255,255,.3); max-width:440px; margin:0 auto 48px; line-height:1.8; text-align:center;">
+    這份平台已完整建置，隨時可以根據您的品牌形象與商品內容進行客製調整。
+  </p>
+</section>
+
+<footer>
+  <div class="footer-logo">FORMA</div>
+  <div class="footer-copy">精品家具數位選品平台 · 2026</div>
+</footer>
+
+<!-- Side nav dots -->
+<nav class="toc">
+  <div class="toc-dot" onclick="document.getElementById('cover').scrollIntoView({behavior:'smooth'})" title="封面"></div>
+  <div class="toc-dot" onclick="document.getElementById('why').scrollIntoView({behavior:'smooth'})" title="為何需要"></div>
+  <div class="toc-dot" onclick="document.getElementById('architecture').scrollIntoView({behavior:'smooth'})" title="網站架構"></div>
+  <div class="toc-dot" onclick="document.getElementById('experience').scrollIntoView({behavior:'smooth'})" title="訪客體驗"></div>
+  <div class="toc-dot" onclick="document.getElementById('advantages').scrollIntoView({behavior:'smooth'})" title="核心優勢"></div>
+  <div class="toc-dot" onclick="document.getElementById('admin').scrollIntoView({behavior:'smooth'})" title="商家後台"></div>
+  <div class="toc-dot" onclick="document.getElementById('member').scrollIntoView({behavior:'smooth'})" title="會員系統"></div>
+  <div class="toc-dot" onclick="document.getElementById('design').scrollIntoView({behavior:'smooth'})" title="設計語言"></div>
+  <div class="toc-dot" onclick="document.getElementById('start').scrollIntoView({behavior:'smooth'})" title="開始使用"></div>
+</nav>
+
+</body>
+</html>
