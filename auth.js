@@ -2,7 +2,10 @@
    所有會員資料改存入 PostgreSQL，不再用 localStorage 模擬
 */
 
-const API_BASE = 'http://localhost:8080'; // Spring Boot 後端位址
+// 本機開發連 localhost:8080，正式網域自動切換到同網域的 /api
+const API_BASE = window.location.hostname === 'localhost'
+  ? 'http://localhost:8080'
+  : window.location.origin;
 
 // ── 取得 JWT Token（存在 localStorage）──
 function getToken() {

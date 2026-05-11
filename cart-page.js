@@ -207,8 +207,6 @@ async function confirmOrder() {
 
   try {
     const token = localStorage.getItem('forma_token');
-    const API_BASE = 'http://localhost:8080'; // 確保網址與後端一致
-    
     const res = await fetch(`${API_BASE}/api/orders`, {
       method: 'POST',
       headers: {
