@@ -756,6 +756,32 @@ async function uploadFile(file) {
   }
 }
 
+// ── 品牌/設計師圖片上傳（通用：傳入 inputId、previewId、placeholderId）──
+async function uploadBrandImage(input, inputId, previewId, placeholderId) {
+  if (!input.files[0]) return;
+  const url = await uploadFile(input.files[0]);
+  if (url) {
+    document.getElementById(inputId).value = url;
+    updateImgPreview(inputId, previewId, placeholderId);
+    showToast('圖片上傳成功', 'success');
+  }
+}
+
+// ── 通用圖片預覽更新（URL 輸入框改變時呼叫）──
+function updateImgPreview(inputId, previewId, placeholderId) {
+  const url = document.getElementById(inputId).value.trim();
+  const preview = document.getElementById(previewId);
+  const placeholder = document.getElementById(placeholderId);
+  if (url) {
+    preview.src = url;
+    preview.style.display = 'block';
+    placeholder.style.display = 'none';
+  } else {
+    preview.style.display = 'none';
+    placeholder.style.display = 'flex';
+  }
+}
+
 // ── 更新主圖預覽 ──
 function updateMainPreview(url) {
   const preview = document.getElementById('mainImagePreview');
@@ -887,6 +913,9 @@ async function openEditBrandModal(id) {
   document.getElementById('bf_coverImageUrl').value = brand.coverImageUrl || '';
   document.getElementById('bf_sortOrder').value = brand.sortOrder ?? 99;
 
+  updateImgPreview('bf_logoUrl', 'bf_logoPreview', 'bf_logoPlaceholder');
+  updateImgPreview('bf_coverImageUrl', 'bf_coverPreview', 'bf_coverPlaceholder');
+
   brandModal.show();
 }
 
@@ -996,6 +1025,8 @@ async function openEditDesignerModal(id) {
   document.getElementById('df_famousWorks').value = designer.famousWorks || '';
   document.getElementById('df_portraitUrl').value = designer.portraitUrl || '';
   document.getElementById('df_sortOrder').value = designer.sortOrder ?? 99;
+
+  updateImgPreview('df_portraitUrl', 'df_portraitPreview', 'df_portraitPlaceholder');
 
   designerModal.show();
 }

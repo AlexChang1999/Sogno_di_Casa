@@ -63,7 +63,30 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"http://localhost:8080/api/designers/1\")",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"http://localhost:8080/api/products\")",
       "Bash(curl -s -w '\\\\n%{http_code}' -X POST http://localhost:8080/api/auth/register -H 'Content-Type: application/json' -H 'Origin: http://localhost:3333' -d '{\"name\":\"測試\",\"email\":\"test123@test.com\",\"password\":\"Test1234!\"}')",
-      "Bash(curl -s -w '\\\\nHTTP:%{http_code}' -X POST http://localhost:8080/api/auth/register -H 'Content-Type: application/json' -H 'Origin: http://localhost:3333' -d '{\"email\":\"test@test.com\",\"code\":\"123456\"}')"
+      "Bash(curl -s -w '\\\\nHTTP:%{http_code}' -X POST http://localhost:8080/api/auth/register -H 'Content-Type: application/json' -H 'Origin: http://localhost:3333' -d '{\"email\":\"test@test.com\",\"code\":\"123456\"}')",
+      "Bash(curl -s http://localhost:8080/api/brands)",
+      "Bash(python -c \"import json,sys; data=json.load\\(sys.stdin\\); [print\\(f'{b[\\\\\"id\\\\\"]}: {b[\\\\\"name\\\\\"]} \\({b.get\\(\\\\\"country\\\\\",\\\\\"\\\\\"\\)} {b.get\\(\\\\\"foundedYear\\\\\",\\\\\"\\\\\"\\)}\\)'\\) for b in data]\")",
+      "Bash(PGPASSWORD=4119Kx03 psql -U postgres -d sognodicasa -c \"SELECT id, name, brand, designer FROM products ORDER BY id;\")",
+      "Bash(\"/c/Program Files/PostgreSQL/17/bin/psql\" -U postgres -d sognodicasa -c \"SELECT id, name, brand, designer FROM products ORDER BY id;\")",
+      "Bash(\"/c/Program Files/PostgreSQL/16/bin/psql\" -U postgres -d sognodicasa -c \"SELECT id, name, brand, designer FROM products ORDER BY id;\")",
+      "Bash(PGPASSWORD=4119Kx03 \"/c/Program Files/PostgreSQL/18/bin/psql\" -U postgres -d sognodicasa -c \"SELECT id, name, brand, designer FROM products ORDER BY id;\")",
+      "Bash('/c/Program Files/PostgreSQL/18/bin/psql' -U postgres -d sognodicasa -c ' *)",
+      "Bash(PGPASSWORD=4119Kx03 \"/c/Program Files/PostgreSQL/18/bin/psql\" -U postgres -d sognodicasa -c \"SELECT id, name, brand, designer FROM products WHERE id IN \\(2,3,4,7,8\\) ORDER BY id;\")",
+      "Bash(PGPASSWORD=4119Kx03 \"/c/Program Files/PostgreSQL/18/bin/psql\" -U postgres -d sognodicasa --no-align -c \"SELECT id, brand FROM products WHERE id IN \\(9,10,11\\);\")",
+      "Bash(PGPASSWORD=4119Kx03 \"/c/Program Files/PostgreSQL/18/bin/psql\" -U postgres -d sognodicasa -c \"UPDATE products SET brand=U&'PP M\\\\00F8bler' WHERE id IN \\(9,10,11\\);\")",
+      "Bash(xargs wc *)",
+      "Bash(awk '{print $9, $5}')",
+      "mcp__Claude_in_Chrome__list_connected_browsers",
+      "mcp__Claude_in_Chrome__select_browser",
+      "mcp__Claude_in_Chrome__browser_batch",
+      "Read(//c/Users/User/AppData/Roaming/Claude/local-agent-mode-sessions/skills-plugin/63250106-f7c4-4d37-b090-12c3774753b8/e9cb8419-8740-43a6-80ce-0a54b6d9684c/skills/pptx/**)",
+      "Bash(python -m markitdown \"C:\\\\Users\\\\User\\\\OneDrive\\\\Desktop\\\\11_張鈞皓_家具電商.pptx\")",
+      "Bash(python -m markitdown \"C:/Users/User/OneDrive/Desktop/11_張鈞皓_家具電商.pptx\")",
+      "Bash(python scripts/office/soffice.py --headless --convert-to pdf \"C:/Users/User/OneDrive/Desktop/11_張鈞皓_家具電商.pptx\")",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(git pull *)"
     ]
   }
 }

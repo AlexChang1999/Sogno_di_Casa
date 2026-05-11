@@ -227,3 +227,46 @@ mvn spring-boot:run
 - Port 8080 被佔用 → 修改 `server.port`
 - PostgreSQL 未啟動 → 先啟動 PostgreSQL 服務
 - 資料庫不存在 → 手動建立 `sognodicasa` 資料庫
+
+---
+
+## MotorVia 補充：Auth 端點列表（含忘記密碼）
+
+### `AuthController` — `/api/auth/**`（全部公開）
+
+| 方法 | 路徑 | 說明 |
+|------|------|------|
+| POST | `/api/auth/send-code` | 發送 Email 驗證碼（60 秒冷卻限制） |
+| POST | `/api/auth/register` | 會員註冊（需驗證碼） |
+| POST | `/api/auth/login` | 登入，回傳 JWT Token |
+| POST | `/api/auth/forgot-password` | 忘記密碼：寄送 Reset 連結 |
+| POST | `/api/auth/reset-password` | 忘記密碼：用 token 提交新密碼 |
+
+### 驗證碼冷卻（EmailService）
+
+`EmailService` 使用三個 `ConcurrentHashMap` 管理狀態：
+
+| Map | Key | Value | 用途 |
+|-----|-----|-------|------|
+| `codeStore` | email | 驗證碼字串 | 驗證用戶輸入 |
+| `expireStore` | email | 過期時間戳(ms) | 驗證碼 10 分鐘有效 |
+| `cooldownStore` | email | 上次發送時間戳(ms) | 60 秒冷卻限制 |
+
+### 忘記密碼（EmailService）
+
+| Map | Key | Value | 用途 |
+|-----|-----|-------|------|
+| `resetTokenStore` | UUID token | email | 驗證 token 歸屬 |
+| `resetExpireStore` | UUID token | 過期時間戳(ms) | token 15 分鐘有效 |
+
+**重點**：token 使用後呼叫 `invalidateResetToken()` 立即作廢，防止重複使用。
+
+### 啟動 MotorVia 後端
+
+```bash
+cd "D:\Projects\MotorVia\backend"
+JAVA_HOME="/c/Program Files/Java/jdk-21.0.11" mvn spring-boot:run
+```
+
+後端運行於 `http://localhost:8081`
+

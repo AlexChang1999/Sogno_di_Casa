@@ -162,3 +162,178 @@ FORMA 專案出現問題：[描述問題]
 2. 前端呼叫時需要帶 token 嗎？
 3. 路徑命名是否符合現有慣例？
 ```
+
+---
+
+## MotorVia 專案補充 Context（二手車平台）
+
+### 專案基本資訊
+
+- **名稱**：MotorVia 二手車電商
+- **位置**：D:\Projects\MotorVia
+- **前端**：http://localhost:4200（npx serve）
+- **後端**：http://localhost:8081（Spring Boot）
+- **資料庫**：PostgreSQL localhost:5432 / 資料庫：motorvia
+- **Java**：21（JAVA_HOME=C:\Program Files\Java\jdk-21.0.11）
+
+### 啟動後端
+
+```bash
+cd "D:\Projects\MotorVia\backend"
+JAVA_HOME="/c/Program Files/Java/jdk-21.0.11" mvn spring-boot:run
+```
+
+---
+
+## 關鍵教訓（踩過的坑）
+
+### ❌ 錯誤 1：前端多個 `const API` 重複宣告
+
+**問題**：`auth.js` 宣告了 `const API = 'http://localhost:8081'`，每個 HTML 頁面的 `<script>` 標籤又重複宣告一次，導致 JavaScript SyntaxError，整個頁面的 JS 全部失效（包含 tab 切換按鈕）。
+
+**症狀**：按鈕完全沒有反應，包含「切換到註冊」、「發送驗證碼」等全部失效。
+
+**正確做法**：`const API` **只在 `auth.js` 宣告一次**，所有 HTML 頁面的 `<script>` 不得重複宣告。
+
+```javascript
+// auth.js — 唯一宣告點
+const API = 'http://localhost:8081';
+```
+
+**修復指令**（若不小心又重複）：
+```bash
+for f in *.html admin.js; do
+  sed -i "s/const API = 'http:\/\/localhost:8081';//g" "$f"
+done
+```
+
+---
+
+### ❌ 錯誤 2：CORS 只設在 WebConfig，沒有設在 SecurityConfig
+
+**問題**：Spring Security 6 的請求比 Spring MVC 更早攔截，如果只在 `WebConfig` 設 CORS，Security 層會先拒絕 OPTIONS preflight，導致前端所有 API 呼叫失敗（CORS blocked）。
+
+**症狀**：前端呼叫後端 API 時，瀏覽器 console 出現 CORS error，即使 WebConfig 已有設定。
+
+**正確做法**：在 `SecurityConfig` 加入 `CorsConfigurationSource` Bean，並在 filterChain 明確綁定：
+
+```java
+@Bean
+public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration config = new CorsConfiguration();
+    config.setAllowedOriginPatterns(List.of("*"));
+    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    config.setAllowedHeaders(List.of("*"));
+    config.setAllowCredentials(false);
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", config);
+    return source;
+}
+
+// filterChain 裡：
+http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+```
+
+---
+
+## 設計模式參考
+
+### 驗證碼 60 秒冷卻限制
+
+**後端（EmailService.java）**：
+
+```java
+// 加一個 Map 記錄上次發送時間
+private final Map<String, Long> cooldownStore = new ConcurrentHashMap<>();
+
+public long getCooldownRemaining(String email) {
+    Long lastSent = cooldownStore.get(email);
+    if (lastSent == null) return 0;
+    return Math.max(lastSent + 60_000 - System.currentTimeMillis(), 0);
+}
+
+public void sendVerificationCode(String email) {
+    // ... 原本的發送邏輯 ...
+    cooldownStore.put(email, System.currentTimeMillis()); // 記錄時間
+}
+```
+
+**後端（Controller）**：在呼叫 sendCode 前先檢查，超過限制回傳 HTTP 429：
+
+```java
+long remaining = emailService.getCooldownRemaining(req.getEmail());
+if (remaining > 0) {
+    long seconds = (remaining / 1000) + 1;
+    return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+            .body(Map.of("message", "請等待 " + seconds + " 秒後再重新發送"));
+}
+```
+
+**前端（JavaScript）**：用 localStorage 存冷卻結束時間，頁面刷新後也能繼續倒數：
+
+```javascript
+const COOLDOWN_KEY = 'mvCodeCooldown';
+
+function startCooldown(btnId, seconds) {
+    localStorage.setItem(COOLDOWN_KEY, Date.now() + seconds * 1000);
+    runCountdown(btnId);
+}
+
+function runCountdown(btnId) {
+    const tick = () => {
+        const remaining = Math.ceil((parseInt(localStorage.getItem(COOLDOWN_KEY)) - Date.now()) / 1000);
+        const btn = document.getElementById(btnId);
+        if (remaining <= 0) {
+            localStorage.removeItem(COOLDOWN_KEY);
+            btn.disabled = false;
+            btn.textContent = '發送驗證碼';
+            return;
+        }
+        btn.disabled = true;
+        btn.textContent = `${remaining} 秒後可重新發送`;
+        setTimeout(tick, 1000);
+    };
+    tick();
+}
+```
+
+---
+
+### 忘記密碼：Reset Token 設計
+
+**流程**：
+1. 用戶輸入 Email → `POST /api/auth/forgot-password`
+2. 後端產生 UUID token（15 分鐘有效），存在記憶體 Map，寄送含連結的 Email
+3. 用戶點連結 → `reset-password.html#<token>` 開啟
+4. 用戶輸入新密碼 → `POST /api/auth/reset-password` 帶 `{ token, newPassword }`
+5. 後端驗證 token → 更新密碼 → token 立即作廢（防止重複使用）
+
+**後端（EmailService.java）**：
+
+```java
+private final Map<String, String> resetTokenStore  = new ConcurrentHashMap<>();
+private final Map<String, Long>   resetExpireStore = new ConcurrentHashMap<>();
+
+public void sendPasswordResetLink(String email, String frontendBase) {
+    String token = UUID.randomUUID().toString();
+    resetTokenStore.put(token, email);
+    resetExpireStore.put(token, System.currentTimeMillis() + 15 * 60 * 1000);
+    // 寄送帶 token 的 Email 連結
+}
+
+public String validateResetToken(String token) {
+    // 驗證有效性，回傳 email 或 null
+}
+
+public void invalidateResetToken(String token) {
+    resetTokenStore.remove(token);
+    resetExpireStore.remove(token);
+}
+```
+
+**安全注意事項**：
+- 不論帳號是否存在，`forgot-password` endpoint 都回傳相同訊息（避免洩漏用戶資料）
+- token 使用一次後立即作廢，不可重複使用
+- Reset link 格式：`http://localhost:4200/reset-password.html#<token>`（用 hash，因 npx serve 不支援 query string）
+
+**SecurityConfig 設定**：`/api/auth/**` 全部 permitAll()，兩個新 endpoint 自動包含，無需額外設定。
