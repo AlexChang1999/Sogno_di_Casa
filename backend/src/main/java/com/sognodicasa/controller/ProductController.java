@@ -18,6 +18,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -37,8 +38,8 @@ public class ProductController {
     @Value("${app.upload-dir:./uploads}")
     private String uploadDir;
 
-    @Value("${server.port:8080}")
-    private String serverPort;
+    @Value("${app.base-url:http://localhost:8080}")
+    private String appBaseUrl;
 
     // ── 公開 API ──
 
@@ -100,16 +101,25 @@ public class ProductController {
     @PostMapping("/upload-image")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file) throws IOException {
+        // 驗證 MIME 類型（防止上傳偽裝成圖片的惡意檔案）
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            return ResponseEntity.badRequest().body(Map.of("message", "只允許上傳圖片檔案"));
+        }
+
+        String ext = StringUtils.getFilenameExtension(file.getOriginalFilename());
+        if (ext == null || !Set.of("jpg", "jpeg", "png", "gif", "webp").contains(ext.toLowerCase())) {
+            return ResponseEntity.badRequest().body(Map.of("message", "不支援的圖片格式，請使用 jpg、png、gif 或 webp"));
+        }
+
         Path dir = Paths.get(uploadDir);
         Files.createDirectories(dir);
 
-        String ext = StringUtils.getFilenameExtension(file.getOriginalFilename());
-        if (ext == null || ext.isEmpty()) ext = "jpg";
-        String filename = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8) + "." + ext;
+        String filename = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8) + "." + ext.toLowerCase();
         Path dest = dir.resolve(filename);
         Files.copy(file.getInputStream(), dest);
 
-        String url = "http://localhost:" + serverPort + "/uploads/" + filename;
+        String url = appBaseUrl + "/uploads/" + filename;
         return ResponseEntity.ok(Map.of("url", url));
     }
 

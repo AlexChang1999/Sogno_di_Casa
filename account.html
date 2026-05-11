@@ -125,7 +125,7 @@
     orderList.innerHTML = `<p style="color:var(--color-muted);text-align:center;padding:2rem;">載入中...</p>`;
 
     // 從後端 API 取得訂單（需要 JWT token）
-    authFetch('http://localhost:8080/api/orders')
+    authFetch(`${API_BASE}/api/orders`)
       .then(res => {
         if (!res.ok) throw new Error('無法取得訂單');
         return res.json();

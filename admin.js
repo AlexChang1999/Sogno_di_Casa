@@ -3,7 +3,9 @@
 */
 /* admin.js — 商家管理後台邏輯 */
 
-const API_BASE = 'http://localhost:8080';
+const API_BASE = window.location.hostname === 'localhost'
+  ? 'http://localhost:8080'
+  : window.location.origin;
 
 // 1. 將 historyModal 加在全域變數這裡，讓所有函式都抓得到
 let productModal, deleteModal, brandModal, designerModal, historyModal;
@@ -283,17 +285,17 @@ function renderProductTable(products) {
     <tr>
       <td>
         <img src="${p.mainImage || ''}" class="product-thumb"
-             alt="${p.name}"
+             alt="${escapeHtml(p.name)}"
              onerror="this.style.opacity='0'">
       </td>
       <td>
-        <div class="product-name">${p.name}</div>
+        <div class="product-name">${escapeHtml(p.name)}</div>
         ${p.description
-      ? `<div class="product-desc">${p.description.substring(0, 55)}${p.description.length > 55 ? '...' : ''}</div>`
+      ? `<div class="product-desc">${escapeHtml(p.description.substring(0, 55))}${p.description.length > 55 ? '...' : ''}</div>`
       : ''}
       </td>
-      <td style="color:var(--muted);">${p.brand || '—'}</td>
-      <td><span class="cat-badge">${catMap[p.category] || p.category || '—'}</span></td>
+      <td style="color:var(--muted);">${escapeHtml(p.brand || '—')}</td>
+      <td><span class="cat-badge">${catMap[p.category] || escapeHtml(p.category || '—')}</span></td>
       <td style="white-space:nowrap;">NT$ ${(p.price || 0).toLocaleString()}</td>
       <td>
         ${p.inStock
