@@ -1,101 +1,159 @@
-# 本機開發與常用軟體環境（可重複使用範本）
+# FORMA — 精品家具電商平台
 
-> **用途**：給新對話的 AI 或換電腦時快速對齊你的環境。建議在安裝或升級重要工具後，手動更新此檔的「偵測日期」與「版本欄位」。
-
-**最後偵測 / 產生日期**：2026-04-23  
-**作業系統帳戶主目錄**：`C:\Users\User`
+> **Sogno di Casa**（義大利文「家的夢想」）  
+> 高端設計家具電商，提供商品瀏覽、購物車、會員系統與後台管理。
 
 ---
 
-## 1. 作業系統
+## 技術棧
 
-| 項目 | 內容 |
+| 類型 | 技術 |
 |------|------|
-| OS | Microsoft Windows 11 家用版（系統內顯示字元可能隨地區變體而異） |
-| 核心版本 | 10.0.22631（64-bit） |
+| 後端 | Java 21 + Spring Boot 3.2 + Spring Security（JWT）|
+| 資料庫 | PostgreSQL |
+| 前端 | Vanilla HTML / CSS / JavaScript（無框架）|
+| 認證 | JWT Stateless + Email OTP 驗證碼 |
+| 圖片上傳 | Spring Multipart → 本機 `uploads/` 資料夾 |
 
 ---
 
-## 2. 終端與 Shell
+## 快速啟動（本機開發）
 
-- **建議主終端**：Windows Terminal / PowerShell 7+（依你實際安裝為準）。
-- 本檔產生時的指令環境可正常執行 `java`、`mvn`、`node`、`npm`、`git`、`python` 等（皆已加入 `PATH`）。
+### 前置需求
 
----
+- Java 21+
+- Maven 3.9+
+- PostgreSQL（建立資料庫 `sognodicasa`）
+- Node.js（前端靜態伺服器用）
 
-## 3. 程式語言與執行環境
+### 步驟
 
-| 技術 | 路徑 / 偵測版本 | 備註 |
-|------|-----------------|------|
-| **Java (JDK)** | `C:\Program Files\Java\jdk-17.0.18` | `java -version` → **17.0.18** LTS（Oracle）。另有 Oracle **Java 8** 的 `java8path` 於 `PATH` 中（舊專案可能用到）。 |
-| `JAVA_HOME` | `C:\Program Files\Java\jdk-17.0.18` | 建議專案與 Spring/Maven 以此為準。 |
-| **Node.js** | `C:\Program Files\nodejs\node.exe` | **v22.22.0**；`npm` **11.11.0**；額外 `npm` 全域目錄：`%AppData%\Roaming\npm`。 |
-| **Python** | `C:\Users\User\AppData\Local\Programs\Python\Python313\` | **Python 3.13.12**（`py -0` 顯示 3.13 為預設）。 |
-| **Bun** | `C:\Users\User\.bun\bin` | **1.3.12**（若專案使用 Bun）。 |
-| **.NET** | `C:\Program Files\dotnet\dotnet.exe` | 目前**未安裝 .NET SDK**（執行 `dotnet --version` 會提示下載 SDK）；路徑上仍有 SQL / 其他相關工具所需之 dotnet 元件。 |
+**1. 建立環境變數檔**
 
----
+```bash
+cp .env.example .env
+```
 
-## 4. 建置與版本控制
+用編輯器開啟 `.env`，填入真實值：
 
-| 工具 | 偵測版本 | 安裝位置 / 說明 |
-|------|----------|-----------------|
-| **Apache Maven** | **3.9.14** | `C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.14\`（經 **Chocolatey** 安裝） |
-| **Git** | **2.53.0.windows.2** | `C:\Program Files\Git\cmd\` |
-| **Chocolatey** | **2.7.1** | 套件目錄常見於 `C:\ProgramData\chocolatey\` |
+```env
+DB_PASSWORD=你的資料庫密碼
+JWT_SECRET=至少32字元的隨機字串
+GMAIL_USERNAME=你的gmail@gmail.com
+GMAIL_APP_PASSWORD=你的16碼應用程式密碼
+ADMIN_SETUP_SECRET=你的管理員密鑰
+APP_BASE_URL=http://localhost:8080
+CORS_ALLOWED_ORIGINS=http://localhost:3333
+```
 
----
-
-## 5. 資料庫與相關工具（從 PATH 推斷已安裝元件）
-
-- **Microsoft SQL Server** 相關路徑已存在於 `PATH` 中，例如 `...\Microsoft SQL Server\160\...`（工具 / DTS / 用戶端等），實際服務實體名稱與版本以 SSMS 或 `sqlcmd` 為準。
-
----
-
-## 6. 編輯器與 IDE
-
-| 名稱 | 說明 |
-|------|------|
-| **Cursor** | `C:\Users\User\AppData\Local\Programs\cursor\`（內建輔助用 `node` 在 resources 下，與系統 Node 分開） |
-| **Visual Studio Code** | `C:\Users\User\AppData\Local\Programs\Microsoft VS Code\bin` 已於 `PATH` |
-| **IntelliJ IDEA** | 約 **2025.3.4**，啟動器路徑曾見於 `D:\IntelliJ IDEA 2025.3.4\bin`（若你搬移安裝目錄請自行改寫） |
-
----
-
-## 7. 常用目錄速查
-
-| 用途 | 路徑 |
-|------|------|
-| 使用者家目錄 | `C:\Users\User` |
-| 本機可執行工具（可選） | `C:\Users\User\.local\bin` |
-| 專案工作區（範例） | `D:\Projects\`（例如 `D:\Projects\Sogno di Casa`） |
-
----
-
-## 8. 重新偵測用的指令（複製到 PowerShell 執行即可更新版本欄位）
+**2. 設定環境變數並啟動後端**
 
 ```powershell
-"OS: $([System.Environment]::OSVersion.VersionString)"
-"Java: " + (java -version 2>&1 | Out-String)
-"JAVA_HOME: $env:JAVA_HOME"
-"mvn: " + (mvn -version 2>&1 | Select-Object -First 1)
-"node: $(node -v); npm: $(npm -v)"
-"git: $(git --version)"
-"python: $(python --version 2>&1)"
-"py: $(py -0p 2>&1)"
-"bun: $(bun -v 2>&1)"
-"choco: $(choco -v 2>&1)"
-"dotnet: $(dotnet --version 2>&1)"
+# PowerShell
+$env:DB_PASSWORD="你的密碼"
+$env:JWT_SECRET="你的密鑰"
+$env:GMAIL_USERNAME="你的gmail"
+$env:GMAIL_APP_PASSWORD="你的應用密碼"
+$env:ADMIN_SETUP_SECRET="你的管理員密鑰"
+$env:APP_BASE_URL="http://localhost:8080"
+$env:CORS_ALLOWED_ORIGINS="http://localhost:3333"
+
+cd backend
+mvn spring-boot:run
+```
+
+**3. 啟動前端**
+
+```bash
+npx serve -p 3333 .
+```
+
+或直接執行 `start.bat`（Windows 一鍵啟動）。
+
+| 服務 | 網址 |
+|------|------|
+| 前端 | http://localhost:3333 |
+| 後端 API | http://localhost:8080 |
+
+**4. 設定第一個管理員帳號**
+
+先在 `login.html` 註冊一個帳號，再執行：
+
+```bash
+curl -X POST http://localhost:8080/api/auth/setup-admin \
+  -H "Content-Type: application/json" \
+  -d '{"email":"你的帳號@email.com","secret":"你的ADMIN_SETUP_SECRET"}'
 ```
 
 ---
 
-## 9. 維護建議
+## 主要功能
 
-1. 升級 **JDK、Node、Python、Git、Maven** 後，執行上一節指令並把表格中的版本號改為新值。  
-2. 若開始做 **.NET 開發**，請安裝對應 **SDK** 後再執行 `dotnet --version` 補寫。  
-3. 此檔可連同 OneDrive/雲端備份，但請勿夾帶密碼、金鑰或內部主機名等敏感資訊。
+| 功能 | 說明 |
+|------|------|
+| 商品瀏覽 | 依類別、品牌、設計師、價格篩選與排序 |
+| 商品詳情 | 圖片輪播、顏色款式選擇、加入購物車 |
+| 購物車 | 本地儲存、運費計算、結帳填寫收件資訊 |
+| 會員系統 | Email + OTP 驗證碼註冊、JWT 持久登入 |
+| 訂單查詢 | 會員查看歷史訂單 |
+| 品牌 / 設計師 | 品牌故事、設計師介紹頁 |
+| 管理後台 | 商品 / 品牌 / 設計師 CRUD、圖片上傳、訂單管理 |
 
 ---
 
-*本檔由偵測本機 `PATH` 與版本指令自動整理，實際以你當下終端輸出為準。*
+## 專案結構
+
+```
+Sogno di Casa/
+├── index.html              首頁
+├── products.html           商品列表
+├── product-detail.html     商品詳情
+├── cart.html               購物車
+├── login.html              登入 / 註冊
+├── account.html            我的帳號
+├── brands.html             品牌列表
+├── designers.html          設計師列表
+├── admin.html              管理後台
+│
+├── auth.js                 JWT 認證邏輯（API_BASE 定義於此）
+├── cart.js / cart-page.js  購物車邏輯
+├── admin.js                後台管理邏輯
+├── style.css               全站樣式
+│
+├── .env.example            環境變數範本
+├── start.bat               Windows 一鍵啟動
+├── start.sh                跨平台啟動腳本
+│
+├── backend/                Spring Boot 後端
+│   ├── src/main/java/com/sognodicasa/
+│   │   ├── controller/     REST API 控制器
+│   │   ├── service/        商業邏輯
+│   │   ├── repository/     資料庫存取
+│   │   ├── model/          JPA Entity
+│   │   ├── dto/            資料傳輸物件
+│   │   ├── security/       JWT 工具與過濾器
+│   │   └── config/         Security / CORS 設定
+│   └── src/main/resources/
+│       ├── application.properties       主設定（讀取環境變數）
+│       └── application-prod.properties  正式環境覆寫設定
+│
+└── docs/                   開發文件
+    ├── 01-project-overview.md
+    ├── 02-architecture.md
+    ├── 05-backend-guide.md
+    ├── 08-design-system.md
+    └── SECURITY.md         資安操作手冊
+```
+
+---
+
+## 資安說明
+
+- 所有密碼、密鑰均透過環境變數注入，不寫入程式碼
+- 詳見 [docs/SECURITY.md](docs/SECURITY.md)
+
+---
+
+## 文件
+
+詳細的架構說明、API 參考、設計系統請參考 [`docs/`](docs/) 資料夾。
